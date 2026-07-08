@@ -72,8 +72,44 @@ export default function CanvasWorkspace() {
 
   const currentPage = pages.find(p => p.id === currentPageId);
 
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          // Adjust drop coordinates based on canvas pan/zoom
+          const rect = containerRef.current?.getBoundingClientRect();
+          let x = 100;
+          let y = 100;
+          if (rect) {
+            const rawX = e.clientX - rect.left;
+            const rawY = e.clientY - rect.top;
+            x = (rawX - currentPanX) / canvasSettings.zoom;
+            y = (rawY - currentPanY) / canvasSettings.zoom;
+          }
+          
+          useEditorStore.getState().addElement({
+            type: 'image',
+            src: event.target.result as string,
+            x, y, width: 200, height: 150,
+            rotation: 0, opacity: 1, locked: false,
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="absolute inset-0 w-full h-full" ref={containerRef}>
+    <div 
+      className="absolute inset-0 w-full h-full" 
+      ref={containerRef}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       <Stage
         ref={stageRef}
         width={dimensions.width}

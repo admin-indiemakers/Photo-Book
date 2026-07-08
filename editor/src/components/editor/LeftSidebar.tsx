@@ -1,23 +1,32 @@
 'use client';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LayoutTemplate, Type, Image as ImageIcon, Shapes, Grid3X3, FolderHeart, Sticker } from 'lucide-react';
+import { LayoutTemplate, Type, Image as ImageIcon, Shapes, Grid3X3, FolderHeart, Sticker, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '@/store/useEditorStore';
 
 const TABS = [
   { id: 'templates', icon: LayoutTemplate, label: 'Templates' },
+  { id: 'images', icon: ImageIcon, label: 'Images' },
   { id: 'layouts', icon: Grid3X3, label: 'Layouts' },
-  { id: 'uploads', icon: FolderHeart, label: 'Uploads' },
   { id: 'text', icon: Type, label: 'Text' },
   { id: 'shapes', icon: Shapes, label: 'Shapes' },
   { id: 'stickers', icon: Sticker, label: 'Stickers' },
-  { id: 'photos', icon: ImageIcon, label: 'Photos' },
+];
+
+const DUMMY_PHOTOS = [
+  'https://picsum.photos/id/1015/400/300',
+  'https://picsum.photos/id/1016/400/300',
+  'https://picsum.photos/id/1018/400/300',
+  'https://picsum.photos/id/1019/400/300',
+  'https://picsum.photos/id/1020/400/300',
+  'https://picsum.photos/id/1021/400/300',
 ];
 
 export default function LeftSidebar() {
   const { addElement } = useEditorStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddText = () => {
     addElement({
@@ -36,6 +45,31 @@ export default function LeftSidebar() {
       rotation: 0, opacity: 1, locked: false,
       fill: '#E85D26'
     });
+  };
+
+  const handleAddImage = (src: string) => {
+    addElement({
+      type: 'image',
+      src,
+      x: 100, y: 100, width: 200, height: 150,
+      rotation: 0, opacity: 1, locked: false,
+    });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          handleAddImage(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset input
+    }
   };
 
   return (
@@ -90,7 +124,69 @@ export default function LeftSidebar() {
                     </div>
                   )}
 
-                  {tab.id !== 'text' && tab.id !== 'shapes' && (
+                  {tab.id === 'images' && (
+                    <div className="space-y-6">
+                      {/* Upload Area */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-[#1a1a18] mb-3">Upload your own</h4>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          ref={fileInputRef} 
+                          className="hidden" 
+                          onChange={handleFileUpload}
+                        />
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => fileInputRef.current?.click()}
+                          onDragOver={(e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); }}
+                          onDrop={(e: React.DragEvent) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const file = e.dataTransfer.files?.[0];
+                            if (file && file.type.startsWith('image/')) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                if (event.target?.result) handleAddImage(event.target.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="w-full py-8 border-2 border-dashed border-[#E85D26] rounded-xl flex flex-col items-center justify-center gap-3 bg-[#FAF6EE] text-[#E85D26] hover:bg-[#f4efeb] transition-colors cursor-pointer"
+                        >
+                          <Upload size={24} />
+                          <div className="text-center">
+                            <span className="font-semibold block text-sm">Click or Drag & Drop</span>
+                            <span className="text-[10px] text-[#6b6560]">SVG, PNG, JPG or GIF</span>
+                          </div>
+                        </motion.div>
+                      </div>
+
+                      <div className="w-full h-px bg-[#e8e2d9]" />
+
+                      {/* Random Stock Photos */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-[#1a1a18] mb-3">Stock Photos</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          {DUMMY_PHOTOS.map((src, i) => (
+                            <motion.button
+                              key={i}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleAddImage(src)}
+                              className="w-full aspect-square rounded-md overflow-hidden border border-[#e8e2d9] hover:border-[#E85D26]"
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={src} alt="dummy" className="w-full h-full object-cover" />
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {['templates', 'layouts', 'stickers'].includes(tab.id) && (
                     <div className="text-sm text-[#6b6560] border-2 border-dashed border-[#e8e2d9] rounded-lg p-8 text-center bg-[#FAF6EE]">
                       Placeholder for {tab.label} content.
                     </div>

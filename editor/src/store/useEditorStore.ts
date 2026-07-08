@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
+import { get, set as idbSet, del } from 'idb-keyval';
+import { v4 as uuidv4 } from 'uuid';
 
 export type ElementType = 'image' | 'text' | 'shape';
 
@@ -52,157 +55,182 @@ interface EditorState {
   addElement: (element: any) => void;
 }
 
-export const useEditorStore = create<EditorState>((set) => ({
-  pages: [{ 
-    id: 'page-1', 
-    name: 'Page 1', 
-    elements: [
-      {
-        id: 'element-1',
-        type: 'text',
-        x: 100,
-        y: 100,
-        width: 300,
-        height: 50,
-        rotation: 0,
-        opacity: 1,
-        locked: false,
-        text: 'World-Class Photo Book Editor',
-        fontSize: 24,
-        fontFamily: 'var(--font-sans)',
-        fill: '#E85D26'
-      },
-      {
-        id: 'element-2',
-        type: 'shape',
-        shapeType: 'rectangle',
-        x: 100,
-        y: 200,
-        width: 150,
-        height: 100,
-        rotation: -10,
-        opacity: 1,
-        locked: false,
-        fill: '#fdc930',
-        cornerRadius: 10
-      }
-    ] 
-  }],
-  currentPageId: 'page-1',
-  selectedElementIds: [],
-  canvasSettings: {
-    zoom: 1,
-    panX: 0,
-    panY: 0,
-    showGrid: false,
-    showSafeArea: true,
-    showBleed: false,
+// Custom IndexedDB storage for Zustand to handle large base64 images
+const idbStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) || null;
   },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await idbSet(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
+  },
+};
 
-  addPage: () =>
-    set((state) => {
-      const newPage = {
-        id: `page-${Date.now()}`,
-        name: `Page ${state.pages.length + 1}`,
-        elements: [],
-      };
-      return { pages: [...state.pages, newPage], currentPageId: newPage.id };
-    }),
+export const useEditorStore = create<EditorState>()(
+  persist(
+    (set, get) => ({
+      pages: [{ 
+        id: 'page-1', 
+        name: 'Page 1', 
+        elements: [
+          {
+            id: 'element-1',
+            type: 'text',
+            x: 100,
+            y: 100,
+            width: 300,
+            height: 50,
+            rotation: 0,
+            opacity: 1,
+            locked: false,
+            text: 'World-Class Photo Book Editor',
+            fontSize: 24,
+            fontFamily: 'var(--font-sans)',
+            fill: '#E85D26'
+          },
+          {
+            id: 'element-2',
+            type: 'shape',
+            shapeType: 'rectangle',
+            x: 100,
+            y: 200,
+            width: 150,
+            height: 100,
+            rotation: -10,
+            opacity: 1,
+            locked: false,
+            fill: '#fdc930',
+            cornerRadius: 10
+          }
+        ] 
+      }],
+      currentPageId: 'page-1',
+      selectedElementIds: [],
+      canvasSettings: {
+        zoom: 1,
+        panX: 0,
+        panY: 0,
+        showGrid: false,
+        showSafeArea: true,
+        showBleed: false,
+      },
 
-  setCurrentPage: (id) => set({ currentPageId: id }),
+      addPage: () =>
+        set((state) => {
+          const newPage = {
+            id: `page-${Date.now()}`,
+            name: `Page ${state.pages.length + 1}`,
+            elements: [],
+          };
+          return { pages: [...state.pages, newPage], currentPageId: newPage.id };
+        }),
 
-  setZoom: (zoom) =>
-    set((state) => ({ canvasSettings: { ...state.canvasSettings, zoom } })),
+      setCurrentPage: (id) => set({ currentPageId: id }),
 
-  setPan: (x, y) =>
-    set((state) => ({ canvasSettings: { ...state.canvasSettings, panX: x, panY: y } })),
+      setZoom: (zoom) =>
+        set((state) => ({ canvasSettings: { ...state.canvasSettings, zoom } })),
 
-  toggleGrid: () =>
-    set((state) => ({
-      canvasSettings: { ...state.canvasSettings, showGrid: !state.canvasSettings.showGrid },
-    })),
+      setPan: (x, y) =>
+        set((state) => ({ canvasSettings: { ...state.canvasSettings, panX: x, panY: y } })),
 
-  toggleSafeArea: () =>
-    set((state) => ({
-      canvasSettings: { ...state.canvasSettings, showSafeArea: !state.canvasSettings.showSafeArea },
-    })),
+      toggleGrid: () =>
+        set((state) => ({
+          canvasSettings: { ...state.canvasSettings, showGrid: !state.canvasSettings.showGrid },
+        })),
 
-  toggleBleed: () =>
-    set((state) => ({
-      canvasSettings: { ...state.canvasSettings, showBleed: !state.canvasSettings.showBleed },
-    })),
+      toggleSafeArea: () =>
+        set((state) => ({
+          canvasSettings: { ...state.canvasSettings, showSafeArea: !state.canvasSettings.showSafeArea },
+        })),
 
-  setSelectedElements: (ids) => set({ selectedElementIds: ids }),
+      toggleBleed: () =>
+        set((state) => ({
+          canvasSettings: { ...state.canvasSettings, showBleed: !state.canvasSettings.showBleed },
+        })),
 
-  updateElement: (pageId, elementId, attrs) =>
-    set((state) => ({
-      pages: state.pages.map((page) => {
-        if (page.id !== pageId) return page;
-        return {
-          ...page,
-          elements: page.elements.map((el) => {
-            if (el.id !== elementId) return el;
-            return { ...el, ...attrs };
+      setSelectedElements: (ids) => set({ selectedElementIds: ids }),
+
+      updateElement: (pageId, elementId, attrs) =>
+        set((state) => ({
+          pages: state.pages.map((page) => {
+            if (page.id !== pageId) return page;
+            return {
+              ...page,
+              elements: page.elements.map((el) => {
+                if (el.id !== elementId) return el;
+                return { ...el, ...attrs };
+              }),
+            };
           }),
-        };
-      }),
-    })),
+        })),
 
-  duplicatePage: (id) =>
-    set((state) => {
-      const pageToDuplicate = state.pages.find((p) => p.id === id);
-      if (!pageToDuplicate) return state;
-      const newPage = {
-        ...pageToDuplicate,
-        id: `page-${Date.now()}`,
-        name: `${pageToDuplicate.name} (Copy)`,
-        elements: pageToDuplicate.elements.map(el => ({ ...el, id: `el-${Date.now()}-${Math.random()}` }))
-      };
-      const index = state.pages.findIndex((p) => p.id === id);
-      const newPages = [...state.pages];
-      newPages.splice(index + 1, 0, newPage);
-      return { pages: newPages, currentPageId: newPage.id };
-    }),
+      duplicatePage: (id) =>
+        set((state) => {
+          const pageToDuplicate = state.pages.find((p) => p.id === id);
+          if (!pageToDuplicate) return state;
+          const newPage = {
+            ...pageToDuplicate,
+            id: `page-${Date.now()}`,
+            name: `${pageToDuplicate.name} (Copy)`,
+            elements: pageToDuplicate.elements.map((el) => ({ ...el, id: `el-${Date.now()}-${Math.random()}` }))
+          };
+          const index = state.pages.findIndex((p) => p.id === id);
+          const newPages = [...state.pages];
+          newPages.splice(index + 1, 0, newPage);
+          return { pages: newPages, currentPageId: newPage.id };
+        }),
 
-  deletePage: (id) =>
-    set((state) => {
-      if (state.pages.length <= 1) return state; // Prevent deleting last page
-      const newPages = state.pages.filter((p) => p.id !== id);
-      const nextCurrent = state.currentPageId === id ? newPages[0].id : state.currentPageId;
-      return { pages: newPages, currentPageId: nextCurrent };
-    }),
+      deletePage: (id) =>
+        set((state) => {
+          if (state.pages.length <= 1) return state; // Prevent deleting last page
+          const newPages = state.pages.filter((p) => p.id !== id);
+          const nextCurrent = state.currentPageId === id ? newPages[0].id : state.currentPageId;
+          return { pages: newPages, currentPageId: nextCurrent };
+        }),
 
-  deleteSelectedElements: () =>
-    set((state) => {
-      if (!state.currentPageId || state.selectedElementIds.length === 0) return state;
-      return {
-        pages: state.pages.map(page => {
-          if (page.id !== state.currentPageId) return page;
+      deleteSelectedElements: () =>
+        set((state) => {
+          if (!state.currentPageId || state.selectedElementIds.length === 0) return state;
           return {
-            ...page,
-            elements: page.elements.filter(el => !state.selectedElementIds.includes(el.id))
+            pages: state.pages.map(page => {
+              if (page.id !== state.currentPageId) return page;
+              return {
+                ...page,
+                elements: page.elements.filter(el => !state.selectedElementIds.includes(el.id))
+              };
+            }),
+            selectedElementIds: []
           };
         }),
-        selectedElementIds: []
-      };
-    }),
 
-  addElement: (element) =>
-    set((state) => {
-      if (!state.currentPageId) return state;
-      const newElement = {
-        ...element,
-        id: `el-${Date.now()}-${Math.random()}`
-      };
-      return {
-        pages: state.pages.map(page => {
-          if (page.id !== state.currentPageId) return page;
-          return {
-            ...page,
-            elements: [...page.elements, newElement]
+      addElement: (element) =>
+        set((state) => {
+          if (!state.currentPageId) return state;
+          const newElement = {
+            ...element,
+            id: `el-${Date.now()}-${Math.random()}`
           };
-        }),
-        selectedElementIds: [newElement.id]
-      };
-    })
-}));
+          return {
+            pages: state.pages.map(page => {
+              if (page.id !== state.currentPageId) return page;
+              return {
+                ...page,
+                elements: [...page.elements, newElement]
+              };
+            }),
+            selectedElementIds: [newElement.id]
+          };
+        })
+    }),
+    {
+      name: 'memorize-photo-book-storage', // unique name
+      storage: createJSONStorage(() => idbStorage),
+      partialize: (state) => ({ 
+        pages: state.pages,
+        canvasSettings: state.canvasSettings
+      }), // only save pages and canvas settings
+    }
+  )
+);
