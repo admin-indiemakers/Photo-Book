@@ -267,10 +267,30 @@ export default function ValidationPanel({ onClose }: { onClose: () => void }) {
             {errors.length === 0 ? '✓ No critical issues' : `⚠ ${errors.length} critical issue${errors.length !== 1 ? 's' : ''} must be fixed`}
           </p>
           <Button
-            onClick={onClose}
+            onClick={async () => {
+              if (errors.length === 0) {
+                try {
+                  const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pages, canvasSettings: useEditorStore.getState().canvasSettings })
+                  });
+                  if (res.ok) {
+                    alert('Order submitted successfully!');
+                    onClose();
+                  } else {
+                    alert('Failed to submit order');
+                  }
+                } catch (e) {
+                  alert('Error submitting order');
+                }
+              } else {
+                onClose();
+              }
+            }}
             className="h-8 text-xs font-semibold bg-[#E85D26] hover:bg-[#D4520A] text-white"
           >
-            {errors.length === 0 ? 'Ready to Export' : 'Close'}
+            {errors.length === 0 ? 'Submit Order' : 'Close'}
           </Button>
         </div>
       </div>

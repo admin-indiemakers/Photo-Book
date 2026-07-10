@@ -100,8 +100,8 @@ export default function LeftSidebar() {
     <div className="w-[320px] h-full bg-[#FFFFFF] border-r border-[#e8e2d9] flex z-10 shrink-0">
       <Tabs defaultValue="images" className="flex w-full h-full">
         {/* Icon strip */}
-        <div className="w-[64px] h-full border-r border-[#e8e2d9] flex flex-col items-center py-3 gap-1 bg-[#FAF6EE] overflow-y-auto shrink-0">
-          <TabsList className="flex flex-col h-auto bg-transparent gap-1 w-full p-0">
+        <div className="w-[64px] h-full border-r border-[#e8e2d9] flex flex-col py-3 gap-1 bg-[#FAF6EE] overflow-y-auto shrink-0">
+          <TabsList className="flex flex-col items-center justify-start h-auto bg-transparent gap-1 w-full p-0">
             {TABS.map((tab) => (
               <TabsTrigger
                 key={tab.id}
