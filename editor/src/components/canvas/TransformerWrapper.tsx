@@ -4,22 +4,23 @@ import { Transformer } from 'react-konva';
 import { useEditorStore } from '@/store/useEditorStore';
 
 interface TransformerWrapperProps {
-  selectedNode: any;
+  selectedNodes: any[];
 }
 
-export default function TransformerWrapper({ selectedNode }: TransformerWrapperProps) {
+export default function TransformerWrapper({ selectedNodes }: TransformerWrapperProps) {
   const trRef = useRef<any>(null);
   const { canvasSettings } = useEditorStore();
 
   useEffect(() => {
-    if (selectedNode && trRef.current) {
-      // we need to attach transformer manually
-      trRef.current.nodes([selectedNode]);
+    if (selectedNodes.length > 0 && trRef.current) {
+      trRef.current.nodes(selectedNodes);
       trRef.current.getLayer().batchDraw();
+    } else if (trRef.current) {
+      trRef.current.nodes([]);
     }
-  }, [selectedNode]);
+  }, [selectedNodes]);
 
-  if (!selectedNode) {
+  if (selectedNodes.length === 0) {
     return null;
   }
 
