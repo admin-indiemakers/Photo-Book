@@ -33,6 +33,7 @@ export default function LeftSidebar() {
   const { addElement } = useEditorStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState('images');
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
 
   const handleAddText = (preset: typeof TEXT_PRESETS[0]) => {
     addElement({
@@ -65,21 +66,24 @@ export default function LeftSidebar() {
     });
   };
 
+  const processFiles = (files: FileList | null) => {
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            const src = event.target.result as string;
+            setUploadedPhotos(prev => [src, ...prev]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            if (event.target?.result) {
-              handleAddImage(event.target.result as string);
-            }
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
+    processFiles(e.target.files);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -132,18 +136,7 @@ export default function LeftSidebar() {
                   onDrop={(e: React.DragEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    const files = e.dataTransfer.files;
-                    if (files) {
-                      Array.from(files).forEach(file => {
-                        if (file.type.startsWith('image/')) {
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            if (event.target?.result) handleAddImage(event.target.result as string);
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      });
-                    }
+                    processFiles(e.dataTransfer.files);
                   }}
                   className="w-full py-6 border-2 border-dashed border-[#E85D26] rounded-xl flex flex-col items-center justify-center gap-2 bg-[#FAF6EE] text-[#E85D26] hover:bg-[#f4efeb] transition-colors cursor-pointer group"
                 >
@@ -154,6 +147,30 @@ export default function LeftSidebar() {
                   </div>
                 </div>
               </div>
+
+              {uploadedPhotos.length > 0 && (
+                <>
+                  <div className="w-full h-px bg-[#e8e2d9]" />
+                  <div>
+                    <h4 className="text-xs font-semibold text-[#1a1a18] mb-3">Your Uploads</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {uploadedPhotos.map((src, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleAddImage(src)}
+                          className="w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#e8e2d9] hover:border-[#E85D26] hover:shadow-md transition-all group relative bg-[#FAF6EE]"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={src} alt={`Upload ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <span className="text-white opacity-0 group-hover:opacity-100 font-medium text-xs drop-shadow-md">Add</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </ScrollArea>
         )}
