@@ -20,8 +20,8 @@ export default function CanvasWorkspace() {
     showContextMenu, hideContextMenu, snapGuides, setSnapGuides, clearSnapGuides,
   } = useEditorStore();
 
-  const PAGE_WIDTH = canvasSettings.width;
-  const PAGE_HEIGHT = canvasSettings.height;
+  const PAGE_WIDTH = canvasSettings.width || 600;
+  const PAGE_HEIGHT = canvasSettings.height || 800;
 
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -291,7 +291,7 @@ export default function CanvasWorkspace() {
             {/* Page shadow */}
             <Rect
               x={0} y={0}
-              width={PAGE_WIDTH} height={PAGE_HEIGHT}
+              width={canvasSettings.width || 600} height={canvasSettings.height || 800}
               fill="black" opacity={0.1}
               shadowBlur={30} shadowColor="black" shadowOpacity={0.15}
               shadowOffsetX={0} shadowOffsetY={10}

@@ -57,7 +57,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         <span className="text-[10px] font-semibold text-[#a09890] uppercase tracking-wider">Size:</span>
         <select
           className="text-xs text-[#1a1a18] bg-transparent outline-none cursor-pointer py-1.5 focus:ring-0"
-          value={`${canvasSettings.width}x${canvasSettings.height}`}
+          value={`${canvasSettings.width || 600}x${canvasSettings.height || 800}`}
           onChange={(e) => {
             const val = e.target.value;
             const label = e.target.options[e.target.selectedIndex].text;
