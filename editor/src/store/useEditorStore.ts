@@ -99,6 +99,7 @@ interface EditorState {
   duplicatePage: (id: string) => void;
   deletePage: (id: string) => void;
   reorderPages: (fromIndex: number, toIndex: number) => void;
+  updatePageBackground: (pageId: string, bg: Page['background']) => void;
 
   // Canvas
   setZoom: (zoom: number) => void;
@@ -599,6 +600,15 @@ export const useEditorStore = create<EditorState>()(
 
       // ============ SAVE STATUS ============
       setSaveStatus: (status) => set({ saveStatus: status, lastSavedAt: status === 'saved' ? Date.now() : get().lastSavedAt }),
+
+      // ============ PAGE BACKGROUND ============
+      updatePageBackground: (pageId, bg) =>
+        set((state) => ({
+          pages: state.pages.map(page => {
+            if (page.id !== pageId) return page;
+            return { ...page, background: bg };
+          }),
+        })),
     }),
     {
       name: 'memorize-photo-book-storage',

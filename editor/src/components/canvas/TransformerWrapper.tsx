@@ -24,11 +24,12 @@ export default function TransformerWrapper({ selectedNodes }: TransformerWrapper
     return null;
   }
 
+  const invZoom = 1 / canvasSettings.zoom;
+
   return (
     <Transformer
       ref={trRef}
       boundBoxFunc={(oldBox, newBox) => {
-        // limit resize
         if (newBox.width < 5 || newBox.height < 5) {
           return oldBox;
         }
@@ -37,9 +38,21 @@ export default function TransformerWrapper({ selectedNodes }: TransformerWrapper
       borderStroke="#E85D26"
       anchorStroke="#E85D26"
       anchorFill="#FFFFFF"
-      anchorSize={8 / canvasSettings.zoom}
-      borderStrokeWidth={1.5 / canvasSettings.zoom}
-      padding={5}
+      anchorSize={Math.max(6, 8 * invZoom)}
+      anchorCornerRadius={2 * invZoom}
+      borderStrokeWidth={1.5 * invZoom}
+      borderDash={[]}
+      rotateAnchorOffset={20 * invZoom}
+      rotateAnchorCursor="grab"
+      enabledAnchors={[
+        'top-left', 'top-center', 'top-right',
+        'middle-left', 'middle-right',
+        'bottom-left', 'bottom-center', 'bottom-right',
+      ]}
+      rotateEnabled={true}
+      padding={2}
+      ignoreStroke={true}
+      keepRatio={false}
     />
   );
 }

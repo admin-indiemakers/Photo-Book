@@ -278,7 +278,8 @@ export default function CanvasWorkspace() {
               name="page-background"
               x={0} y={0}
               width={PAGE_WIDTH} height={PAGE_HEIGHT}
-              fill="white"
+              fill={currentPage?.background?.value || 'white'}
+              opacity={currentPage?.background?.opacity ?? 1}
             />
 
             {/* Bleed area */}
