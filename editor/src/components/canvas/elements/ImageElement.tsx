@@ -7,9 +7,11 @@ interface ImageElementProps {
   isSelected: boolean;
   onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
+  onDragMove?: (e: any) => void;
+  onDragEnd?: (e: any) => void;
 }
 
-export default function ImageElement({ element, isSelected, onSelect, onChange }: ImageElementProps) {
+export default function ImageElement({ element, isSelected, onSelect, onChange, onDragMove, onDragEnd }: ImageElementProps) {
   const imageRef = React.useRef<any>(null);
   const [imageObj, setImageObj] = useState<HTMLImageElement | null>(null);
 
@@ -46,17 +48,20 @@ export default function ImageElement({ element, isSelected, onSelect, onChange }
     <KonvaImage
       ref={imageRef}
       {...element}
+      name="element-node"
+      visible={!element.hidden}
       image={imageObj || undefined}
       draggable={!element.locked}
       onClick={onSelect}
       onTap={onSelect}
-      onDragEnd={(e: any) => {
+      onDragMove={onDragMove}
+      onDragEnd={onDragEnd || ((e: any) => {
         onChange({
           ...element,
           x: e.target.x(),
           y: e.target.y()
         });
-      }}
+      })}
       onTransformEnd={handleChange}
     />
   );

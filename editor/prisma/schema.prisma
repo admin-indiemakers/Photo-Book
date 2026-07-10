@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  status        String   @default("PENDING") // PENDING, PRINTING, SHIPPED
+  customerName  String?
+  customerEmail String?
+  projectData   String   // JSON string of the canvas state
+}

@@ -7,9 +7,11 @@ interface ShapeElementProps {
   isSelected: boolean;
   onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
+  onDragMove?: (e: any) => void;
+  onDragEnd?: (e: any) => void;
 }
 
-export default function ShapeElement({ element, isSelected, onSelect, onChange }: ShapeElementProps) {
+export default function ShapeElement({ element, isSelected, onSelect, onChange, onDragMove, onDragEnd }: ShapeElementProps) {
   const shapeRef = React.useRef<any>(null);
 
   const handleChange = (e: any) => {
@@ -33,16 +35,19 @@ export default function ShapeElement({ element, isSelected, onSelect, onChange }
   const commonProps = {
     ref: shapeRef,
     ...element,
+    name: 'element-node',
+    visible: !element.hidden,
     draggable: !element.locked,
     onClick: onSelect,
     onTap: onSelect,
-    onDragEnd: (e: any) => {
+    onDragMove,
+    onDragEnd: onDragEnd || ((e: any) => {
       onChange({
         ...element,
         x: e.target.x(),
         y: e.target.y()
       });
-    },
+    }),
     onTransformEnd: handleChange,
   };
 
