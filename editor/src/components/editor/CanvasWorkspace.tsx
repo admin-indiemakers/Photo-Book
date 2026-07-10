@@ -9,8 +9,6 @@ import ShapeElement from '../canvas/elements/ShapeElement';
 import TransformerWrapper from '../canvas/TransformerWrapper';
 import CanvasRuler, { RulerCorner } from '../canvas/CanvasRuler';
 
-const PAGE_WIDTH = 600;
-const PAGE_HEIGHT = 800;
 const BLEED = 10;
 const SAFE_AREA = 20;
 const SNAP_THRESHOLD = 5;
@@ -21,6 +19,9 @@ export default function CanvasWorkspace() {
     selectedElementIds, setSelectedElements, updateElement,
     showContextMenu, hideContextMenu, snapGuides, setSnapGuides, clearSnapGuides,
   } = useEditorStore();
+
+  const PAGE_WIDTH = canvasSettings.width;
+  const PAGE_HEIGHT = canvasSettings.height;
 
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

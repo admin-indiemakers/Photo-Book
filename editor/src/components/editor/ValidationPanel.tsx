@@ -5,8 +5,6 @@ import { AlertTriangle, CheckCircle, XCircle, Info, ChevronDown, ChevronUp, Prin
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const PAGE_WIDTH = 600;
-const PAGE_HEIGHT = 800;
 const SAFE_AREA = 20;
 const BLEED = 10;
 const MIN_DPI = 150; // minimum acceptable DPI for print
@@ -22,8 +20,10 @@ export interface ValidationIssue {
   suggestion: string;
 }
 
-export function validateBook(pages: Page[]): ValidationIssue[] {
+export function validateBook(pages: Page[], canvasSettings: any): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
+  const PAGE_WIDTH = canvasSettings.width || 600;
+  const PAGE_HEIGHT = canvasSettings.height || 800;
 
   pages.forEach((page, pageIndex) => {
     const pageName = page.name || `Page ${pageIndex + 1}`;
@@ -134,10 +134,10 @@ export function validateBook(pages: Page[]): ValidationIssue[] {
 }
 
 export default function ValidationPanel({ onClose }: { onClose: () => void }) {
-  const { pages, setCurrentPage, setSelectedElements } = useEditorStore();
+  const { pages, canvasSettings, setCurrentPage, setSelectedElements } = useEditorStore();
   const [expandedPage, setExpandedPage] = useState<number | null>(null);
 
-  const issues = useMemo(() => validateBook(pages), [pages]);
+  const issues = useMemo(() => validateBook(pages, canvasSettings), [pages, canvasSettings]);
   const errors = issues.filter(i => i.severity === 'error');
   const warnings = issues.filter(i => i.severity === 'warning');
   const infos = issues.filter(i => i.severity === 'info');
