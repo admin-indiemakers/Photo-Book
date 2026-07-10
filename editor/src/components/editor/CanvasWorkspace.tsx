@@ -13,8 +13,9 @@ export default function CanvasWorkspace() {
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [selectedNodes, setSelectedNodes] = useState<any[]>([]);
   const stageRef = useRef<any>(null);
+  const [selectionRect, setSelectionRect] = useState({ x1: 0, y1: 0, x2: 0, y2: 0, visible: false });
 
   useEffect(() => {
     setMounted(true);
@@ -32,13 +33,34 @@ export default function CanvasWorkspace() {
   }, []);
 
   useEffect(() => {
-    if (selectedElementIds.length > 0 && stageRef.current) {
-      const node = stageRef.current.findOne(`#${selectedElementIds[0]}`);
-      setSelectedNode(node || null);
-    } else {
-      setSelectedNode(null);
+    if (stageRef.current) {
+      const nodes = selectedElementIds.map(id => stageRef.current.findOne(`#${id}`)).filter(Boolean);
+      setSelectedNodes(nodes);
     }
   }, [selectedElementIds]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        useEditorStore.getState().deleteSelectedElements();
+      }
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'a' || e.key === 'A') {
+          if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+          e.preventDefault();
+          const state = useEditorStore.getState();
+          const page = state.pages.find(p => p.id === state.currentPageId);
+          if (page) {
+            state.setSelectedElements(page.elements.map(el => el.id));
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (!mounted || dimensions.width === 0) return null;
 
@@ -58,6 +80,38 @@ export default function CanvasWorkspace() {
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'page-background';
     if (clickedOnEmpty) {
       setSelectedElements([]);
+      const pos = e.target.getStage().getPointerPosition();
+      setSelectionRect({ x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y, visible: true });
+    }
+  };
+
+  const handleMouseMove = (e: any) => {
+    if (!selectionRect.visible) return;
+    const pos = e.target.getStage().getPointerPosition();
+    setSelectionRect(prev => ({ ...prev, x2: pos.x, y2: pos.y }));
+  };
+
+  const handleMouseUp = (e: any) => {
+    if (!selectionRect.visible) return;
+    setSelectionRect(prev => ({ ...prev, visible: false }));
+    const box = {
+      x: Math.min(selectionRect.x1, selectionRect.x2),
+      y: Math.min(selectionRect.y1, selectionRect.y2),
+      width: Math.abs(selectionRect.x1 - selectionRect.x2),
+      height: Math.abs(selectionRect.y1 - selectionRect.y2),
+    };
+    if (box.width === 0 || box.height === 0) return;
+    const shapes = stageRef.current.find('.element-node');
+    const selected = shapes.filter((shape: any) => {
+      const rect = shape.getClientRect({ relativeTo: stageRef.current });
+      return (
+        rect.x >= box.x && rect.y >= box.y &&
+        rect.x + rect.width <= box.x + box.width &&
+        rect.y + rect.height <= box.y + box.height
+      );
+    });
+    if (selected.length > 0) {
+      setSelectedElements(selected.map((s: any) => s.id()));
     }
   };
 
@@ -116,7 +170,11 @@ export default function CanvasWorkspace() {
         height={dimensions.height}
         onWheel={handleWheel}
         onMouseDown={checkDeselect}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onTouchStart={checkDeselect}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={handleMouseUp}
         draggable={false}
       >
         <Layer>
@@ -162,7 +220,17 @@ export default function CanvasWorkspace() {
                 id: el.id,
                 element: el,
                 isSelected,
-                onSelect: () => setSelectedElements([el.id]),
+                onSelect: (e: any) => {
+                  if (e.evt && e.evt.shiftKey) {
+                    if (isSelected) {
+                      setSelectedElements(selectedElementIds.filter(id => id !== el.id));
+                    } else {
+                      setSelectedElements([...selectedElementIds, el.id]);
+                    }
+                  } else {
+                    setSelectedElements([el.id]);
+                  }
+                },
                 onChange: (newAttrs: any) => updateElement(currentPageId!, el.id, newAttrs)
               };
 
@@ -172,8 +240,20 @@ export default function CanvasWorkspace() {
               return null;
             })}
 
-            {selectedNode && <TransformerWrapper selectedNode={selectedNode} />}
+            {selectedNodes.length > 0 && <TransformerWrapper selectedNodes={selectedNodes} />}
           </Group>
+          {selectionRect.visible && (
+            <Rect
+              x={Math.min(selectionRect.x1, selectionRect.x2)}
+              y={Math.min(selectionRect.y1, selectionRect.y2)}
+              width={Math.abs(selectionRect.x1 - selectionRect.x2)}
+              height={Math.abs(selectionRect.y1 - selectionRect.y2)}
+              fill="rgba(232, 93, 38, 0.2)"
+              stroke="#E85D26"
+              strokeWidth={1}
+              listening={false}
+            />
+          )}
         </Layer>
       </Stage>
     </div>

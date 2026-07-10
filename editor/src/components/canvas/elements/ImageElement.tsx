@@ -5,7 +5,7 @@ import { Image as KonvaImage } from 'react-konva';
 interface ImageElementProps {
   element: any;
   isSelected: boolean;
-  onSelect: () => void;
+  onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
 }
 

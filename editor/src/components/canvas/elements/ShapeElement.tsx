@@ -5,7 +5,7 @@ import { Rect, Circle, Star, RegularPolygon } from 'react-konva';
 interface ShapeElementProps {
   element: any;
   isSelected: boolean;
-  onSelect: () => void;
+  onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
 }
 

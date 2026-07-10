@@ -5,7 +5,7 @@ import { Text } from 'react-konva';
 interface TextElementProps {
   element: any;
   isSelected: boolean;
-  onSelect: () => void;
+  onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
 }
 
