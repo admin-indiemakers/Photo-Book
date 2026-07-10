@@ -48,9 +48,35 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         {saveStatus === 'saved' && lastSavedAt && (
           <span className="text-[10px] text-green-600">✓ Saved {timeAgo}</span>
         )}
+        {saveStatus === 'error' && (
+          <span className="text-[10px] text-red-600">⚠ Save failed</span>
+        )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-4 border border-[#e8e2d9] rounded-md px-2 bg-[#FAF6EE]">
+        <span className="text-[10px] font-semibold text-[#a09890] uppercase tracking-wider">Size:</span>
+        <select
+          className="text-xs text-[#1a1a18] bg-transparent outline-none cursor-pointer py-1.5 focus:ring-0"
+          value={`${canvasSettings.width || 600}x${canvasSettings.height || 800}`}
+          onChange={(e) => {
+            const val = e.target.value;
+            const label = e.target.options[e.target.selectedIndex].text;
+            if (val === '600x800') useEditorStore.getState().setCanvasSize(600, 800, label);
+            if (val === '800x600') useEditorStore.getState().setCanvasSize(800, 600, label);
+            if (val === '800x800') useEditorStore.getState().setCanvasSize(800, 800, label);
+            if (val === '595x842') useEditorStore.getState().setCanvasSize(595, 842, label);
+            if (val === '842x595') useEditorStore.getState().setCanvasSize(842, 595, label);
+          }}
+        >
+          <option value="600x800">Portrait (6x8)</option>
+          <option value="800x600">Landscape (8x6)</option>
+          <option value="800x800">Square (8x8)</option>
+          <option value="595x842">A4 Portrait</option>
+          <option value="842x595">A4 Landscape</option>
+        </select>
+      </div>
+
+      <div className="flex items-center gap-1 bg-[#FAF6EE] p-1 rounded-lg border border-[#e8e2d9]">
         <Button
           variant="ghost" size="icon"
           className={`h-8 w-8 ${canUndo() ? 'text-[#6b6560] hover:text-[#E85D26]' : 'text-[#d4cfc9] cursor-not-allowed'}`}

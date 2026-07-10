@@ -4,13 +4,13 @@ import { useEditorStore } from '@/store/useEditorStore';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const PAGE_WIDTH = 600;
-const PAGE_HEIGHT = 800;
-
 export default function PreviewMode({ onClose }: { onClose: () => void }) {
-  const { pages } = useEditorStore();
+  const { pages, canvasSettings } = useEditorStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
+
+  const PAGE_WIDTH = canvasSettings.width || 600;
+  const PAGE_HEIGHT = canvasSettings.height || 800;
 
   const goTo = (index: number) => {
     setCurrentIndex(Math.max(0, Math.min(pages.length - 1, index)));

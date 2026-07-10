@@ -41,6 +41,9 @@ interface CanvasSettings {
   snapToGrid: boolean;
   snapToObjects: boolean;
   gridSize: number;
+  width: number;
+  height: number;
+  layoutLabel: string;
 }
 
 // History
@@ -110,6 +113,7 @@ interface EditorState {
   toggleRulers: () => void;
   toggleSnapToGrid: () => void;
   toggleSnapToObjects: () => void;
+  setCanvasSize: (width: number, height: number, label: string) => void;
 
   // Selection
   setSelectedElements: (ids: string[]) => void;
@@ -212,11 +216,14 @@ export const useEditorStore = create<EditorState>()(
         panY: 0,
         showGrid: false,
         showSafeArea: true,
-        showBleed: false,
-        showRulers: false,
-        snapToGrid: true,
+        showBleed: true,
+        showRulers: true,
+        snapToGrid: false,
         snapToObjects: true,
         gridSize: 20,
+        width: 600,
+        height: 800,
+        layoutLabel: 'Portrait (6x8)'
       },
       clipboard: null,
       contextMenu: { visible: false, x: 0, y: 0 },
@@ -368,9 +375,15 @@ export const useEditorStore = create<EditorState>()(
         })),
 
       toggleSnapToObjects: () =>
-        set((state) => ({
-          canvasSettings: { ...state.canvasSettings, snapToObjects: !state.canvasSettings.snapToObjects },
-        })),
+        set((state) => ({ canvasSettings: { ...state.canvasSettings, snapToObjects: !state.canvasSettings.snapToObjects } })),
+
+      setCanvasSize: (width: number, height: number, label: string) =>
+        set((state) => {
+          get()._pushHistory('Set canvas size');
+          return {
+            canvasSettings: { ...state.canvasSettings, width, height, layoutLabel: label }
+          };
+        }),
 
       // ============ SELECTION ============
       setSelectedElements: (ids) => set({ selectedElementIds: ids }),

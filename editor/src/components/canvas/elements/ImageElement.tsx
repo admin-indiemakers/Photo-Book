@@ -18,8 +18,10 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
   useEffect(() => {
     if (element.src) {
       const img = new window.Image();
+      if (!element.src.startsWith('data:')) {
+        img.crossOrigin = 'Anonymous';
+      }
       img.src = element.src;
-      img.crossOrigin = 'Anonymous';
       img.onload = () => {
         setImageObj(img);
       };
