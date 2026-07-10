@@ -1,15 +1,26 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useEditorStore } from '@/store/useEditorStore';
-import { Stage, Layer, Rect, Group } from 'react-konva';
+import { Stage, Layer, Rect, Group, Line } from 'react-konva';
 
 import TextElement from '../canvas/elements/TextElement';
 import ImageElement from '../canvas/elements/ImageElement';
 import ShapeElement from '../canvas/elements/ShapeElement';
 import TransformerWrapper from '../canvas/TransformerWrapper';
 
+const PAGE_WIDTH = 600;
+const PAGE_HEIGHT = 800;
+const BLEED = 10;
+const SAFE_AREA = 20;
+const SNAP_THRESHOLD = 5;
+
 export default function CanvasWorkspace() {
-  const { currentPageId, pages, canvasSettings, setZoom, setPan, selectedElementIds, setSelectedElements, updateElement } = useEditorStore();
+  const {
+    currentPageId, pages, canvasSettings, setZoom, setPan,
+    selectedElementIds, setSelectedElements, updateElement,
+    showContextMenu, hideContextMenu, snapGuides, setSnapGuides, clearSnapGuides,
+  } = useEditorStore();
+
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -36,38 +47,17 @@ export default function CanvasWorkspace() {
     if (stageRef.current) {
       const nodes = selectedElementIds.map(id => stageRef.current.findOne(`#${id}`)).filter(Boolean);
       setSelectedNodes(nodes);
+    } else {
+      setSelectedNodes([]);
     }
   }, [selectedElementIds]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-        useEditorStore.getState().deleteSelectedElements();
-      }
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'a' || e.key === 'A') {
-          if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-          e.preventDefault();
-          const state = useEditorStore.getState();
-          const page = state.pages.find(p => p.id === state.currentPageId);
-          if (page) {
-            state.setSelectedElements(page.elements.map(el => el.id));
-          }
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   if (!mounted || dimensions.width === 0) return null;
 
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
     if (e.evt.ctrlKey) {
-      const scaleBy = 1.1;
+      const scaleBy = 1.08;
       const oldScale = canvasSettings.zoom;
       const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
       setZoom(Math.max(0.1, Math.min(newScale, 5)));
@@ -77,8 +67,14 @@ export default function CanvasWorkspace() {
   };
 
   const checkDeselect = (e: any) => {
+    // Right click - show context menu
+    if (e.evt && e.evt.button === 2) {
+      e.evt.preventDefault();
+      return;
+    }
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.name() === 'page-background';
     if (clickedOnEmpty) {
+      hideContextMenu();
       setSelectedElements([]);
       const pos = e.target.getStage().getPointerPosition();
       setSelectionRect({ x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y, visible: true });
@@ -91,7 +87,7 @@ export default function CanvasWorkspace() {
     setSelectionRect(prev => ({ ...prev, x2: pos.x, y2: pos.y }));
   };
 
-  const handleMouseUp = (e: any) => {
+  const handleMouseUp = () => {
     if (!selectionRect.visible) return;
     setSelectionRect(prev => ({ ...prev, visible: false }));
     const box = {
@@ -100,7 +96,7 @@ export default function CanvasWorkspace() {
       width: Math.abs(selectionRect.x1 - selectionRect.x2),
       height: Math.abs(selectionRect.y1 - selectionRect.y2),
     };
-    if (box.width === 0 || box.height === 0) return;
+    if (box.width < 3 || box.height < 3) return;
     const shapes = stageRef.current.find('.element-node');
     const selected = shapes.filter((shape: any) => {
       const rect = shape.getClientRect({ relativeTo: stageRef.current });
@@ -115,12 +111,90 @@ export default function CanvasWorkspace() {
     }
   };
 
-  const PAGE_WIDTH = 600;
-  const PAGE_HEIGHT = 800;
-  
+  const handleContextMenu = (e: any) => {
+    e.evt.preventDefault();
+    e.evt.stopPropagation();
+    const stage = e.target.getStage();
+    const pos = stage.getPointerPosition();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (containerRect) {
+      showContextMenu(
+        pos.x + containerRect.left,
+        pos.y + containerRect.top,
+      );
+    }
+  };
+
+  // ============ SNAPPING ENGINE ============
+  const getSnapLines = (currentId: string) => {
+    const currentPage = pages.find(p => p.id === currentPageId);
+    if (!currentPage || !canvasSettings.snapToObjects) return { vertical: [] as number[], horizontal: [] as number[] };
+
+    const vertical: number[] = [];
+    const horizontal: number[] = [];
+
+    // Page edges
+    vertical.push(0, PAGE_WIDTH / 2, PAGE_WIDTH);
+    horizontal.push(0, PAGE_HEIGHT / 2, PAGE_HEIGHT);
+
+    // Safe area
+    vertical.push(SAFE_AREA, PAGE_WIDTH - SAFE_AREA);
+    horizontal.push(SAFE_AREA, PAGE_HEIGHT - SAFE_AREA);
+
+    // Other element edges & centers
+    currentPage.elements.forEach(el => {
+      if (el.id === currentId || el.hidden) return;
+      vertical.push(el.x, el.x + el.width / 2, el.x + el.width);
+      horizontal.push(el.y, el.y + el.height / 2, el.y + el.height);
+    });
+
+    return { vertical, horizontal };
+  };
+
+  const handleDragMove = (e: any, element: any) => {
+    if (!canvasSettings.snapToObjects) return;
+    const node = e.target;
+    const { vertical, horizontal } = getSnapLines(element.id);
+    const guides: typeof snapGuides = [];
+
+    const nodeX = node.x();
+    const nodeY = node.y();
+    const nodeW = node.width() * node.scaleX();
+    const nodeH = node.height() * node.scaleY();
+    const nodeEdgesX = [nodeX, nodeX + nodeW / 2, nodeX + nodeW];
+    const nodeEdgesY = [nodeY, nodeY + nodeH / 2, nodeY + nodeH];
+
+    for (const vLine of vertical) {
+      for (const edge of nodeEdgesX) {
+        if (Math.abs(edge - vLine) < SNAP_THRESHOLD) {
+          node.x(nodeX + (vLine - edge));
+          guides.push({ type: 'vertical', position: vLine });
+          break;
+        }
+      }
+    }
+    for (const hLine of horizontal) {
+      for (const edge of nodeEdgesY) {
+        if (Math.abs(edge - hLine) < SNAP_THRESHOLD) {
+          node.y(nodeY + (hLine - edge));
+          guides.push({ type: 'horizontal', position: hLine });
+          break;
+        }
+      }
+    }
+    setSnapGuides(guides);
+  };
+
+  const handleDragEnd = (e: any, element: any) => {
+    clearSnapGuides();
+    updateElement(currentPageId!, element.id, {
+      x: e.target.x(),
+      y: e.target.y(),
+    });
+  };
+
   const initialPanX = (dimensions.width - PAGE_WIDTH) / 2;
   const initialPanY = (dimensions.height - PAGE_HEIGHT) / 2;
-  
   const currentPanX = canvasSettings.panX || initialPanX;
   const currentPanY = canvasSettings.panY || initialPanY;
 
@@ -134,7 +208,6 @@ export default function CanvasWorkspace() {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          // Adjust drop coordinates based on canvas pan/zoom
           const rect = containerRef.current?.getBoundingClientRect();
           let x = 100;
           let y = 100;
@@ -144,7 +217,6 @@ export default function CanvasWorkspace() {
             x = (rawX - currentPanX) / canvasSettings.zoom;
             y = (rawY - currentPanY) / canvasSettings.zoom;
           }
-          
           useEditorStore.getState().addElement({
             type: 'image',
             src: event.target.result as string,
@@ -158,11 +230,12 @@ export default function CanvasWorkspace() {
   };
 
   return (
-    <div 
-      className="absolute inset-0 w-full h-full" 
+    <div
+      className="absolute inset-0 w-full h-full"
       ref={containerRef}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <Stage
         ref={stageRef}
@@ -175,9 +248,11 @@ export default function CanvasWorkspace() {
         onTouchStart={checkDeselect}
         onTouchMove={handleMouseMove}
         onTouchEnd={handleMouseUp}
+        onContextMenu={handleContextMenu}
         draggable={false}
       >
         <Layer>
+          {/* Canvas background grid */}
           {canvasSettings.showGrid && (
             <Rect
               x={0} y={0}
@@ -185,11 +260,12 @@ export default function CanvasWorkspace() {
               fillPatternImage={undefined}
             />
           )}
-          
-          <Group 
-            x={currentPanX} y={currentPanY} 
+
+          <Group
+            x={currentPanX} y={currentPanY}
             scaleX={canvasSettings.zoom} scaleY={canvasSettings.zoom}
           >
+            {/* Page shadow */}
             <Rect
               x={0} y={0}
               width={PAGE_WIDTH} height={PAGE_HEIGHT}
@@ -197,22 +273,54 @@ export default function CanvasWorkspace() {
               shadowBlur={30} shadowColor="black" shadowOpacity={0.15}
               shadowOffsetX={0} shadowOffsetY={10}
             />
+            {/* Page background */}
             <Rect
               name="page-background"
               x={0} y={0}
               width={PAGE_WIDTH} height={PAGE_HEIGHT}
               fill="white"
             />
-            
+
+            {/* Bleed area */}
+            {canvasSettings.showBleed && (
+              <Rect
+                x={-BLEED} y={-BLEED}
+                width={PAGE_WIDTH + BLEED * 2} height={PAGE_HEIGHT + BLEED * 2}
+                stroke="#ff4444" strokeWidth={1 / canvasSettings.zoom}
+                dash={[3, 3]} listening={false}
+              />
+            )}
+
+            {/* Safe area */}
             {canvasSettings.showSafeArea && (
               <Rect
-                x={20} y={20}
-                width={PAGE_WIDTH - 40} height={PAGE_HEIGHT - 40}
+                x={SAFE_AREA} y={SAFE_AREA}
+                width={PAGE_WIDTH - SAFE_AREA * 2} height={PAGE_HEIGHT - SAFE_AREA * 2}
                 stroke="#E85D26" strokeWidth={1 / canvasSettings.zoom}
                 dash={[5, 5]} listening={false}
               />
             )}
-            
+
+            {/* Grid overlay */}
+            {canvasSettings.showGrid && (() => {
+              const lines = [];
+              const gs = canvasSettings.gridSize;
+              for (let i = gs; i < PAGE_WIDTH; i += gs) {
+                lines.push(
+                  <Line key={`gv-${i}`} points={[i, 0, i, PAGE_HEIGHT]}
+                    stroke="#ddd" strokeWidth={0.5 / canvasSettings.zoom} listening={false} />
+                );
+              }
+              for (let i = gs; i < PAGE_HEIGHT; i += gs) {
+                lines.push(
+                  <Line key={`gh-${i}`} points={[0, i, PAGE_WIDTH, i]}
+                    stroke="#ddd" strokeWidth={0.5 / canvasSettings.zoom} listening={false} />
+                );
+              }
+              return lines;
+            })()}
+
+            {/* Elements */}
             {currentPage?.elements.map((el) => {
               const isSelected = selectedElementIds.includes(el.id);
               const props = {
@@ -221,6 +329,13 @@ export default function CanvasWorkspace() {
                 element: el,
                 isSelected,
                 onSelect: (e: any) => {
+                  // Right click - select element and show context menu
+                  if (e.evt && e.evt.button === 2) {
+                    if (!isSelected) {
+                      setSelectedElements([el.id]);
+                    }
+                    return;
+                  }
                   if (e.evt && e.evt.shiftKey) {
                     if (isSelected) {
                       setSelectedElements(selectedElementIds.filter(id => id !== el.id));
@@ -231,7 +346,9 @@ export default function CanvasWorkspace() {
                     setSelectedElements([el.id]);
                   }
                 },
-                onChange: (newAttrs: any) => updateElement(currentPageId!, el.id, newAttrs)
+                onChange: (newAttrs: any) => updateElement(currentPageId!, el.id, newAttrs),
+                onDragMove: (e: any) => handleDragMove(e, el),
+                onDragEnd: (e: any) => handleDragEnd(e, el),
               };
 
               if (el.type === 'text') return <TextElement {...props} />;
@@ -240,17 +357,43 @@ export default function CanvasWorkspace() {
               return null;
             })}
 
+            {/* Snap guides */}
+            {snapGuides.map((guide, i) => (
+              guide.type === 'vertical' ? (
+                <Line
+                  key={`snap-${i}`}
+                  points={[guide.position, -50, guide.position, PAGE_HEIGHT + 50]}
+                  stroke="#E85D26"
+                  strokeWidth={1 / canvasSettings.zoom}
+                  dash={[4, 4]}
+                  listening={false}
+                />
+              ) : (
+                <Line
+                  key={`snap-${i}`}
+                  points={[-50, guide.position, PAGE_WIDTH + 50, guide.position]}
+                  stroke="#E85D26"
+                  strokeWidth={1 / canvasSettings.zoom}
+                  dash={[4, 4]}
+                  listening={false}
+                />
+              )
+            ))}
+
             {selectedNodes.length > 0 && <TransformerWrapper selectedNodes={selectedNodes} />}
           </Group>
+
+          {/* Selection rectangle */}
           {selectionRect.visible && (
             <Rect
               x={Math.min(selectionRect.x1, selectionRect.x2)}
               y={Math.min(selectionRect.y1, selectionRect.y2)}
               width={Math.abs(selectionRect.x1 - selectionRect.x2)}
               height={Math.abs(selectionRect.y1 - selectionRect.y2)}
-              fill="rgba(232, 93, 38, 0.2)"
+              fill="rgba(232, 93, 38, 0.1)"
               stroke="#E85D26"
               strokeWidth={1}
+              dash={[4, 4]}
               listening={false}
             />
           )}

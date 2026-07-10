@@ -5,8 +5,8 @@ import TopToolbar from './TopToolbar';
 import LeftSidebar from './LeftSidebar';
 import RightSidebar from './RightSidebar';
 import BottomStrip from './BottomStrip';
+import ContextMenu from './ContextMenu';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 const CanvasWorkspace = dynamic(() => import('./CanvasWorkspace'), { ssr: false });
@@ -37,6 +37,9 @@ export default function EditorLayout() {
         {/* Right Sidebar (Properties) */}
         <RightSidebar />
       </div>
+
+      {/* Context Menu (portal-like overlay) */}
+      <ContextMenu />
     </div>
   );
 }

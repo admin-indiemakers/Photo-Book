@@ -7,9 +7,11 @@ interface TextElementProps {
   isSelected: boolean;
   onSelect: (e: any) => void;
   onChange: (newAttrs: any) => void;
+  onDragMove?: (e: any) => void;
+  onDragEnd?: (e: any) => void;
 }
 
-export default function TextElement({ element, isSelected, onSelect, onChange }: TextElementProps) {
+export default function TextElement({ element, isSelected, onSelect, onChange, onDragMove, onDragEnd }: TextElementProps) {
   const textRef = React.useRef<any>(null);
 
   const handleChange = (e: any) => {
@@ -34,16 +36,19 @@ export default function TextElement({ element, isSelected, onSelect, onChange }:
     <Text
       ref={textRef}
       {...element}
+      name="element-node"
+      visible={!element.hidden}
       draggable={!element.locked}
       onClick={onSelect}
       onTap={onSelect}
-      onDragEnd={(e: any) => {
+      onDragMove={onDragMove}
+      onDragEnd={onDragEnd || ((e: any) => {
         onChange({
           ...element,
           x: e.target.x(),
           y: e.target.y()
         });
-      }}
+      })}
       onTransformEnd={handleChange}
     />
   );
