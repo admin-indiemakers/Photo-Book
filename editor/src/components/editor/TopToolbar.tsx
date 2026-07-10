@@ -3,8 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Undo, Redo, ZoomIn, ZoomOut, Download, Grid, Maximize, Ruler, Magnet, Save } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
+interface TopToolbarProps {
+  onPreview?: () => void;
+  onValidate?: () => void;
+}
 
-export default function TopToolbar() {
+export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
   const {
     toggleGrid, canvasSettings, setZoom,
     undo, redo, canUndo, canRedo,
@@ -121,6 +125,15 @@ export default function TopToolbar() {
         <div className="h-4 w-[1px] bg-[#e8e2d9] mx-1" />
 
         <Button
+          variant={canvasSettings.showRulers ? "secondary" : "ghost"}
+          size="icon"
+          className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
+          onClick={toggleRulers}
+          title="Toggle Rulers"
+        >
+          <Ruler size={16} />
+        </Button>
+        <Button
           variant={canvasSettings.showGrid ? "secondary" : "ghost"}
           size="icon"
           className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
@@ -141,8 +154,8 @@ export default function TopToolbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button variant="outline" className="h-9 text-xs font-semibold tracking-wider uppercase border-[#e8e2d9] hover:border-[#E85D26] hover:text-[#E85D26]">Preview</Button>
-        <Button disabled className="h-9 text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white">
+        <Button onClick={onPreview} variant="outline" className="h-9 text-xs font-semibold tracking-wider uppercase border-[#e8e2d9] hover:border-[#E85D26] hover:text-[#E85D26]">Preview</Button>
+        <Button onClick={onValidate} className="h-9 text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white">
           <Download size={14} className="mr-2" /> Export
         </Button>
       </div>

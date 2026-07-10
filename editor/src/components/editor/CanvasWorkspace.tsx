@@ -7,6 +7,7 @@ import TextElement from '../canvas/elements/TextElement';
 import ImageElement from '../canvas/elements/ImageElement';
 import ShapeElement from '../canvas/elements/ShapeElement';
 import TransformerWrapper from '../canvas/TransformerWrapper';
+import CanvasRuler, { RulerCorner } from '../canvas/CanvasRuler';
 
 const PAGE_WIDTH = 600;
 const PAGE_HEIGHT = 800;
@@ -237,6 +238,27 @@ export default function CanvasWorkspace() {
       onDrop={handleDrop}
       onContextMenu={(e) => e.preventDefault()}
     >
+      {canvasSettings.showRulers && (
+        <>
+          <RulerCorner />
+          <CanvasRuler
+            direction="horizontal"
+            canvasWidth={dimensions.width}
+            canvasHeight={dimensions.height}
+            panX={currentPanX}
+            panY={currentPanY}
+            zoom={canvasSettings.zoom}
+          />
+          <CanvasRuler
+            direction="vertical"
+            canvasWidth={dimensions.width}
+            canvasHeight={dimensions.height}
+            panX={currentPanX}
+            panY={currentPanY}
+            zoom={canvasSettings.zoom}
+          />
+        </>
+      )}
       <Stage
         ref={stageRef}
         width={dimensions.width}
