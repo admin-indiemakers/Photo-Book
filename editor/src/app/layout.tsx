@@ -28,7 +28,7 @@ const instrument = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Photo Book Editor",
+  title: "🦋 Offline Living — Your Story. Beautifully Told.",
   description: "World-class Photo Book Editor",
 };
 
