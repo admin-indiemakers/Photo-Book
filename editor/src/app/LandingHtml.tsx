@@ -6,7 +6,7 @@ export const LandingHtml = () => (
 
   {/*  LOADER  */}
   <div className="loader" id="loader">
-    <div className="loader__text">MEMORIZE.</div>
+    <div className="loader__text">Offline Living</div>
     <div className="loader__bar"><div className="loader__fill" id="loaderFill"></div></div>
     <div className="loader__pct" id="loaderPct">0%</div>
   </div>
@@ -25,7 +25,7 @@ export const LandingHtml = () => (
           <path d="M14 8C12 10 10 14 10 18C10 22 12 26 16 28" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.35"/>
           <path d="M26 8C28 10 30 14 30 18C30 22 28 26 24 28" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.35"/>
         </svg>
-        <span className="nav__logo-text">MEMORIZE.</span>
+        <span className="nav__logo-text">Offline Living</span>
       </a>
       <div className="nav__links">
         <div className="nav__dropdown-group" style={{ position: 'relative', display: 'inline-block' }}>
@@ -380,7 +380,7 @@ export const LandingHtml = () => (
             <svg className="footer__logo-icon" viewBox="0 0 40 40" fill="none">
               <path d="M20 4C16 4 12 8 10 12C8 16 8 20 10 24C12 28 16 30 18 32C19 33 19.5 34 20 36C20.5 34 21 33 22 32C24 30 28 28 30 24C32 20 32 16 30 12C28 8 24 4 20 4Z" fill="currentColor"/>
             </svg>
-            <span className="footer__logo-text">MEMORIZE.</span>
+            <span className="footer__logo-text">Offline Living</span>
           </a>
           <p className="footer__tagline">We help you turn your memories into beautiful photobooks you'll treasure forever.</p>
           <div className="footer__socials">
@@ -446,7 +446,7 @@ export const LandingHtml = () => (
       </div>
 
       <div className="footer__bottom">
-        <span>&copy; 2026 MEMORIZE. All rights reserved.</span>
+        <span>&copy; 2026 Offline Living. All rights reserved.</span>
         <span>Crafted with 🧡</span>
       </div>
     </div>

@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-white border-r border-[#e8e2d9] flex flex-col">
         <div className="p-6">
           <Link href="/admin" className="font-serif text-2xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity">
-            MEMORIZE.
+            Offline Living
           </Link>
           <p className="text-xs text-[#a09890] mt-1 uppercase tracking-wider font-semibold">Admin Panel</p>
         </div>

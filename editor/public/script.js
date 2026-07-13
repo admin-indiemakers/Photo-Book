@@ -1,5 +1,5 @@
 /* ============================================================
-   MEMORIZE. — Photo Book Website
+   Offline Living — Photo Book Website
    JavaScript — GSAP + Lenis + Cursor + Animations
    ============================================================ */
 

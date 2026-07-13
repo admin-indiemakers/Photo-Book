@@ -39,7 +39,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
   return (
     <header className="h-14 flex items-center justify-between px-4 bg-[#FFFFFF] border-b border-[#e8e2d9] shadow-sm z-20 shrink-0">
       <div className="flex items-center gap-4">
-        <a href="/" className="font-serif text-xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity">MEMORIZE.</a>
+        <a href="/" className="font-serif text-xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity">Offline Living</a>
         <div className="h-4 w-[1px] bg-[#e8e2d9]" />
         <span className="text-sm font-medium text-[#6b6560]">Untitled Project</span>
         {saveStatus === 'saving' && (
