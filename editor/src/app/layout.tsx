@@ -42,7 +42,7 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans overflow-hidden text-theme-black bg-theme-ivory">
+      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
         <TooltipProvider>
           {children}
         </TooltipProvider>
