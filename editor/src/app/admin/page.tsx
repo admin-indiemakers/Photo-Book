@@ -10,8 +10,8 @@ export default async function AdminDashboard() {
   const orders = await prisma.order.findMany();
 
   const totalOrders = orders.length;
-  const pendingOrders = orders.filter(o => o.status === 'PENDING').length;
-  const completedOrders = orders.filter(o => o.status === 'SHIPPED').length;
+  const pendingOrders = orders.filter((o: any) => o.status === 'PENDING').length;
+  const completedOrders = orders.filter((o: any) => o.status === 'SHIPPED').length;
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">

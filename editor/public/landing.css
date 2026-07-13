@@ -230,6 +230,11 @@ img { max-width: 100%; display: block; }
 .nav__link:hover::after { width: 100%; }
 .nav__link:hover { color: var(--orange); }
 
+.nav__dropdown-group:hover .nav__dropdown-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
 .nav__right { display: flex; align-items: center; gap: 22px; }
 .nav__login {
   font-size: 11px;
