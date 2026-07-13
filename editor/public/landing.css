@@ -541,7 +541,6 @@ img { max-width: 100%; display: block; }
   z-index: 1;
 }
 
-.editor__left {}
 .editor__title {
   font-family: var(--font-serif);
   font-size: clamp(30px, 2.8vw, 42px);
