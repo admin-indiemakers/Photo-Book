@@ -3,24 +3,24 @@ import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SIZES = [
-  { id: 'standard', label: 'Standard', dimensions: 'Standard Size', price: 200.00 }
+  { id: 'portrait', label: 'Portrait', dimensions: 'Portrait', price: 549 },
+  { id: 'landscape', label: 'Landscape', dimensions: 'Landscape', price: 549 },
+  { id: 'square', label: 'Square', dimensions: 'Square', price: 549 },
+  { id: 'love', label: 'Love', dimensions: 'Heart Shape', price: 549 },
+  { id: 'hexagon', label: 'Hexagon', dimensions: 'Hexagon Shape', price: 549 },
+  { id: 'round', label: 'Round', dimensions: 'Round Shape', price: 549 }
 ];
 
-export const StickerProductPage = () => {
+export const AcrylicFramesProductPage = () => {
   const [selectedSize, setSelectedSize] = useState(SIZES[0]);
-  
-  // Multi-image state
   const [uploadedImages, setUploadedImages] = useState<{id: string, url: string}[]>([]);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  
-  // Validation state
   const [showError, setShowError] = useState(false);
 
-  // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +49,6 @@ export const StickerProductPage = () => {
     setShowError(false);
     setUploadProgress(0);
 
-    // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
@@ -70,7 +69,7 @@ export const StickerProductPage = () => {
       }));
       
       setUploadedImages(prev => [...prev, ...newImages]);
-      if (uploadedImages.length === 0) setActiveImageIndex(0); // Select first if empty
+      if (uploadedImages.length === 0) setActiveImageIndex(0);
       
       setTimeout(() => setIsUploading(false), 400);
     }, 1200);
@@ -85,11 +84,9 @@ export const StickerProductPage = () => {
   const handleAddToCart = () => {
     if (uploadedImages.length === 0) {
       setShowError(true);
-      // Remove error animation class after it plays
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    // Proceed to cart
     console.log("Added to cart");
   };
 
@@ -104,17 +101,27 @@ export const StickerProductPage = () => {
 
   const totalPrice = selectedSize.price.toFixed(2);
 
+  // Helper to determine aspect ratio based on selected shape
+  const getAspectRatioClass = () => {
+    switch(selectedSize.id) {
+      case 'portrait': return 'aspect-[3/4] rounded-sm';
+      case 'landscape': return 'aspect-[4/3] rounded-sm';
+      case 'square': return 'aspect-square rounded-sm';
+      case 'love': return 'aspect-square rounded-full'; // Simplified representation
+      case 'hexagon': return 'aspect-square rounded-[30%]'; // Simplified representation
+      case 'round': return 'aspect-square rounded-full';
+      default: return 'aspect-[3/4] rounded-sm';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black overflow-x-hidden pt-24 relative selection:bg-[#E85D26] selection:text-white">
-      {/* Decorative film grain */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" 
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
       ></div>
 
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 pt-8 flex flex-col lg:flex-row gap-16 relative">
-        
-        {/* Left Column: Form */}
         <div className="flex-1 w-full space-y-14 relative z-10">
           <div>
             <motion.h1 
@@ -123,7 +130,7 @@ export const StickerProductPage = () => {
               className="text-5xl md:text-7xl font-serif tracking-tight mb-4 text-[#1a1a18]"
               style={{ fontFamily: "'DM Serif Display', serif" }}
             >
-              Custom Stickers
+              Acrylic Frames
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -131,18 +138,17 @@ export const StickerProductPage = () => {
               transition={{ delay: 0.1 }}
               className="text-lg text-[#6b6560] font-light max-w-md leading-relaxed"
             >
-              Turn your digital memories into premium quality stickers.
+              Sleek, modern, and vibrant. Showcase your memories in crystal clear, high-quality acrylic.
             </motion.p>
           </div>
 
           <div className="space-y-12">
-            {/* Step 1: Size */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex justify-between items-end mb-4">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Select Size</h3>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Select Size & Shape</h3>
                 <span className="text-xs font-mono text-[#E85D26]">{selectedSize.dimensions}</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {SIZES.map((size) => (
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -155,27 +161,24 @@ export const StickerProductPage = () => {
                         : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
                     }`}
                   >
-                    <div className="w-10 h-10 border-2 border-black/20 rounded-full bg-white/50"></div>
                     <span className="font-medium text-sm text-[#1a1a18]">{size.label}</span>
                   </motion.button>
                 ))}
               </div>
             </motion.div>
 
-            {/* Step 2: Quantity */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
               <div className="flex justify-between items-end mb-4">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">2. Quantity</h3>
-                <span className="text-xs font-mono text-[#E85D26]">₹{totalPrice} per unit</span>
+                <span className="text-xs font-mono text-[#E85D26]">₹{totalPrice}</span>
               </div>
               <div className="flex gap-3 bg-white/50 p-1.5 rounded-xl border border-black/5">
                 <div className="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all bg-white shadow-sm border border-black/5 text-[#E85D26] text-center">
-                  1
+                  Pack of 1
                 </div>
               </div>
             </motion.div>
 
-            {/* Step 3: Upload */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
               <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">3. Upload Photos</h3>
               
@@ -223,7 +226,6 @@ export const StickerProductPage = () => {
                 </div>
               </motion.div>
 
-              {/* Thumbnails */}
               {uploadedImages.length > 0 && (
                 <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
                   <AnimatePresence>
@@ -248,7 +250,6 @@ export const StickerProductPage = () => {
               )}
             </motion.div>
             
-            {/* Add to Cart */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="pt-8">
               <button 
                 onClick={handleAddToCart}
@@ -260,7 +261,6 @@ export const StickerProductPage = () => {
           </div>
         </div>
 
-        {/* Right Column: Floating Hero Preview */}
         <div 
           className="flex-1 w-full lg:sticky lg:top-24 h-[600px] flex items-center justify-center relative z-10"
           style={{ perspective: '1200px' }}
@@ -274,25 +274,24 @@ export const StickerProductPage = () => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            {/* 3D Wrapper */}
             <motion.div 
-              className="relative z-10"
+              className="relative z-10 w-full flex justify-center items-center"
               animate={{ rotateX: tilt.x, rotateY: tilt.y }}
               transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
               style={{ transformStyle: 'preserve-3d' }}
             >
-              {/* Sticker Preview */}
               <motion.div 
                 layout
-                className={`transition-colors duration-500 relative bg-white rounded-2xl overflow-hidden p-2`}
+                className={`transition-all duration-500 shadow-2xl relative bg-transparent overflow-hidden w-64 sm:w-72 md:w-80 ${getAspectRatioClass()}`}
                 style={{
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0,0,0,0.05)',
-                  filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))'
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255,255,255,0.5)'
                 }}
               >
+                {/* Glass/Acrylic Effect */}
+                <div className="absolute inset-0 z-20 pointer-events-none rounded-inherit border-[6px] border-white/20 mix-blend-screen"></div>
+                <div className="absolute inset-0 z-30 pointer-events-none rounded-inherit bg-gradient-to-tr from-white/10 via-transparent to-white/40 mix-blend-overlay"></div>
                 
-                {/* Photo Area */}
-                <div className={`bg-[#e5e5e5] overflow-hidden rounded-xl relative w-64 sm:w-72 md:w-80 aspect-square shadow-inner`}>
+                <div className="bg-[#e5e5e5] w-full h-full relative z-10">
                   <AnimatePresence mode="popLayout">
                     {uploadedImages.length > 0 ? (
                       <motion.img 
@@ -316,29 +315,27 @@ export const StickerProductPage = () => {
                         <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Sticker Canvas</span>
+                        <span className="font-mono text-[10px] uppercase tracking-widest opacity-50 text-center">Empty<br/>Acrylic</span>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
-
-                {/* Glossy Sticker 3D Reflection */}
+                
                 <motion.div 
-                  className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay rounded-xl"
+                  className="absolute inset-0 pointer-events-none opacity-60 mix-blend-overlay z-40"
                   animate={{
-                    background: `linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.9) ${25 + tilt.x}%, transparent 30%)`,
+                    background: `linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.9) ${25 + tilt.x}%, transparent 40%)`,
                   }}
                   transition={{ type: "tween", ease: "linear", duration: 0 }}
                 />
               </motion.div>
 
-              {/* Dynamic Drop Shadow Layer */}
               <motion.div 
-                className="absolute -inset-2 bg-black/10 blur-xl -z-10 rounded-2xl"
+                className={`absolute -inset-4 bg-black/20 blur-2xl -z-10 ${getAspectRatioClass()}`}
                 animate={{
                   x: tilt.y * -1,
-                  y: tilt.x * 1 + 15,
-                  opacity: Math.max(0.1, 0.3 - Math.abs(tilt.x) * 0.01)
+                  y: tilt.x * 1 + 20,
+                  opacity: Math.max(0.2, 0.4 - Math.abs(tilt.x) * 0.01)
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
