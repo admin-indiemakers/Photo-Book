@@ -45,10 +45,10 @@ export const LandingHtml = () => (
             transition: 'all 0.3s ease',
             zIndex: 1000
           }}>
-            <a href="/polaroid" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Polaroid</a>
-            <a href="/sticker" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Sticker</a>
             <a href="/photo-book" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Photo Book</a>
             <a href="/frame" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Photo Frame</a>
+            <a href="/polaroid" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Polaroid</a>
+            <a href="/sticker" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Sticker</a>
           </div>
         </div>
         <a href="#" className="nav__link" data-magnetic>Templates</a>
@@ -81,7 +81,7 @@ export const LandingHtml = () => (
           </h1>
 
           <p className="hero__desc" data-reveal>
-            Design stunning photobooks that bring your memories to life. Every page, a moment worth remembering.
+            Transform the digital camera roll into an archival-quality masterpiece. Beautifully bound photobooks designed to be felt, shared, and passed down.
           </p>
 
           <div className="hero__actions" data-reveal>
@@ -124,7 +124,7 @@ export const LandingHtml = () => (
           <div className="hero__book" data-reveal>
             <div className="hero__book-spread">
               <div className="hero__book-page hero__book-page--left">
-                <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&h=380&fit=crop" alt="Couple on beach at sunset" loading="eager" />
+                <img src="https://images.unsplash.com/photo-1587572236558-a3751c6d42c0?w=500&h=380&fit=crop" alt="Hands holding open photobook" loading="eager" />
               </div>
               <div className="hero__book-page">
                 <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&h=380&fit=crop" alt="Happy couple outdoors" loading="eager" />
@@ -159,7 +159,7 @@ export const LandingHtml = () => (
         <div className="editor__card" data-reveal>
           <div className="editor__spread">
             <div className="editor__page">
-              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=420&h=280&fit=crop" alt="Tropical beach" loading="lazy" />
+              <img src="https://images.unsplash.com/photo-1600861194942-f883de0dfe96?w=420&h=280&fit=crop" alt="Flat lay of custom photobook and polaroids" loading="lazy" />
             </div>
             <div className="editor__page">
               <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=420&h=280&fit=crop" alt="Mountain lake" loading="lazy" />
@@ -283,11 +283,13 @@ export const LandingHtml = () => (
           <div className="tpl-card__pages">36 Pages</div>
         </div>
 
-        {/*  5 - Text Card  */}
-        <div className="tpl-card tpl-card--text" data-reveal>
-          <div className="tpl-card__text">
-            <p>Clean layouts.<br />Timeless style.<br /><em>Made to<br />be yours.</em></p>
+        {/*  5 - Milestones  */}
+        <div className="tpl-card" data-reveal>
+          <div className="tpl-card__img-wrap">
+            <img className="tpl-card__img" src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=340&h=450&fit=crop" alt="Milestones celebration" loading="lazy" />
           </div>
+          <div className="tpl-card__name">Milestones</div>
+          <div className="tpl-card__pages">28 Pages</div>
         </div>
       </div>
     </div>
@@ -320,7 +322,7 @@ export const LandingHtml = () => (
         <a href="#" className="link-arrow quality__link" data-magnetic data-reveal>See Quality <span>→</span></a>
       </div>
       <div className="quality__right">
-        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&h=700&fit=crop" alt="Person enjoying a beautifully printed photo book" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?w=800&h=700&fit=crop" alt="Macro shot of premium thick layflat pages" loading="lazy" />
       </div>
     </div>
   </section>
@@ -351,21 +353,47 @@ export const LandingHtml = () => (
       </div>
 
       <div className="community__quotes">
-        <div data-reveal>
+        <div className="quote-card" data-reveal>
+          <div className="quote__stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
           <p className="quote__text">The best way to keep memories alive.</p>
-          <p className="quote__author">— Sarah T.</p>
+          <div className="quote__meta">
+            <p className="quote__author">Sarah T.</p>
+            <span className="quote__verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg> Verified Buyer</span>
+          </div>
         </div>
-        <div data-reveal>
+        <div className="quote-card" data-reveal>
+          <div className="quote__stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
           <p className="quote__text">Beautiful quality and so easy to create.</p>
-          <p className="quote__author">— James L.</p>
+          <div className="quote__meta">
+            <p className="quote__author">James L.</p>
+            <span className="quote__verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg> Verified Buyer</span>
+          </div>
         </div>
-        <div data-reveal>
+        <div className="quote-card" data-reveal>
+          <div className="quote__stars">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
           <p className="quote__text">A gift that means everything.</p>
-          <p className="quote__author">— Priya K.</p>
-        </div>
-        <div data-reveal>
-          <p className="quote__text">We cried happy tears flipping through it.</p>
-          <p className="quote__author">— Mark & Lisa</p>
+          <div className="quote__meta">
+            <p className="quote__author">Priya K.</p>
+            <span className="quote__verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg> Verified Buyer</span>
+          </div>
         </div>
       </div>
     </div>
@@ -440,10 +468,14 @@ export const LandingHtml = () => (
           <form className="footer__nl-form" onSubmit={(e) => e.preventDefault()}>
             <input type="email" className="footer__nl-input" placeholder="Enter your email" aria-label="Email address" />
             <button className="footer__nl-btn" data-magnetic aria-label="Subscribe">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              Subscribe
             </button>
           </form>
         </div>
+      </div>
+
+      <div className="footer__giant-text">
+        OFFLINE LIVING
       </div>
 
       <div className="footer__bottom">
