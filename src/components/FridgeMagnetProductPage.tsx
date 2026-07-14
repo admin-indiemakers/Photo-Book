@@ -6,16 +6,23 @@ const SIZES = [
   { id: 'standard', label: 'Standard', dimensions: 'Standard Size', price: 299 }
 ];
 
+type MagnetItem = {
+  id: string;
+  url: string;
+  sizeId: string;
+  quantity: number;
+};
+
 export const FridgeMagnetProductPage = () => {
-  const [selectedSize, setSelectedSize] = useState(SIZES[0]);
-  const [uploadedImages, setUploadedImages] = useState<{id: string, url: string}[]>([]);
-  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+  const [magnetItems, setMagnetItems] = useState<MagnetItem[]>([]);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
 
+  // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -58,13 +65,20 @@ export const FridgeMagnetProductPage = () => {
       clearInterval(interval);
       setUploadProgress(100);
       
-      const newImages = validFiles.map(file => ({
+      const newItems = validFiles.map(file => ({
         id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file)
+        url: URL.createObjectURL(file),
+        sizeId: SIZES[0].id,
+        quantity: 1
       }));
       
-      setUploadedImages(prev => [...prev, ...newImages]);
-      if (uploadedImages.length === 0) setActiveImageIndex(0);
+      setMagnetItems(prev => {
+        const nextItems = [...prev, ...newItems];
+        if (prev.length === 0 && nextItems.length > 0) {
+          setActiveItemId(nextItems[0].id);
+        }
+        return nextItems;
+      });
       
       setTimeout(() => setIsUploading(false), 400);
     }, 1200);
@@ -77,24 +91,40 @@ export const FridgeMagnetProductPage = () => {
   }, []);
 
   const handleAddToCart = () => {
-    if (uploadedImages.length === 0) {
+    if (magnetItems.length === 0) {
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    console.log("Added to cart");
+    console.log("Added to cart", magnetItems);
   };
 
-  const removeImage = (index: number) => {
-    const newImages = [...uploadedImages];
-    newImages.splice(index, 1);
-    setUploadedImages(newImages);
-    if (activeImageIndex >= newImages.length) {
-      setActiveImageIndex(Math.max(0, newImages.length - 1));
-    }
+  const removeImage = (idToRemove: string) => {
+    setMagnetItems(prev => {
+      const filtered = prev.filter(item => item.id !== idToRemove);
+      if (activeItemId === idToRemove) {
+        setActiveItemId(filtered.length > 0 ? filtered[0].id : null);
+      }
+      return filtered;
+    });
   };
 
-  const totalPrice = selectedSize.price.toFixed(2);
+  const updateItemQuantity = (id: string, delta: number) => {
+    setMagnetItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQuantity = Math.max(1, item.quantity + delta);
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    }));
+  };
+
+  const grandTotal = magnetItems.reduce((acc, item) => {
+    const sizeConfig = SIZES.find(s => s.id === item.sizeId);
+    return acc + (sizeConfig ? sizeConfig.price * item.quantity : 0);
+  }, 0);
+
+  const activeItem = magnetItems.find(item => item.id === activeItemId);
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black overflow-x-hidden pt-24 relative selection:bg-[#E85D26] selection:text-white">
@@ -104,7 +134,7 @@ export const FridgeMagnetProductPage = () => {
       ></div>
 
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 pt-8 flex flex-col lg:flex-row gap-16 relative">
-        <div className="flex-1 w-full space-y-14 relative z-10">
+        <div className="flex-1 w-full space-y-10 relative z-10">
           <div>
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
@@ -124,53 +154,19 @@ export const FridgeMagnetProductPage = () => {
             </motion.p>
           </div>
 
-          <div className="space-y-12">
+          <div className="space-y-10">
+            {/* Step 1: Upload */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex justify-between items-end mb-4">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Select Size</h3>
-                <span className="text-xs font-mono text-[#E85D26]">{selectedSize.dimensions}</span>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Upload Photos</h3>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                {SIZES.map((size) => (
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    key={size.id}
-                    onClick={() => setSelectedSize(size)}
-                    className={`relative p-4 rounded-xl border transition-colors flex flex-col items-center justify-center gap-3 overflow-hidden ${
-                      selectedSize.id === size.id 
-                        ? 'border-[#E85D26] bg-white shadow-[0_0_0_1px_#E85D26]' 
-                        : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
-                    }`}
-                  >
-                    <div className="w-10 h-10 border-2 border-black/20 rounded-md"></div>
-                    <span className="font-medium text-sm text-[#1a1a18]">{size.label}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-              <div className="flex justify-between items-end mb-4">
-                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">2. Quantity</h3>
-                <span className="text-xs font-mono text-[#E85D26]">₹{totalPrice}</span>
-              </div>
-              <div className="flex gap-3 bg-white/50 p-1.5 rounded-xl border border-black/5">
-                <div className="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all bg-white shadow-sm border border-black/5 text-[#E85D26] text-center">
-                  Pack of 1
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
-              <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">3. Upload Photos</h3>
               
               <motion.div 
-                animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
+                animate={showError && magnetItems.length === 0 ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
                 className={`relative border-2 border-dashed rounded-xl overflow-hidden group transition-all duration-300 ${
                   isDragging ? 'border-[#E85D26] bg-[#E85D26]/5 scale-[1.02]' : 
-                  showError ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
+                  (showError && magnetItems.length === 0) ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
                 } ${isUploading ? 'pointer-events-none' : ''}`}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
@@ -182,7 +178,7 @@ export const FridgeMagnetProductPage = () => {
                   onChange={(e) => e.target.files && processFiles(e.target.files)}
                 />
                 
-                <div className="flex flex-col items-center justify-center p-10 h-40">
+                <div className="flex flex-col items-center justify-center p-8 h-32">
                   <AnimatePresence mode="wait">
                     {isUploading ? (
                       <motion.div key="uploading" className="flex flex-col items-center gap-4 w-full max-w-xs">
@@ -196,49 +192,97 @@ export const FridgeMagnetProductPage = () => {
                       </motion.div>
                     ) : (
                       <motion.div key="idle" className="flex flex-col items-center gap-2">
-                        <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-2 group-hover:bg-[#E85D26]/10 transition-colors">
+                        <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center mb-1 group-hover:bg-[#E85D26]/10 transition-colors">
                           <svg className="w-5 h-5 text-[#6b6560] group-hover:text-[#E85D26] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                           </svg>
                         </div>
-                        <p className="font-medium text-[#1a1a18] text-sm">Drag & drop photos here</p>
-                        <p className="text-xs text-[#6b6560]">Supports multiple files</p>
+                        <p className="font-medium text-[#1a1a18] text-sm">Drag & drop to add photos</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               </motion.div>
+            </motion.div>
 
-              {uploadedImages.length > 0 && (
-                <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+            {/* Step 2: Configure Items */}
+            {magnetItems.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">2. Configure Magnets</h3>
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
                   <AnimatePresence>
-                    {uploadedImages.map((img, idx) => (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5, width: 0 }}
-                        key={img.id}
-                        className={`relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 cursor-pointer border-2 transition-colors ${activeImageIndex === idx ? 'border-[#E85D26]' : 'border-transparent'}`}
-                        onClick={() => setActiveImageIndex(idx)}
-                      >
-                        <img src={img.url} alt="thumb" className="w-full h-full object-cover" />
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                          className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 opacity-0 hover:opacity-100 transition-opacity"
+                    {magnetItems.map((item) => {
+                      const itemSize = SIZES.find(s => s.id === item.sizeId) || SIZES[0];
+                      const itemTotal = itemSize.price * item.quantity;
+                      const isActive = activeItemId === item.id;
+
+                      return (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9, height: 0, marginTop: 0, marginBottom: 0 }}
+                          key={item.id}
+                          onClick={() => setActiveItemId(item.id)}
+                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row gap-4 items-center ${
+                            isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
+                          }`}
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                      </motion.div>
-                    ))}
+                          <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
+                            <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
+                          </div>
+
+                          <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full items-center">
+                            {/* Size Info */}
+                            <div className="flex-1">
+                              <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Size</label>
+                              <div className="w-full bg-white border-2 border-transparent rounded-lg text-sm px-3 py-2.5 font-medium text-black">
+                                {itemSize.label} - ₹{itemSize.price}
+                              </div>
+                            </div>
+
+                            {/* Quantity Selector */}
+                            <div className="w-full sm:w-32">
+                              <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Quantity</label>
+                              <div className="flex items-center bg-white border-2 border-black/10 rounded-lg overflow-hidden h-[42px]">
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }}
+                                  className="px-3 h-full text-black/60 hover:text-black hover:bg-black/5 transition-colors"
+                                >-</button>
+                                <span className="flex-1 text-center text-sm font-medium">{item.quantity}</span>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }}
+                                  className="px-3 h-full text-black/60 hover:text-black hover:bg-black/5 transition-colors"
+                                >+</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Price & Remove */}
+                          <div className="flex items-center gap-4 sm:flex-col sm:gap-2 sm:items-end sm:justify-center">
+                            <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); removeImage(item.id); }}
+                              className="text-black/30 hover:text-red-500 transition-colors p-1"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </AnimatePresence>
                 </div>
-              )}
-            </motion.div>
+              </motion.div>
+            )}
             
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="pt-8">
+            {/* Add to Cart */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4">
               <button 
                 onClick={handleAddToCart}
-                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98]"
+                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-between px-8 items-center"
               >
-                Add to Cart — ₹{totalPrice}
+                <span>Add to Cart</span>
+                <span className="font-medium">₹{grandTotal.toFixed(2)}</span>
               </button>
             </motion.div>
           </div>
@@ -272,14 +316,14 @@ export const FridgeMagnetProductPage = () => {
               >
                 <div className="bg-[#e5e5e5] overflow-hidden relative w-64 sm:w-72 md:w-80 shadow-inner rounded-md aspect-square">
                   <AnimatePresence mode="popLayout">
-                    {uploadedImages.length > 0 ? (
+                    {activeItem ? (
                       <motion.img 
-                        key={uploadedImages[activeImageIndex].id}
+                        key={activeItem.id}
                         initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
                         animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                         exit={{ opacity: 0, filter: 'blur(10px)' }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        src={uploadedImages[activeImageIndex].url} 
+                        src={activeItem.url} 
                         alt="Preview" 
                         className="w-full h-full object-cover"
                       />
