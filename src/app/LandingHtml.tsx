@@ -29,7 +29,7 @@ export const LandingHtml = () => (
       </a>
       <div className="nav__links">
         <div className="nav__dropdown-group" style={{ position: 'relative', display: 'inline-block' }}>
-          <a href="/editor" className="nav__link nav__link--dropdown" data-magnetic>Create Book</a>
+          <a href="/editor" className="nav__link nav__link--dropdown" data-magnetic>Create</a>
           <div className="nav__dropdown-menu" style={{ 
             position: 'absolute', 
             top: '100%', 
@@ -48,6 +48,7 @@ export const LandingHtml = () => (
             <a href="/polaroid" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Polaroid</a>
             <a href="/laptop-skin" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Laptop Skin</a>
             <a href="/photo-book" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Photo Book</a>
+            <a href="/frame" className="nav__dropdown-item" style={{ display: 'block', padding: '10px 20px', fontSize: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text)', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.color = 'var(--orange)'; e.currentTarget.style.background = 'rgba(250,246,238,0.5)'}} onMouseOut={e => {e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.background = 'transparent'}}>Photo Frame</a>
           </div>
         </div>
         <a href="#" className="nav__link" data-magnetic>Templates</a>
