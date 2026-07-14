@@ -1,6 +1,6 @@
-import { StickerProductPage } from '@/components/StickerProductPage';
+import { AcrylicFramesProductPage } from '@/components/AcrylicFramesProductPage';
 
-export default function StickerPage() {
+export default function AcrylicFramesPage() {
   return (
     <main className="min-h-screen bg-[#F7F5F0] overflow-y-auto">
       <div className="absolute top-6 left-6 z-50">
@@ -11,7 +11,7 @@ export default function StickerPage() {
           Back to Home
         </a>
       </div>
-      <StickerProductPage />
+      <AcrylicFramesProductPage />
     </main>
   );
 }
