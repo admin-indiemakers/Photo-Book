@@ -4,6 +4,10 @@
    ============================================================ */
 
 gsap.registerPlugin(ScrollTrigger);
+gsap.config({ nullTargetWarn: false });
+
+// Global variables
+let lenis;
 
 // ============ PAGE LOADER ============
 (function () {
@@ -11,6 +15,11 @@ gsap.registerPlugin(ScrollTrigger);
   const fill = document.getElementById('loaderFill');
   const pct = document.getElementById('loaderPct');
   const txt = document.querySelector('.loader__text');
+
+  if (!loader || !fill || !pct || !txt) {
+    initAll();
+    return;
+  }
 
   let progress = 0;
   const start = Date.now();
@@ -52,7 +61,6 @@ function initAll() {
 }
 
 // ============ LENIS ============
-let lenis;
 function initLenis() {
   lenis = new Lenis({
     duration: 1.2,
@@ -99,9 +107,21 @@ function initCursor() {
     requestAnimationFrame(loop);
   })();
 
-  document.querySelectorAll('a, button, [data-magnetic], input, .tpl-card, .community__photo').forEach(el => {
-    el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring.classList.add('hover'); });
-    el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring.classList.remove('hover'); });
+  // Use event delegation for hover states so it works across Next.js route changes
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo');
+    if (target) {
+      dot.classList.add('hover');
+      ring.classList.add('hover');
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo');
+    if (target) {
+      dot.classList.remove('hover');
+      ring.classList.remove('hover');
+    }
   });
 
   document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
@@ -111,6 +131,8 @@ function initCursor() {
 // ============ NAV SCROLL ============
 function initNavScroll() {
   const nav = document.getElementById('nav');
+  if (!nav) return;
+  
   ScrollTrigger.create({
     start: 'top -80',
     end: 99999,
@@ -122,6 +144,8 @@ function initNavScroll() {
 
 // ============ HERO ANIMATIONS ============
 function initHero() {
+  if (!document.querySelector('.hero')) return;
+
   const tl = gsap.timeline({ delay: 0.15 });
 
   // Headline words
