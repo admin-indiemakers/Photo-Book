@@ -24,6 +24,7 @@ export const FridgeMagnetProductPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -46,34 +47,45 @@ export const FridgeMagnetProductPage = () => {
 
   const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
-  const processFiles = (files: FileList) => {
+  const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     if (!validFiles.length) return;
     
     setIsUploading(true);
     setShowError(false);
-    setUploadProgress(0);
+    setUploadProgress(10);
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      const newItems: MagnetItem[] = [];
+      let processed = 0;
+
+      for (const file of validFiles) {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+        const filePath = `magnets/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('customer-uploads')
+          .upload(filePath, file);
+
+        if (error) {
+          console.error("Upload error", error);
+        } else if (data) {
+          const { data: publicUrlData } = supabase.storage
+            .from('customer-uploads')
+            .getPublicUrl(filePath);
+            
+          newItems.push({
+            id: Math.random().toString(36).substring(7),
+            url: publicUrlData.publicUrl,
+            sizeId: SIZES[0].id,
+            quantity: 1
+          });
         }
-        return prev + 10;
-      });
-    }, 100);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      setUploadProgress(100);
-      
-      const newItems = validFiles.map(file => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file),
-        sizeId: SIZES[0].id,
-        quantity: 1
-      }));
+        processed++;
+        setUploadProgress(10 + (processed / validFiles.length) * 90);
+      }
       
       setMagnetItems(prev => {
         const nextItems = [...prev, ...newItems];
@@ -82,9 +94,11 @@ export const FridgeMagnetProductPage = () => {
         }
         return nextItems;
       });
-      
+    } catch (err) {
+      console.error(err);
+    } finally {
       setTimeout(() => setIsUploading(false), 400);
-    }, 1200);
+    }
   };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -93,13 +107,42 @@ export const FridgeMagnetProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (magnetItems.length === 0) {
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    console.log("Added to cart", magnetItems);
+    
+    setIsAddingToCart(true);
+    try {
+      // Import the server action
+      const { addToCart } = await import('@/app/actions/cart');
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        alert('Please log in to add items to cart');
+        window.location.href = '/login';
+        return;
+      }
+      
+      const productId = 'a2efa28a-f458-4aa3-abb9-15655986b93a'; // Premium Fridge Magnets DB ID
+      const customOptions = { items: magnetItems };
+      
+      const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
+      
+      if (result.success) {
+        window.location.href = '/cart'; // Redirect to cart
+      } else {
+        alert(result.error || 'Failed to add to cart. Are you logged in?');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred.');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const removeImage = (idToRemove: string) => {
@@ -323,9 +366,10 @@ export const FridgeMagnetProductPage = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4">
               <button 
                 onClick={handleAddToCart}
-                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-between px-8 items-center"
+                disabled={isAddingToCart}
+                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-between px-8 items-center disabled:opacity-70"
               >
-                <span>Add to Cart</span>
+                <span>{isAddingToCart ? 'Adding...' : 'Add to Cart'}</span>
                 <span className="font-medium">₹{grandTotal.toFixed(2)}</span>
               </button>
             </motion.div>
