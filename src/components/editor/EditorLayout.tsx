@@ -34,7 +34,7 @@ export default function EditorLayout() {
         {/* Center Workspace (Canvas) */}
         <main className="flex-1 relative overflow-hidden bg-[#f4efeb] border-x border-[#e8e2d9] shadow-inner">
           <CanvasWorkspace />
-          
+
           {/* Bottom Page Strip */}
           <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
             <BottomStrip />

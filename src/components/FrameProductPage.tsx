@@ -30,6 +30,9 @@ export const FrameProductPage = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
 
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const previewRef = useRef<HTMLDivElement>(null);
@@ -51,34 +54,43 @@ export const FrameProductPage = () => {
 
   const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
-  const processFiles = (files: FileList) => {
+  const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     if (!validFiles.length) return;
     
     setIsUploading(true);
     setShowError(false);
-    setUploadProgress(0);
+    setUploadProgress(10);
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
+    try {
+      const { uploadImageAction } = await import('@/app/actions/upload');
+      const newItems: FrameItem[] = [];
+      let processed = 0;
+
+      for (const file of validFiles) {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+        const filePath = `frames/${fileName}`;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filePath', filePath);
+
+        const result = await uploadImageAction(formData);
+
+        if (!result.success) {
+          console.error("Upload error", result.error);
+        } else if (result.url) {
+          newItems.push({
+            id: Math.random().toString(36).substring(7),
+            url: result.url,
+            sizeId: SIZES[0].id,
+            quantity: 1
+          });
         }
-        return prev + 10;
-      });
-    }, 100);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      setUploadProgress(100);
-      
-      const newItems = validFiles.map(file => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file),
-        sizeId: SIZES[0].id,
-        quantity: 1
-      }));
+        processed++;
+        setUploadProgress(10 + (processed / validFiles.length) * 90);
+      }
       
       setFrameItems(prev => {
         const nextItems = [...prev, ...newItems];
@@ -87,9 +99,11 @@ export const FrameProductPage = () => {
         }
         return nextItems;
       });
-      
+    } catch (err) {
+      console.error(err);
+    } finally {
       setTimeout(() => setIsUploading(false), 400);
-    }, 1200);
+    }
   };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -98,13 +112,72 @@ export const FrameProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const handleAddToCart = () => {
+  const addItemsToDatabaseCart = async () => {
+    const { addToCart } = await import('@/app/actions/cart');
+    const { supabase } = await import('@/lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      alert('Please log in to add items to cart');
+      window.location.href = '/login';
+      return false;
+    }
+    
+    const productId = 'ffb38f41-d2f3-40c4-9e40-e7a253940930'; // Custom Photo Frames DB ID
+    const customOptions = { items: frameItems };
+    
+    const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
+    
+    if (!result.success) {
+      alert(result.error || 'Failed to add to cart. Are you logged in?');
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddToCart = async () => {
     if (frameItems.length === 0) {
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    console.log("Added to cart", frameItems);
+    
+    setIsAddingToCart(true);
+    try {
+      const success = await addItemsToDatabaseCart();
+      if (success) {
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+          window.location.href = '/cart';
+        }, 1500);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (frameItems.length === 0) {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 800);
+      return;
+    }
+    
+    setIsAddingToCart(true);
+    try {
+      const success = await addItemsToDatabaseCart();
+      if (success) {
+        window.location.href = '/cart'; // Redirect to checkout flow
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred.');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const removeImage = (idToRemove: string) => {
@@ -344,15 +417,30 @@ export const FrameProductPage = () => {
               </motion.div>
             )}
             
-            {/* Add to Cart */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4">
-              <button 
-                onClick={handleAddToCart}
-                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-between px-8 items-center"
-              >
-                <span>Add to Cart</span>
-                <span className="font-medium">₹{grandTotal.toFixed(2)}</span>
-              </button>
+            {/* Add to Cart and Buy Now */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4 space-y-3">
+              {showSuccessMessage && (
+                <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg border border-green-100 text-center font-medium">
+                  Products are added to cart successfully!
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-white text-black border border-black/10 py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-gray-50 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
+                >
+                  <span>{isAddingToCart ? 'Adding...' : 'Add to Cart'}</span>
+                </button>
+                <button 
+                  onClick={handleBuyNow}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
+                >
+                  <span>Buy Now - ₹{grandTotal.toFixed(2)}</span>
+                </button>
+              </div>
             </motion.div>
           </div>
         </div>

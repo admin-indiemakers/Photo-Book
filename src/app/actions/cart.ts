@@ -74,7 +74,7 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
     // Get active cart
     const { data: cart } = await supabaseAdmin
       .from('carts')
-      .select('*, cart_items(*)')
+      .select('*, cart_items(*, products(*))')
       .eq('customer_id', userId)
       .eq('status', 'active')
       .maybeSingle();
@@ -95,7 +95,8 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
         order_number: orderNumber,
         status: 'pending',
         total,
-        ...deliveryInfo // full_name, email, phone, address_line1, etc.
+        shipping_address: deliveryInfo, // Required by schema
+        ...deliveryInfo // The flat columns added via ALTER TABLE
       })
       .select()
       .single();
@@ -106,9 +107,12 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
     const orderItemsToInsert = cart.cart_items.map((item: any) => ({
       order_id: order.id,
       product_id: item.product_id,
+      product_name: item.products?.name || 'Unknown',
+      category: item.products?.category || 'photo_frame',
       quantity: item.quantity,
-      price_at_purchase: item.price,
-      metadata: item.custom_options
+      unit_price: item.price,
+      line_total: item.price * item.quantity,
+      customization: item.custom_options || {}
     }));
 
     const { error: itemsError } = await supabaseAdmin.from('order_items').insert(orderItemsToInsert);
