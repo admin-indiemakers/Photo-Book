@@ -41,3 +41,23 @@ export async function adminCreateUser(email: string, password: string, name: str
     return { success: false, error: err.message };
   }
 }
+
+export async function confirmUserEmailByEmail(email: string) {
+  try {
+    const { data: users, error } = await supabaseAdmin.auth.admin.listUsers();
+    if (error) return { success: false, error: error.message };
+
+    const user = users.users.find(u => u.email === email);
+    if (!user) return { success: false, error: 'User not found' };
+
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      email_confirm: true
+    });
+
+    if (updateError) return { success: false, error: updateError.message };
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

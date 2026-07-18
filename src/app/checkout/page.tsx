@@ -77,8 +77,8 @@ export default function CheckoutPage() {
           </div>
           <h2 className="text-3xl font-serif text-theme-black mb-4">Order Confirmed!</h2>
           <p className="text-theme-black/60 mb-8">Thank you for your purchase. We've received your order and will begin processing it right away.</p>
-          <Link href="/" className="inline-block bg-[#1a1a18] text-white px-8 py-3 rounded font-medium hover:bg-black transition-colors w-full">
-            Back to Home
+          <Link href="/orders" className="inline-block bg-[#1a1a18] text-white px-8 py-3 rounded font-medium hover:bg-black transition-colors w-full">
+            View My Orders
           </Link>
         </div>
       </div>

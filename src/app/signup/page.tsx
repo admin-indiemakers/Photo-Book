@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
+const customEase = [0.16, 1, 0.3, 1] as const;
+
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,119 +21,100 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
-    const { data, error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
-        }
-      }
-    });
-
-    if (signupError) {
-      if (signupError.message.includes('rate limit')) {
-        // Fallback to server action to bypass rate limit
-        const { adminCreateUser } = await import('@/app/actions/auth');
-        const result = await adminCreateUser(email, password, name);
-        if (result.success) {
-          // Log them in now that the account is created
-          await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { adminCreateUser } = await import('@/app/actions/auth');
+      const result = await adminCreateUser(email, password, name);
+      
+      if (result.success) {
+        // Log them in now that the account is created and auto-confirmed
+        const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (loginError) {
+          setError(loginError.message);
+        } else {
           router.push('/');
-          return;
+        }
+      } else {
+        // Supabase often returns a unique constraint error if user exists
+        if (result.error?.includes('already registered')) {
+          setError('An account with this email address already exists. Please sign in.');
         } else {
           setError(result.error || 'Failed to create account');
-          setLoading(false);
-          return;
         }
       }
-
-      setError(signupError.message);
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Supabase returns a fake user with empty identities if email exists and confirmations are ON
-    if (data?.user?.identities && data.user.identities.length === 0) {
-      setError('An account with this email address already exists. Please sign in.');
-      setLoading(false);
-      return;
-    }
-
-    if (data?.user) {
-      // Add user to the customers table bypassing RLS using server action
-      const { syncCustomerData } = await import('@/app/actions/auth');
-      await syncCustomerData(data.user.id, email, name);
-      router.push('/');
-    }
-    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex bg-theme-ivory overflow-hidden">
+    <div className="min-h-screen flex bg-white overflow-hidden text-black font-sans selection:bg-[#f26523] selection:text-white">
       {/* Left side - Image */}
       <motion.div 
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#1a1a18]"
+        transition={{ duration: 1.2, ease: customEase }}
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black"
       >
         <img 
-          src="https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?w=1200&q=80" 
-          alt="Premium thick layflat pages" 
-          className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-1000 hover:scale-105"
+          src="/images/hero.png" 
+          alt="Premium photobook" 
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a18]/90 via-[#1a1a18]/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="absolute bottom-16 left-16 text-white pr-12"
+          transition={{ delay: 0.5, duration: 1, ease: customEase }}
+          className="absolute bottom-20 left-20 text-white pr-12"
         >
-          <h2 className="text-5xl font-serif mb-4 leading-tight">Begin your<br/>story today.</h2>
-          <p className="text-white/80 max-w-md text-lg">
-            Join thousands of creators who trust Offline Living to turn their digital memories into beautiful, heirloom-quality photobooks.
+          <h2 className="text-5xl md:text-6xl font-serif mb-6 leading-tight font-light">Begin your<br/>story today.</h2>
+          <p className="text-gray-300 max-w-md text-lg font-light leading-relaxed">
+            Join thousands of creators who trust Offline Living to turn their digital memories into beautiful, heirloom-quality artifacts.
           </p>
         </motion.div>
       </motion.div>
 
       {/* Right side - Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 xl:px-24">
+      <div className="flex-1 flex flex-col justify-center px-6 py-8 md:py-12 sm:px-12 lg:px-24 xl:px-32 bg-white relative">
+        
+        {/* Subtle Decorative Background Element */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f26523] opacity-[0.03] rounded-full blur-[100px] pointer-events-none" />
+
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="mx-auto w-full max-w-sm"
+          transition={{ delay: 0.3, duration: 0.8, ease: customEase }}
+          className="w-full max-w-md mx-auto relative z-10"
         >
-          <Link href="/" className="inline-flex items-center gap-3 mb-12 group">
-            <svg className="w-8 h-8 text-theme-black group-hover:text-[#E85D26] transition-colors" viewBox="0 0 40 40" fill="none">
-              <path d="M20 4C16 4 12 8 10 12C8 16 8 20 10 24C12 28 16 30 18 32C19 33 19.5 34 20 36C20.5 34 21 33 22 32C24 30 28 28 30 24C32 20 32 16 30 12C28 8 24 4 20 4Z" fill="currentColor"/>
-            </svg>
-            <span className="font-serif text-xl tracking-wide text-theme-black">Offline Living</span>
+          <Link href="/" className="inline-flex items-center gap-3 mb-8 md:mb-10 group">
+            <span className="font-serif text-2xl tracking-wide text-black hover:text-[#f26523] transition-colors">Offline Living</span>
           </Link>
           
-          <h2 className="text-3xl font-serif font-medium text-theme-black mb-2">
+          <h2 className="text-3xl md:text-4xl font-serif text-black mb-2 md:mb-3">
             Create your account
           </h2>
-          <p className="text-[#1a1a18]/60 mb-8">
+          <p className="text-gray-500 mb-6 md:mb-8 font-light text-base md:text-lg">
             Already have an account?{' '}
-            <Link href="/login" className="text-theme-black font-medium hover:text-[#E85D26] hover:underline transition-colors">
+            <Link href="/login" className="text-black font-medium hover:text-[#f26523] transition-colors">
               Sign in
             </Link>
           </p>
 
-          <form className="space-y-5" onSubmit={handleSignup}>
+          <form className="space-y-6" onSubmit={handleSignup}>
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-100 flex items-start gap-3">
-                <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                className="bg-red-50 text-red-600 p-4 rounded-md text-sm border border-red-100 flex items-start gap-3"
+              >
                 <span>{error}</span>
-              </div>
+              </motion.div>
             )}
             
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-theme-black mb-1.5">
+            <div className="space-y-1">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Full Name
               </label>
               <input
@@ -141,13 +124,13 @@ export default function SignupPage() {
                 required
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="appearance-none block w-full px-4 py-3 bg-white border border-[#1a1a18]/20 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#E85D26] focus:border-[#E85D26] transition-all text-theme-black"
+                className="block w-full px-4 py-3 bg-transparent border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:border-[#f26523] transition-colors text-black"
                 placeholder="Jane Doe"
               />
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-theme-black mb-1.5">
+            <div className="space-y-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <input
@@ -158,13 +141,13 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="appearance-none block w-full px-4 py-3 bg-white border border-[#1a1a18]/20 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#E85D26] focus:border-[#E85D26] transition-all text-theme-black"
+                className="block w-full px-4 py-3 bg-transparent border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:border-[#f26523] transition-colors text-black"
                 placeholder="you@example.com"
               />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-theme-black mb-1.5">
+            <div className="space-y-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
@@ -175,24 +158,27 @@ export default function SignupPage() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="appearance-none block w-full px-4 py-3 bg-white border border-[#1a1a18]/20 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#E85D26] focus:border-[#E85D26] transition-all text-theme-black"
+                className="block w-full px-4 py-3 bg-transparent border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:border-[#f26523] transition-colors text-black"
                 placeholder="••••••••"
               />
-              <p className="text-xs text-[#1a1a18]/50 mt-2">Must be at least 8 characters long.</p>
+              <p className="text-xs text-gray-400 pt-1">Must be at least 8 characters long.</p>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-8">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3.5 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-[#1a1a18] hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E85D26] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full relative overflow-hidden group rounded-full border border-black px-8 py-4 bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Creating account...' : 'Create account'}
+                <div className="absolute inset-0 bg-[#f26523] translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+                <span className="relative z-10 font-medium tracking-wide flex justify-center items-center">
+                  {loading ? 'Creating account...' : 'Create account'}
+                </span>
               </button>
             </div>
             
-            <p className="text-xs text-center text-[#1a1a18]/50 pt-2">
-              By creating an account, you agree to our <a href="#" className="underline hover:text-theme-black">Terms of Service</a> and <a href="#" className="underline hover:text-theme-black">Privacy Policy</a>.
+            <p className="text-xs text-center text-gray-500 pt-4">
+              By creating an account, you agree to our <a href="#" className="text-black hover:text-[#f26523] transition-colors">Terms of Service</a> and <a href="#" className="text-black hover:text-[#f26523] transition-colors">Privacy Policy</a>.
             </p>
           </form>
         </motion.div>
