@@ -109,11 +109,23 @@
     border-color: var(--border);
     outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
   }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
   }
+
   html {
     font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .perspective-\[2500px\] {
+    perspective: 2500px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
 }

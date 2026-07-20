@@ -58,10 +58,11 @@ export default function LeftSidebar() {
   };
 
   const handleAddImage = (src: string) => {
+    const offset = Math.random() * 30 - 15; // Random offset between -15 and +15
     addElement({
       type: 'image',
       src,
-      x: 100, y: 100, width: 200, height: 150,
+      x: 200 + offset, y: 325 + offset, width: 200, height: 150,
       rotation: 0, opacity: 1, locked: false,
     });
   };
@@ -99,11 +100,10 @@ export default function LeftSidebar() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex-col h-14 rounded-none flex items-center justify-center transition-colors border-l-2 ${
-                isActive 
-                  ? 'bg-[#FFFFFF] text-[#E85D26] border-[#E85D26]' 
-                  : 'bg-transparent text-[#6b6560] border-transparent hover:text-[#E85D26]'
-              }`}
+              className={`w-full flex-col h-14 rounded-none flex items-center justify-center transition-colors border-l-2 ${isActive
+                ? 'bg-[#FFFFFF] text-[#E85D26] border-[#E85D26]'
+                : 'bg-transparent text-[#6b6560] border-transparent hover:text-[#E85D26]'
+                }`}
             >
               <tab.icon size={18} className="mb-0.5" />
               <span className="text-[9px] font-medium leading-tight">{tab.label}</span>

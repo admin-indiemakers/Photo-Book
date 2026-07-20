@@ -1,6 +1,9 @@
 'use client';
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import magnet1 from '../assets/fridge_magnet1.webp';
+import magnet2 from '../assets/fridge_magnet2.webp';
+import magnet3 from '../assets/fridge_magnet3.jpg';
 
 const SIZES = [
   { id: 'standard', label: 'Standard', dimensions: 'Standard Size', price: 299 }
@@ -21,6 +24,8 @@ export const FridgeMagnetProductPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -43,34 +48,43 @@ export const FridgeMagnetProductPage = () => {
 
   const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
-  const processFiles = (files: FileList) => {
+  const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     if (!validFiles.length) return;
     
     setIsUploading(true);
     setShowError(false);
-    setUploadProgress(0);
+    setUploadProgress(10);
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
+    try {
+      const { uploadImageAction } = await import('@/app/actions/upload');
+      const newItems: MagnetItem[] = [];
+      let processed = 0;
+
+      for (const file of validFiles) {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+        const filePath = `magnets/${fileName}`;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filePath', filePath);
+
+        const result = await uploadImageAction(formData);
+
+        if (!result.success) {
+          console.error("Upload error", result.error);
+        } else if (result.url) {
+          newItems.push({
+            id: Math.random().toString(36).substring(7),
+            url: result.url,
+            sizeId: SIZES[0].id,
+            quantity: 1
+          });
         }
-        return prev + 10;
-      });
-    }, 100);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      setUploadProgress(100);
-      
-      const newItems = validFiles.map(file => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file),
-        sizeId: SIZES[0].id,
-        quantity: 1
-      }));
+        processed++;
+        setUploadProgress(10 + (processed / validFiles.length) * 90);
+      }
       
       setMagnetItems(prev => {
         const nextItems = [...prev, ...newItems];
@@ -79,9 +93,11 @@ export const FridgeMagnetProductPage = () => {
         }
         return nextItems;
       });
-      
+    } catch (err) {
+      console.error(err);
+    } finally {
       setTimeout(() => setIsUploading(false), 400);
-    }, 1200);
+    }
   };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -90,13 +106,73 @@ export const FridgeMagnetProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const handleAddToCart = () => {
+  const addItemsToDatabaseCart = async () => {
+    // Import the server action
+    const { addToCart } = await import('@/app/actions/cart');
+    const { supabase } = await import('@/lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      alert('Please log in to add items to cart');
+      window.location.href = '/login';
+      return false;
+    }
+    
+    const productId = 'a2efa28a-f458-4aa3-abb9-15655986b93a'; // Premium Fridge Magnets DB ID
+    const customOptions = { items: magnetItems };
+    
+    const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
+    
+    if (!result.success) {
+      alert(result.error || 'Failed to add to cart. Are you logged in?');
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddToCart = async () => {
     if (magnetItems.length === 0) {
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    console.log("Added to cart", magnetItems);
+    
+    setIsAddingToCart(true);
+    try {
+      const success = await addItemsToDatabaseCart();
+      if (success) {
+        setShowSuccessMessage(true);
+        setTimeout(() => {
+          window.location.href = '/cart';
+        }, 1500);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (magnetItems.length === 0) {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 800);
+      return;
+    }
+    
+    setIsAddingToCart(true);
+    try {
+      const success = await addItemsToDatabaseCart();
+      if (success) {
+        window.location.href = '/cart'; // Redirect to cart
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred.');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const removeImage = (idToRemove: string) => {
@@ -154,6 +230,47 @@ export const FridgeMagnetProductPage = () => {
             </motion.p>
           </div>
 
+          {magnetItems.length === 0 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 mt-6"
+            >
+              {/* Sizes */}
+              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                  Available Sizes
+                </div>
+                <div className="text-sm font-medium text-[#1a1a18]">Standard</div>
+                <div className="text-xs text-[#6b6560] mt-1">Perfect fit for any fridge</div>
+              </div>
+
+              {/* Price */}
+              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Starting Price
+                </div>
+                <div className="text-sm font-medium text-[#1a1a18]">₹299.00</div>
+                <div className="text-xs text-[#6b6560] mt-1">Premium quality, affordable price</div>
+              </div>
+
+              {/* Formats */}
+              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm sm:col-span-2 hover:shadow-md transition-shadow">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-3 flex items-center gap-2 font-bold">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                  Supported Formats
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {['.JPG', '.PNG', '.HEIC', '.WEBP', '.PDF', '.PSD', '.AI', '.EPS', '.TIFF', '+ more'].map(ext => (
+                    <span key={ext} className="px-2.5 py-1 bg-black/5 text-[#1a1a18] text-[10px] font-mono rounded-md border border-black/5 hover:bg-black/10 transition-colors">{ext}</span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
           <div className="space-y-10">
             {/* Step 1: Upload */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
@@ -275,15 +392,30 @@ export const FridgeMagnetProductPage = () => {
               </motion.div>
             )}
             
-            {/* Add to Cart */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4">
-              <button 
-                onClick={handleAddToCart}
-                className="w-full bg-[#1a1a18] text-white py-5 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-between px-8 items-center"
-              >
-                <span>Add to Cart</span>
-                <span className="font-medium">₹{grandTotal.toFixed(2)}</span>
-              </button>
+            {/* Add to Cart and Buy Now */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4 space-y-3">
+              {showSuccessMessage && (
+                <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg border border-green-100 text-center font-medium">
+                  Products are added to cart successfully!
+                </div>
+              )}
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-white text-black border border-black/10 py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-gray-50 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
+                >
+                  <span>{isAddingToCart ? 'Adding...' : 'Add to Cart'}</span>
+                </button>
+                <button 
+                  onClick={handleBuyNow}
+                  disabled={isAddingToCart}
+                  className="flex-1 bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
+                >
+                  <span>Buy Now - ₹{grandTotal.toFixed(2)}</span>
+                </button>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -292,6 +424,35 @@ export const FridgeMagnetProductPage = () => {
           className="flex-1 w-full lg:sticky lg:top-24 h-[600px] flex items-center justify-center relative z-10"
           style={{ perspective: '1200px' }}
         >
+          {magnetItems.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="w-full h-full flex flex-col gap-4 py-4"
+            >
+              {/* Main Product Image */}
+              <div className="w-full h-[60%] rounded-2xl overflow-hidden bg-black/5 relative group shadow-sm border border-black/5">
+                <img 
+                  src={magnet1.src} 
+                  alt="Fridge magnet gallery" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-white text-sm font-medium uppercase tracking-widest drop-shadow-md">Premium Quality</span>
+                </div>
+              </div>
+              {/* Product Images Grid */}
+              <div className="w-full h-[40%] flex gap-4">
+                <div className="flex-1 rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-black/5">
+                  <img src={magnet2.src} alt="Fridge magnet detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="flex-1 rounded-2xl overflow-hidden bg-black/5 shadow-sm border border-black/5">
+                  <img src={magnet3.src} alt="Fridge magnet lifestyle" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                </div>
+              </div>
+            </motion.div>
+          ) : (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -364,6 +525,7 @@ export const FridgeMagnetProductPage = () => {
               />
             </motion.div>
           </motion.div>
+          )}
         </div>
       </div>
     </div>
