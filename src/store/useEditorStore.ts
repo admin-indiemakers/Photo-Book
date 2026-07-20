@@ -78,7 +78,9 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 interface EditorState {
   pages: Page[];
-  currentPageId: string | null;
+  currentPageId: string | null; // Keep for fallback compatibility
+  currentSpreadIndex: number;
+  flipDirection: number;
   selectedElementIds: string[];
   canvasSettings: CanvasSettings;
   clipboard: ClipboardData | null;
@@ -86,6 +88,8 @@ interface EditorState {
   snapGuides: SnapGuide[];
   saveStatus: SaveStatus;
   lastSavedAt: number | null;
+  isHydrated: boolean;
+  setHydrated: () => void;
 
   // History
   history: HistoryEntry[];
@@ -96,9 +100,12 @@ interface EditorState {
   canUndo: () => boolean;
   canRedo: () => boolean;
 
-  // Page actions
+  // Page/Spread actions
   addPage: () => void;
   setCurrentPage: (id: string) => void;
+  goToNextSpread: () => void;
+  goToPrevSpread: () => void;
+  loadTemplate: (templateId: string) => void;
   duplicatePage: (id: string) => void;
   deletePage: (id: string) => void;
   reorderPages: (fromIndex: number, toIndex: number) => void;
@@ -119,7 +126,7 @@ interface EditorState {
   setSelectedElements: (ids: string[]) => void;
 
   // Element CRUD
-  addElement: (element: any) => void;
+  addElement: (element: any, targetPageId?: string) => void;
   updateElement: (pageId: string, elementId: string, attrs: any) => void;
   deleteSelectedElements: () => void;
 
@@ -209,6 +216,8 @@ export const useEditorStore = create<EditorState>()(
         ]
       }],
       currentPageId: 'page-1',
+      currentSpreadIndex: 0,
+      flipDirection: 1,
       selectedElementIds: [],
       canvasSettings: {
         zoom: 1,
@@ -230,6 +239,8 @@ export const useEditorStore = create<EditorState>()(
       snapGuides: [],
       saveStatus: 'idle' as SaveStatus,
       lastSavedAt: null,
+      isHydrated: false,
+      setHydrated: () => set({ isHydrated: true }),
 
       // ============ HISTORY ============
       history: [],
@@ -297,15 +308,68 @@ export const useEditorStore = create<EditorState>()(
       addPage: () =>
         set((state) => {
           get()._pushHistory('Add page');
-          const newPage: Page = {
-            id: `page-${Date.now()}`,
+          const newPage1: Page = {
+            id: `page-${Date.now()}-1`,
             name: `Page ${state.pages.length + 1}`,
             elements: [],
+            background: { type: 'solid', value: '#FFFFFF' }
           };
-          return { pages: [...state.pages, newPage], currentPageId: newPage.id };
+          const newPage2: Page = {
+            id: `page-${Date.now()}-2`,
+            name: `Page ${state.pages.length + 2}`,
+            elements: [],
+            background: { type: 'solid', value: '#FFFFFF' }
+          };
+          
+          const newPages = [...state.pages, newPage1, newPage2];
+          const newSpreadIndex = Math.ceil((newPages.length - 1) / 2);
+          
+          return { 
+            pages: newPages, 
+            currentPageId: newPage2.id,
+            currentSpreadIndex: newSpreadIndex,
+            flipDirection: 1
+          };
         }),
 
       setCurrentPage: (id) => set({ currentPageId: id, selectedElementIds: [] }),
+      
+      goToNextSpread: () => set((state) => {
+        const newIndex = state.currentSpreadIndex + 1;
+        const rightPageIndex = newIndex === 0 ? 0 : (newIndex - 1) * 2 + 2;
+        const targetPage = state.pages[rightPageIndex] || state.pages[state.pages.length - 1];
+        return { 
+          currentSpreadIndex: newIndex, 
+          flipDirection: 1,
+          currentPageId: targetPage?.id || state.currentPageId
+        };
+      }),
+      
+      goToPrevSpread: () => set((state) => {
+        const newIndex = Math.max(0, state.currentSpreadIndex - 1);
+        const rightPageIndex = newIndex === 0 ? 0 : (newIndex - 1) * 2 + 2;
+        const targetPage = state.pages[rightPageIndex] || state.pages[state.pages.length - 1];
+        return { 
+          currentSpreadIndex: newIndex, 
+          flipDirection: -1,
+          currentPageId: targetPage?.id || state.currentPageId
+        };
+      }),
+
+      loadTemplate: (templateId: string) => {
+        // Basic template mock data based on ID
+        const pages: Page[] = [];
+        const numPages = 10; // example default
+        for (let i = 0; i < numPages; i++) {
+          pages.push({
+            id: `page-${i}`,
+            name: i === 0 ? 'Cover' : `Page ${i}`,
+            elements: [],
+            background: { type: 'solid', value: i === 0 ? '#E85D26' : '#FFFFFF' }
+          });
+        }
+        set({ pages, currentSpreadIndex: 0, flipDirection: 1, currentPageId: pages[0]?.id || null });
+      },
 
       duplicatePage: (id) =>
         set((state) => {
@@ -389,16 +453,28 @@ export const useEditorStore = create<EditorState>()(
       setSelectedElements: (ids) => set({ selectedElementIds: ids }),
 
       // ============ ELEMENTS ============
-      addElement: (element) =>
+      addElement: (element, targetPageId?: string) =>
         set((state) => {
-          if (!state.currentPageId) return state;
+          let pageId = targetPageId || state.currentPageId;
+          const isCover = state.currentSpreadIndex === 0;
+          const leftPageIndex = isCover ? -1 : (state.currentSpreadIndex - 1) * 2 + 1;
+          const rightPageIndex = isCover ? 0 : (state.currentSpreadIndex - 1) * 2 + 2;
+          
+          const validIds = [state.pages[leftPageIndex]?.id, state.pages[rightPageIndex]?.id].filter(Boolean);
+          
+          if (!pageId || !validIds.includes(pageId)) {
+             pageId = validIds[validIds.length - 1]; // Default to the right-most page in spread
+          }
+          if (!pageId) return state;
+
           get()._pushHistory('Add element');
           const newElement = { ...element, id: generateId() };
           return {
             pages: state.pages.map(page => {
-              if (page.id !== state.currentPageId) return page;
+              if (page.id !== pageId) return page;
               return { ...page, elements: [...page.elements, newElement] };
             }),
+            currentPageId: pageId,
             selectedElementIds: [newElement.id]
           };
         }),
@@ -633,6 +709,7 @@ export const useEditorStore = create<EditorState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.setSaveStatus('saved');
+          state.setHydrated();
         }
       }
     }

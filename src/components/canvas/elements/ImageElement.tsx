@@ -21,10 +21,10 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
       if (!element.src.startsWith('data:')) {
         img.crossOrigin = 'Anonymous';
       }
-      img.src = element.src;
       img.onload = () => {
         setImageObj(img);
       };
+      img.src = element.src;
     }
   }, [element.src]);
 
@@ -46,10 +46,12 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
     });
   };
 
+  const { src, ...restElement } = element;
+
   return (
     <KonvaImage
       ref={imageRef}
-      {...element}
+      {...restElement}
       name="element-node"
       visible={!element.hidden}
       image={imageObj || undefined}
