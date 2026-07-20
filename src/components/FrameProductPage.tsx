@@ -3,14 +3,14 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SIZES = [
-  { id: '3x3', label: '3x3', dimensions: '3inch X 3inch', price: 90.00, ratio: 'aspect-square' },
-  { id: '4x4', label: '4x4', dimensions: '4inch X 4inch', price: 110.00, ratio: 'aspect-square' },
-  { id: '4x6', label: '4x6', dimensions: '4inch X 6inch', price: 180.00, ratio: 'aspect-[4/6]' },
-  { id: '5x7', label: '5x7', dimensions: '5inch X 7inch', price: 260.00, ratio: 'aspect-[5/7]' },
-  { id: '6x8', label: '6x8', dimensions: '6inch X 8inch', price: 280.00, ratio: 'aspect-[6/8]' },
-  { id: 'a4', label: 'A4 SIZE', dimensions: '8.27inch X 11.69inch', price: 380.00, ratio: 'aspect-[1/1.414]' },
-  { id: 'a3', label: 'A3 Size', dimensions: '11.69inch X 16.54inch', price: 650.00, ratio: 'aspect-[1/1.414]' },
-  { id: '13x19', label: '13x19', dimensions: '13inch X 19inch', price: 700.00, ratio: 'aspect-[13/19]' }
+  { id: '3x3', label: '3x3', dimensions: '3inch X 3inch', price: 135.00, ratio: 'aspect-square' },
+  { id: '4x4', label: '4x4', dimensions: '4inch X 4inch', price: 165.00, ratio: 'aspect-square' },
+  { id: '4x6', label: '4x6', dimensions: '4inch X 6inch', price: 270.00, ratio: 'aspect-[4/6]' },
+  { id: '5x7', label: '5x7', dimensions: '5inch X 7inch', price: 390.00, ratio: 'aspect-[5/7]' },
+  { id: '6x8', label: '6x8', dimensions: '6inch X 8inch', price: 420.00, ratio: 'aspect-[6/8]' },
+  { id: 'a4', label: 'A4 SIZE', dimensions: '8.27inch X 11.69inch', price: 570.00, ratio: 'aspect-[1/1.414]' },
+  { id: 'a3', label: 'A3 Size', dimensions: '11.69inch X 16.54inch', price: 975.00, ratio: 'aspect-[1/1.414]' },
+  { id: '13x19', label: '13x19', dimensions: '13inch X 19inch', price: 1050.00, ratio: 'aspect-[13/19]' }
 ];
 
 type FrameItem = {
@@ -264,7 +264,7 @@ export const FrameProductPage = () => {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     Starting Price
                   </div>
-                  <div className="text-sm font-medium text-[#1a1a18]">₹90.00</div>
+                  <div className="text-sm font-medium text-[#1a1a18]">₹135.00</div>
                   <div className="text-xs text-[#6b6560] mt-1">Premium quality, affordable price</div>
                 </div>
 
