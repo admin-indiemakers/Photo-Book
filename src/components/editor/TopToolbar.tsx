@@ -119,9 +119,8 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
               {zoomPresets.map(preset => (
                 <button
                   key={preset}
-                  className={`w-full px-3 py-1.5 text-xs text-left hover:bg-[#f4efeb] transition-colors ${
-                    zoomPercent === preset ? 'text-[#E85D26] font-semibold' : 'text-[#1a1a18]'
-                  }`}
+                  className={`w-full px-3 py-1.5 text-xs text-left hover:bg-[#f4efeb] transition-colors ${zoomPercent === preset ? 'text-[#E85D26] font-semibold' : 'text-[#1a1a18]'
+                    }`}
                   onClick={() => { setZoom(preset / 100); setShowZoomMenu(false); }}
                 >
                   {preset}%
@@ -181,8 +180,43 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
 
       <div className="flex items-center gap-3">
         <Button onClick={onPreview} variant="outline" className="h-9 text-xs font-semibold tracking-wider uppercase border-[#e8e2d9] hover:border-[#E85D26] hover:text-[#E85D26]">Preview</Button>
-        <Button onClick={onValidate} className="h-9 text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white">
-          <Download size={14} className="mr-2" /> Export
+        <Button
+          onClick={async () => {
+            try {
+              useEditorStore.getState().setSaveStatus('saving');
+              const { supabase } = await import('@/lib/supabase');
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session?.user) {
+                alert('Please login to continue');
+                window.location.href = '/login';
+                return;
+              }
+
+              const pagesData = useEditorStore.getState().pages;
+
+              const { addToCart } = await import('@/app/actions/cart');
+              // Assuming a generic product ID for Photo Book, or we can just pass a dummy one if not strict
+              // A real app would query the products table for the 'Photo Book' product ID.
+              const { data: products } = await supabase.from('products').select('id').eq('category', 'photo_book').limit(1);
+              const productId = products?.[0]?.id || 'default-photobook-id';
+
+              const res = await addToCart(session.user.id, productId, 1, { pdfData: pagesData, type: 'photobook_pdf' }, 1500);
+
+              if (res.success) {
+                useEditorStore.getState().setSaveStatus('saved');
+                window.location.href = '/cart';
+              } else {
+                throw new Error(res.error);
+              }
+            } catch (e: any) {
+              console.error(e);
+              useEditorStore.getState().setSaveStatus('error');
+              alert('Failed to save to cart: ' + e.message);
+            }
+          }}
+          className="h-9 text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white"
+        >
+          <Save size={14} className="mr-2" /> Save & Continue
         </Button>
       </div>
     </header>

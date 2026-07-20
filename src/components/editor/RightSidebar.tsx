@@ -45,9 +45,8 @@ function PageBackgroundPanel() {
           {BG_PRESETS.map(color => (
             <button
               key={color}
-              className={`w-full aspect-square rounded-md border-2 transition-all hover:scale-110 ${
-                bg?.value === color ? 'border-[#E85D26] ring-1 ring-[#E85D26]/30' : 'border-[#e8e2d9]'
-              }`}
+              className={`w-full aspect-square rounded-md border-2 transition-all hover:scale-110 ${bg?.value === color ? 'border-[#E85D26] ring-1 ring-[#E85D26]/30' : 'border-[#e8e2d9]'
+                }`}
               style={{ backgroundColor: color }}
               onClick={() => {
                 if (currentPageId) {
@@ -443,11 +442,10 @@ function LayersPanel() {
             return (
               <div
                 key={el.id}
-                className={`group flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-xs ${
-                  isSelected
-                    ? 'bg-[#E85D26]/10 text-[#E85D26]'
-                    : 'hover:bg-[#f4efeb] text-[#1a1a18]'
-                } ${el.hidden ? 'opacity-40' : ''}`}
+                className={`group flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors text-xs ${isSelected
+                  ? 'bg-[#E85D26]/10 text-[#E85D26]'
+                  : 'hover:bg-[#f4efeb] text-[#1a1a18]'
+                  } ${el.hidden ? 'opacity-40' : ''}`}
                 onClick={() => setSelectedElements([el.id])}
               >
                 <span className="w-5 text-center text-sm flex-shrink-0">{getElementIcon(el)}</span>
@@ -499,21 +497,19 @@ export default function RightSidebar() {
       {/* Tab Switcher */}
       <div className="flex border-b border-[#e8e2d9]">
         <button
-          className={`flex-1 py-3 text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
-            activeTab === 'properties'
-              ? 'border-[#E85D26] text-[#E85D26]'
-              : 'border-transparent text-[#6b6560] hover:text-[#1a1a18]'
-          }`}
+          className={`flex-1 py-3 text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors border-b-2 ${activeTab === 'properties'
+            ? 'border-[#E85D26] text-[#E85D26]'
+            : 'border-transparent text-[#6b6560] hover:text-[#1a1a18]'
+            }`}
           onClick={() => setActiveTab('properties')}
         >
           <Settings2 size={14} /> Design
         </button>
         <button
-          className={`flex-1 py-3 text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors border-b-2 ${
-            activeTab === 'layers'
-              ? 'border-[#E85D26] text-[#E85D26]'
-              : 'border-transparent text-[#6b6560] hover:text-[#1a1a18]'
-          }`}
+          className={`flex-1 py-3 text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-1.5 transition-colors border-b-2 ${activeTab === 'layers'
+            ? 'border-[#E85D26] text-[#E85D26]'
+            : 'border-transparent text-[#6b6560] hover:text-[#1a1a18]'
+            }`}
           onClick={() => setActiveTab('layers')}
         >
           <Layers size={14} /> Layers
