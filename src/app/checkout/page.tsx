@@ -47,13 +47,32 @@ export default function CheckoutPage() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let value = e.target.value;
+    if (e.target.name === 'phone') {
+      value = value.replace(/\D/g, '').slice(0, 10);
+    }
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+
+    // Validate email strictly
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address (e.g., name@example.com).");
+      return;
+    }
+
+    // Validate Indian phone number (10 digits, starts with 6-9)
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setSubmitting(true);
 
     const res = await checkoutCart(userId as string, formData);
     if (res.success) {
@@ -132,7 +151,7 @@ export default function CheckoutPage() {
 
               <div>
                 <label className="block text-sm text-theme-black/80 mb-2">Phone Number</label>
-                <input required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 bg-white border border-black/10 rounded focus:outline-none focus:border-[#E85D26] transition-colors" />
+                <input required maxLength={10} pattern="[6-9][0-9]{9}" title="Please enter a valid 10-digit phone number" type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 bg-white border border-black/10 rounded focus:outline-none focus:border-[#E85D26] transition-colors" />
               </div>
 
               <div>

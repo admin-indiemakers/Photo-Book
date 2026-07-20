@@ -26,8 +26,20 @@ export const PolaroidProductPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
+  const [toastError, setToastError] = useState<string | null>(null);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  // Force scroll recalculation when items change so Lenis knows the page got taller
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      if (typeof window !== 'undefined' && (window as any).ScrollTrigger) {
+        (window as any).ScrollTrigger.refresh();
+      }
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [polaroidItems]);
 
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -132,8 +144,31 @@ export const PolaroidProductPage = () => {
     return true;
   };
 
+  const total2x3 = polaroidItems.filter(item => item.sizeId === '2.5x3').reduce((acc, item) => acc + item.quantity, 0);
+  const total4x4 = polaroidItems.filter(item => item.sizeId === '4x4').reduce((acc, item) => acc + item.quantity, 0);
+
+  const packs2x3 = Math.ceil(total2x3 / 16);
+  const packs4x4 = Math.ceil(total4x4 / 16);
+
+  const grandTotal = (packs2x3 * 299) + (packs4x4 * 499);
+
+  const validationError = (() => {
+    if (polaroidItems.length === 0) return 'Please add at least one photo.';
+    if (total2x3 > 0 && total2x3 % 16 !== 0) {
+      const missing = 16 - (total2x3 % 16);
+      return `You can add ${missing} more Mini pcs... the pack amount is the same!`;
+    }
+    if (total4x4 > 0 && total4x4 % 16 !== 0) {
+      const missing = 16 - (total4x4 % 16);
+      return `You can add ${missing} more Square pcs... the pack amount is the same!`;
+    }
+    return null;
+  })();
+
   const handleAddToCart = async () => {
-    if (polaroidItems.length === 0) {
+    if (validationError) {
+      setToastError(validationError);
+      setTimeout(() => setToastError(null), 3000);
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
@@ -157,7 +192,9 @@ export const PolaroidProductPage = () => {
   };
 
   const handleBuyNow = async () => {
-    if (polaroidItems.length === 0) {
+    if (validationError) {
+      setToastError(validationError);
+      setTimeout(() => setToastError(null), 3000);
       setShowError(true);
       setTimeout(() => setShowError(false), 800);
       return;
@@ -205,16 +242,13 @@ export const PolaroidProductPage = () => {
     setPolaroidItems(prev => prev.map(item => item.id === id ? { ...item, caption: newCaption } : item));
   };
 
-  const grandTotal = polaroidItems.reduce((acc, item) => {
-    const sizeConfig = SIZES.find(s => s.id === item.sizeId);
-    return acc + (sizeConfig ? sizeConfig.price * item.quantity : 0);
-  }, 0);
+  // The grandTotal and totals are already calculated above.
 
   const activeItem = polaroidItems.find(item => item.id === activeItemId);
   const activeSize = activeItem ? SIZES.find(s => s.id === activeItem.sizeId) : SIZES[0];
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black overflow-x-hidden pt-24 relative selection:bg-[#E85D26] selection:text-white">
+    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
       {/* Decorative film grain */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
@@ -252,7 +286,7 @@ export const PolaroidProductPage = () => {
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 mt-6"
             >
               {/* Sizes */}
-              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                   Available Sizes
@@ -262,13 +296,21 @@ export const PolaroidProductPage = () => {
               </div>
 
               {/* Price */}
-              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Starting Price
+                  Pricing
                 </div>
-                <div className="text-sm font-medium text-[#1a1a18]">₹299.00</div>
-                <div className="text-xs text-[#6b6560] mt-1">Premium quality, affordable price</div>
+                <div className="flex flex-col gap-2 mt-3">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-medium text-[#1a1a18]">Mini <span className="text-[#6b6560] font-normal text-xs ml-1">(2.5" x 3")</span></span>
+                    <span className="font-mono text-[#E85D26] font-semibold">₹299 <span className="text-xs text-[#6b6560] font-normal lowercase tracking-normal ml-1">/ 1 pack (16 pcs)</span></span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm pt-2 border-t border-black/5">
+                    <span className="font-medium text-[#1a1a18]">Square <span className="text-[#6b6560] font-normal text-xs ml-1">(4" x 4")</span></span>
+                    <span className="font-mono text-[#E85D26] font-semibold">₹499 <span className="text-xs text-[#6b6560] font-normal lowercase tracking-normal ml-1">/ 1 pack (16 pcs)</span></span>
+                  </div>
+                </div>
               </div>
 
               {/* Formats */}
@@ -339,11 +381,50 @@ export const PolaroidProductPage = () => {
             {polaroidItems.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">2. Configure Polaroids</h3>
-                <div className="space-y-4 max-h-[550px] overflow-y-auto pr-2 scrollbar-hide">
+
+                {/* Pack Builder Tracker */}
+                <div className="bg-white/60 p-4 rounded-xl border border-[#E85D26]/20 shadow-sm mb-6">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-4 flex items-center gap-2 font-bold">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                    Pack Builder Status
+                  </div>
+                  
+                  <div className="space-y-5">
+                    {total2x3 > 0 && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="font-medium text-[#1a1a18]">Mini (2.5x3) - {packs2x3} Pack{packs2x3 > 1 ? 's' : ''}</span>
+                          <span className="text-[#6b6560] font-mono">{total2x3} / {packs2x3 * 16} pieces</span>
+                        </div>
+                        <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#E85D26] transition-all duration-300" style={{ width: `${(total2x3 / (packs2x3 * 16)) * 100}%` }}></div>
+                        </div>
+                        {total2x3 % 16 !== 0 && (
+                          <div className="text-xs text-[#E85D26] mt-2 font-medium">You can add {16 - (total2x3 % 16)} more pcs... the pack amount is the same!</div>
+                        )}
+                      </div>
+                    )}
+                    {total4x4 > 0 && (
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="font-medium text-[#1a1a18]">Square (4x4) - {packs4x4} Pack{packs4x4 > 1 ? 's' : ''}</span>
+                          <span className="text-[#6b6560] font-mono">{total4x4} / {packs4x4 * 16} pieces</span>
+                        </div>
+                        <div className="w-full h-2 bg-black/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#E85D26] transition-all duration-300" style={{ width: `${(total4x4 / (packs4x4 * 16)) * 100}%` }}></div>
+                        </div>
+                        {total4x4 % 16 !== 0 && (
+                          <div className="text-xs text-[#E85D26] mt-2 font-medium">You can add {16 - (total4x4 % 16)} more pcs... the pack amount is the same!</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
                   <AnimatePresence>
                     {polaroidItems.map((item) => {
                       const itemSize = SIZES.find(s => s.id === item.sizeId) || SIZES[0];
-                      const itemTotal = itemSize.price * item.quantity;
                       const isActive = activeItemId === item.id;
 
                       return (
@@ -372,7 +453,7 @@ export const PolaroidProductPage = () => {
                                     className="w-full bg-white border-2 border-[#E85D26]/40 hover:border-[#E85D26] rounded-lg text-sm pl-3 pr-8 py-2.5 outline-none focus:ring-4 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
                                   >
                                     {SIZES.map(s => (
-                                      <option key={s.id} value={s.id}>{s.label} ({s.dimensions}) - ₹{s.price}</option>
+                                      <option key={s.id} value={s.id}>{s.label} ({s.dimensions}) - ₹{s.price} / pack of 16</option>
                                     ))}
                                   </select>
                                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-[#E85D26]">
@@ -400,7 +481,6 @@ export const PolaroidProductPage = () => {
 
                             {/* Price & Remove */}
                             <div className="flex items-center gap-4 sm:flex-col sm:gap-2 sm:items-end sm:justify-center">
-                              <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
                               <button
                                 onClick={(e) => { e.stopPropagation(); removeImage(item.id); }}
                                 className="text-black/30 hover:text-red-500 transition-colors p-1"
@@ -437,6 +517,19 @@ export const PolaroidProductPage = () => {
                   Products are added to cart successfully!
                 </div>
               )}
+              
+              <AnimatePresence>
+                {toastError && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -10 }} 
+                    className="bg-[#E85D26]/10 text-[#E85D26] text-sm p-3 rounded-lg border border-[#E85D26]/20 shadow-sm text-center font-medium"
+                  >
+                    {toastError}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               
               <div className="flex gap-3">
                 <button 
