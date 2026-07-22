@@ -39,13 +39,18 @@ export default function LoginPage() {
               password,
             });
             if (retryData.error) {
-              setError(retryData.error.message);
+              let errMsg = retryData.error.message;
+              if (errMsg === 'Invalid login credentials') errMsg = 'Invalid email or password. Please try again.';
+              setError(errMsg);
               return null;
             }
             return retryData.data;
           }
         }
-        setError(loginError.message);
+        
+        let errMsg = loginError.message;
+        if (errMsg === 'Invalid login credentials') errMsg = 'Invalid email or password. Please try again.';
+        setError(errMsg);
         return null;
       }
       return data;

@@ -19,10 +19,10 @@ export default function CartPage() {
         return;
       }
       getCart(session.user.id).then((res) => {
-        if (res.success && res.cart) {
-          setCartData(res.cart);
+        if (res.success) {
+          setCartData(res.cart || { cart_items: [] });
         } else {
-          setError(res.error || 'Cart not found');
+          setError(res.error || 'Failed to load cart');
         }
         setLoading(false);
       });
@@ -49,9 +49,15 @@ export default function CartPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a18] mb-4 tracking-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>Your Cart</h1>
           <p className="text-[#6b6560] mb-8 font-light text-lg">{error || 'Please log in to view your cart.'}</p>
-          <Link href="/login" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
-            Log In to Continue
-          </Link>
+          {error === 'Please log in to view your cart.' ? (
+            <Link href="/login" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
+              Log In to Continue
+            </Link>
+          ) : (
+            <Link href="/products" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
+              Continue Shopping
+            </Link>
+          )}
         </motion.div>
       </div>
     );
@@ -80,7 +86,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-2xl font-serif text-[#1a1a18] mb-3">Your cart is empty</h2>
             <p className="text-[#6b6560] mb-10 max-w-md mx-auto font-light">Looks like you haven't added anything to your cart yet. Explore our premium products to start your collection.</p>
-            <Link href="/" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
+            <Link href="/products" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
               Continue Shopping
             </Link>
           </motion.div>

@@ -1,7 +1,7 @@
 /* ============================================================
-   Offline Living — Photo Book Website
-   JavaScript — GSAP + Lenis + Cursor + Animations
-   ============================================================ */
+  Offline Living — Photo Book Website
+  JavaScript — GSAP + Lenis + Cursor + Animations
+  ============================================================ */
 
 gsap.registerPlugin(ScrollTrigger);
 gsap.config({ nullTargetWarn: false });
@@ -69,6 +69,7 @@ function initLenis() {
     wheelMultiplier: 1,
     touchMultiplier: 2,
   });
+  window.lenis = lenis;
 
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(time => lenis.raf(time * 1000));
@@ -132,7 +133,7 @@ function initCursor() {
 function initNavScroll() {
   const nav = document.getElementById('nav');
   if (!nav) return;
-  
+
   ScrollTrigger.create({
     start: 'top -80',
     end: 99999,
