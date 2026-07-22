@@ -35,10 +35,11 @@ export default function SignupPage() {
         }
       } else {
         // Supabase often returns a unique constraint error if user exists
-        if (result.error?.includes('already registered')) {
+        const errStr = result.error || '';
+        if (errStr.includes('already registered') || errStr.includes('already exists') || errStr.includes('Bearer token')) {
           setError('An account with this email address already exists. Please sign in.');
         } else {
-          setError(result.error || 'Failed to create account');
+          setError(errStr || 'Failed to create account');
         }
       }
     } catch (err: any) {

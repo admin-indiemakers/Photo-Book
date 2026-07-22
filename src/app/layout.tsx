@@ -46,9 +46,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
+      <body className="min-h-screen flex flex-col font-sans text-theme-black bg-theme-ivory">
         <TooltipProvider>
           {children}
         </TooltipProvider>
