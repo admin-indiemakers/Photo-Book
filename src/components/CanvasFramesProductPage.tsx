@@ -114,8 +114,8 @@ export const CanvasFramesProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const addItemsToDatabaseCart = async () => {
-    const { addToCart } = await import('@/app/actions/cart');
+  const addItemsToDatabaseCart = async (clearFirst: boolean = false) => {
+    const { addToCart, clearActiveCart } = await import('@/app/actions/cart');
     const { supabase } = await import('@/lib/supabase');
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -126,15 +126,27 @@ export const CanvasFramesProductPage = () => {
     }
     
     const productId = '76c6f141-cd5a-424f-a246-00de61b51166'; // Gallery Canvas Frames DB ID
-    const customOptions = { items: frameItems };
     
-    const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
-    
-    if (!result.success) {
-      alert(result.error || 'Failed to add to cart. Are you logged in?');
+    try {
+      if (clearFirst) {
+        await clearActiveCart(session.user.id);
+      }
+      for (const item of frameItems) {
+        const sizeConfig = SIZES.find(s => s.id === item.sizeId);
+        const price = sizeConfig ? sizeConfig.price : 0;
+        
+        const customOptions = {
+          items: [item],
+          size: item.sizeId,
+        };
+        const result = await addToCart(session.user.id, productId, item.quantity, customOptions, price);
+        if (!result.success) throw new Error(result.error);
+      }
+      return true;
+    } catch (e: any) {
+      alert(e.message || 'Failed to add to cart.');
       return false;
     }
-    return true;
   };
 
   const handleAddToCart = async () => {
@@ -148,10 +160,7 @@ export const CanvasFramesProductPage = () => {
     try {
       const success = await addItemsToDatabaseCart();
       if (success) {
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          window.location.href = '/cart';
-        }, 1500);
+        window.location.href = '/cart';
       }
     } catch (error) {
       console.error(error);
@@ -170,9 +179,9 @@ export const CanvasFramesProductPage = () => {
     
     setIsAddingToCart(true);
     try {
-      const success = await addItemsToDatabaseCart();
+      const success = await addItemsToDatabaseCart(true);
       if (success) {
-        window.location.href = '/cart'; // Redirect to checkout flow
+        window.location.href = '/checkout'; // Redirect to checkout flow
       }
     } catch (error) {
       console.error(error);
@@ -215,21 +224,21 @@ export const CanvasFramesProductPage = () => {
   const activeSize = activeItem ? SIZES.find(s => s.id === activeItem.sizeId) : SIZES[0];
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black overflow-x-hidden pt-24 relative selection:bg-[#E85D26] selection:text-white">
+    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
       ></div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 pt-8 flex flex-col lg:flex-row gap-16 relative">
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-12 lg:px-20 pt-4 lg:pt-8 flex flex-col lg:flex-row gap-8 lg:gap-16 relative">
+        
         {/* Left Column: Form */}
-        <div className="flex-1 w-full space-y-10 relative z-10">
+        <div className="flex-1 w-full space-y-8 lg:space-y-10 relative z-10 order-2 lg:order-1">
           <div>
-            <motion.h1
+            <motion.h1 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-serif tracking-tight mb-4 text-[#1a1a18]"
+              className="text-4xl md:text-7xl font-serif tracking-tight mb-2 md:mb-4 text-[#1a1a18]"
               style={{ fontFamily: "'DM Serif Display', serif" }}
             >
               Classic Canvas Frames
@@ -341,7 +350,7 @@ export const CanvasFramesProductPage = () => {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">2. Configure Frames</h3>
 
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
+                <div className="space-y-3 max-h-none lg:max-h-[500px] overflow-visible lg:overflow-y-auto pr-0 lg:pr-2 scrollbar-hide">
                   <AnimatePresence>
                     {frameItems.map((item) => {
                       const itemSize = SIZES.find(s => s.id === item.sizeId) || SIZES[0];
@@ -349,65 +358,53 @@ export const CanvasFramesProductPage = () => {
                       const isActive = activeItemId === item.id;
 
                       return (
-                        <motion.div
+                        <motion.div 
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.9, height: 0, marginTop: 0, marginBottom: 0 }}
                           key={item.id}
                           onClick={() => setActiveItemId(item.id)}
-                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row gap-4 items-center ${isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
-                            }`}
+                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 sm:gap-4 ${
+                            isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
+                          }`}
                         >
                           <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
                             <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
                           </div>
 
-                          <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full">
-                            {/* Size Selector */}
-                            <div className="flex-1">
-                              <label className="text-[10px] uppercase font-mono tracking-widest text-[#E85D26] mb-1 block font-bold">Select Size</label>
-                              <div className="relative group shadow-sm">
-                                <select
-                                  value={item.sizeId}
+                          <div className="flex-1 flex flex-col gap-2 min-w-0 w-full">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                              {/* Size Selector */}
+                              <div className="flex-1 min-w-0 relative group shadow-sm">
+                                <select 
+                                  value={item.sizeId} 
                                   onChange={(e) => updateItemSize(item.id, e.target.value)}
-                                  className="w-full bg-white border-2 border-[#E85D26]/40 hover:border-[#E85D26] rounded-lg text-sm pl-3 pr-8 py-2.5 outline-none focus:ring-4 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
+                                  className="w-full bg-white border border-black/10 hover:border-[#E85D26]/50 rounded-md text-xs pl-2 pr-6 py-1.5 outline-none focus:ring-2 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
                                 >
                                   {SIZES.map(s => (
-                                    <option key={s.id} value={s.id}>{s.label} - ₹{s.price}</option>
+                                    <option key={s.id} value={s.id}>{s.label}</option>
                                   ))}
                                 </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-[#E85D26]">
-                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
+                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-black/40">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                                 </div>
                               </div>
-                            </div>
 
-                            {/* Quantity Selector */}
-                            <div className="w-full sm:w-28">
-                              <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Quantity</label>
-                              <div className="flex items-center bg-black/5 rounded-lg border border-transparent overflow-hidden">
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }}
-                                  className="px-3 py-2 text-black/60 hover:text-black hover:bg-black/5 transition-colors"
-                                >-</button>
-                                <span className="flex-1 text-center text-sm font-medium">{item.quantity}</span>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }}
-                                  className="px-3 py-2 text-black/60 hover:text-black hover:bg-black/5 transition-colors"
-                                >+</button>
+                              {/* Quantity Selector */}
+                              <div className="w-full sm:w-24 flex-shrink-0 flex items-center bg-black/5 rounded-md border border-transparent overflow-hidden h-[30px]">
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">-</button>
+                                <span className="flex-1 text-center text-xs font-medium">{item.quantity}</span>
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">+</button>
                               </div>
                             </div>
-                          </div>
-
-                          {/* Price & Remove */}
-                          <div className="flex items-center gap-4 sm:flex-col sm:gap-2 sm:items-end sm:justify-center">
-                            <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); removeImage(item.id); }}
-                              className="text-black/30 hover:text-red-500 transition-colors p-1"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
+                            
+                            <div className="flex justify-between items-center px-1 mt-0.5">
+                              <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
+                              <button onClick={(e) => { e.stopPropagation(); removeImage(item.id); }} className="text-black/30 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                Remove
+                              </button>
+                            </div>
                           </div>
                         </motion.div>
                       );
@@ -445,8 +442,8 @@ export const CanvasFramesProductPage = () => {
           </div>
         </div>
 
-        <div
-          className="flex-1 w-full lg:sticky lg:top-24 h-[600px] flex items-center justify-center relative z-10"
+        <div 
+          className="flex-1 w-full lg:sticky lg:top-24 h-[350px] md:h-[500px] lg:h-[600px] flex items-center justify-center relative z-10 order-1 lg:order-2 pointer-events-none lg:pointer-events-auto"
           style={{ perspective: '1200px' }}
         >
           {frameItems.length === 0 ? (

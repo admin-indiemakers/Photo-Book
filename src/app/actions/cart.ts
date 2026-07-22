@@ -21,6 +21,29 @@ export async function getCart(userId: string) {
   }
 }
 
+export async function clearActiveCart(userId: string) {
+  if (!userId) return { success: false, error: 'Not authenticated' };
+
+  try {
+    const { data: cart } = await supabaseAdmin
+      .from('carts')
+      .select('id')
+      .eq('customer_id', userId)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (cart) {
+      await supabaseAdmin
+        .from('cart_items')
+        .delete()
+        .eq('cart_id', cart.id);
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
 export async function addToCart(userId: string, productId: string, quantity: number, customOptions: any, price: number) {
   if (!userId) return { success: false, error: 'Please log in to add items to cart' };
 

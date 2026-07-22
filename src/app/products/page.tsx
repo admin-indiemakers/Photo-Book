@@ -2,59 +2,111 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { HeaderNav, Footer, productsData } from "@/components/shared";
+import { useEffect, useState } from "react";
+import { HeaderNav, Footer } from "@/components/shared";
+import { supabase } from "@/lib/supabase";
+
+const getHrefFromCategory = (category: string) => {
+  switch (category) {
+    case 'polaroid': return '/polaroid';
+    case 'photo_frame': return '/frame';
+    case 'photo_canvas': return '/canvas-frames';
+    case 'fridge_magnet': return '/fridge-magnet';
+    case 'acrylic_frame': return '/acrylic-frames';
+    case 'photo_book': return '/templates';
+    default: return '/products';
+  }
+};
+
+const getBadgeFromName = (name: string) => {
+  if (name.includes('Book')) return 'Signature';
+  if (name.includes('Frame') && !name.includes('Acrylic') && !name.includes('Canvas')) return 'Popular';
+  if (name.includes('Acrylic')) return 'New';
+  return '';
+};
 
 const customEase = [0.16, 1, 0.3, 1] as const;
 
 export default function AllProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('base_price', { ascending: true });
+        
+      if (!error && data) {
+        setProducts(data);
+      }
+      setLoading(false);
+    }
+    fetchProducts();
+  }, []);
+
   return (
     <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-20">
       <HeaderNav />
 
-      <section className="py-24 px-6 bg-white min-h-[80vh]">
+      <section className="pt-2 pb-6 md:pt-4 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: customEase }}
-            className="mb-16 text-center"
+            className="mb-4 md:mb-16 text-center"
           >
-            <h1 className="font-serif text-5xl md:text-7xl text-black mb-6">Our Collections</h1>
-            <p className="text-gray-500 font-light text-lg max-w-2xl mx-auto">
+            <h1 className="font-serif text-4xl md:text-7xl text-black mb-3 md:mb-6">Our Collections</h1>
+            <p className="text-gray-500 font-light text-xs md:text-lg max-w-2xl mx-auto">
               Explore our full range of premium, archival-quality physical artifacts designed to turn your digital memories into lasting heirlooms.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {productsData.map((item, i) => (
-              <Link href={item.href} key={item.title} className="block">
-                <motion.div 
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
-                  className="group cursor-pointer perspective-[1000px]"
-                >
-                  <div className="relative h-[500px] md:h-[600px] w-full rounded-2xl overflow-hidden mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-x-2 group-hover:rotate-y-[-2deg] group-hover:scale-[1.02] shadow-sm hover:shadow-xl">
-                    <img src={item.img} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
-                    
-                    {item.badge && (
-                      <div className="absolute top-6 left-6 px-3 py-1 bg-white text-black text-xs uppercase tracking-widest font-semibold rounded-sm">
-                        {item.badge === "Signature" ? (
-                          <span className="text-[#c5161d]">{item.badge}</span>
-                        ) : (
-                          <span className="text-[#fdc930]">{item.badge}</span>
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="w-8 h-8 border-4 border-gray-200 border-t-[#f26523] rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10">
+              {products.map((item, i) => {
+                const img = item.images && item.images.length > 0 ? item.images[0] : "/images/hero.png";
+                const badge = getBadgeFromName(item.name);
+                const href = getHrefFromCategory(item.category);
+                
+                return (
+                  <Link href={href} key={item.id} className="block">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
+                      className="group cursor-pointer perspective-[1000px]"
+                    >
+                      <div className="relative h-[130px] sm:h-[160px] md:h-[600px] w-full rounded-lg md:rounded-2xl overflow-hidden mb-2 md:mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-x-2 group-hover:rotate-y-[-2deg] group-hover:scale-[1.02] shadow-sm hover:shadow-xl">
+                        <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+                        
+                        {badge && (
+                          <div className="absolute top-2 left-2 md:top-6 md:left-6 px-1.5 py-0.5 md:px-3 md:py-1 bg-white text-black text-[8px] md:text-xs uppercase tracking-widest font-semibold rounded-sm">
+                            {badge === "Signature" ? (
+                              <span className="text-[#c5161d]">{badge}</span>
+                            ) : (
+                              <span className="text-[#fdc930]">{badge}</span>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
-                  
-                  <h3 className="font-serif text-3xl text-black mb-3">{item.title}</h3>
-                  <p className="text-gray-600 font-light text-lg leading-relaxed">{item.desc}</p>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
+                      
+                      <h3 className="font-serif text-[11px] sm:text-xs md:text-3xl text-black mb-1 md:mb-3 leading-tight">{item.name}</h3>
+                      <p className="text-gray-600 font-light text-[9px] sm:text-[10px] md:text-lg leading-tight md:leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
+                    </motion.div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

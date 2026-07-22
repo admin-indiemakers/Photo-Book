@@ -29,7 +29,7 @@ export default function TemplatesClient() {
     <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-20">
       <HeaderNav />
 
-      <section className="py-8 md:py-24 px-4 md:px-6 bg-white min-h-screen">
+      <section className="pt-2 pb-8 md:py-24 px-4 md:px-6 bg-white min-h-screen">
         <div className="max-w-7xl mx-auto">
 
           {/* Header */}
