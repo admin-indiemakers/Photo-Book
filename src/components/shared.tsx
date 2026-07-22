@@ -95,99 +95,63 @@ export const productsData = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-[#0a0a0a] text-white pt-24 pb-8 px-6 font-sans overflow-hidden">
-      {/* Matte Noise Texture Overlay */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
-        style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}
-      />
-
-      <div className="max-w-[1400px] mx-auto relative z-10">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8 mb-20">
-          
-          {/* Left Column: Brand & Vision */}
-          <div className="lg:w-2/5">
-            <Link href="/" className="font-serif italic font-light text-5xl block mb-6 text-white/90">
-              Offline Living.
-            </Link>
-            <p className="text-white/40 font-light text-sm leading-relaxed max-w-sm mb-10">
-              We believe in the power of the tangible. In a world of fleeting pixels, we craft heirlooms meant to be held, passed down, and cherished for generations.
-            </p>
-            <div className="flex gap-6">
-              {["Instagram", "Pinterest", "Twitter"].map((social) => (
-                <Link key={social} href="#" className="relative overflow-hidden group text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">
-                  <span className="block group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{social}</span>
-                  <span className="block absolute top-full left-0 group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{social}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Column: Links & Newsletter */}
-          <div className="lg:w-1/2 flex flex-col md:flex-row justify-between gap-12 lg:gap-16">
-            
-            <div className="md:w-1/3">
-              <h4 className="font-medium mb-6 uppercase tracking-[0.3em] text-[9px] text-white/30">Collections</h4>
-              <ul className="space-y-4 font-light text-white/60 text-[13px]">
-                {["Signature Books", "Gallery Frames", "Keepsakes", "Gift Cards"].map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="hover:text-white transition-colors relative group flex items-center">
-                      <span className="w-0 h-[1px] bg-white mr-0 group-hover:w-4 group-hover:mr-4 transition-all duration-500 ease-out"></span>
-                      {link}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="md:w-2/3 max-w-xs">
-              <h4 className="font-medium mb-6 uppercase tracking-[0.3em] text-[9px] text-white/30">Join The List</h4>
-              <p className="text-white/40 font-light text-[13px] leading-relaxed mb-8">
-                Exclusive releases, editorial insights, and a gentle reminder to print your photos.
-              </p>
-              <div className="relative group border-b border-white/20 pb-3">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="w-full focus:outline-none bg-transparent text-white transition-colors text-sm placeholder:text-white/20"
-                  suppressHydrationWarning
-                />
-                <button className="absolute right-0 top-1 text-white/20 group-hover:text-white transition-colors" suppressHydrationWarning>
-                  <ArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-500 ease-out" />
-                </button>
-              </div>
-            </div>
-
+    <footer className="bg-[#1a1a1a] text-white pt-20 pb-10 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+        <div className="col-span-1 md:col-span-1">
+          <Link href="/" className="font-serif text-3xl tracking-wide block mb-6">Offline Living</Link>
+          <p className="text-gray-400 font-light text-sm mb-8 leading-relaxed max-w-[250px]">
+            Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
+          </p>
+          <div className="flex gap-4 opacity-70">
+            {/* Social Icons Placeholders */}
+            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">IG</div>
+            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">P</div>
+            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">YT</div>
+            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">M</div>
           </div>
         </div>
 
-        {/* Massive Typography Backdrop with overlay */}
-        <div className="w-full overflow-hidden flex flex-col justify-end border-t border-white/10 pt-16 relative min-h-[220px]">
-           <h1 
-             className="text-[14vw] leading-[0.75] font-sans font-light tracking-tighter text-white/[0.04] select-none pointer-events-none mt-auto text-center w-full pb-8"
-             style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent 10%, black 80%)' }}
-           >
-             OFFLINE LIVING
-           </h1>
-           
-           {/* Copyright overlaying the massive text at the very bottom */}
-           <div className="absolute bottom-4 left-0 w-full flex flex-col md:flex-row justify-between items-end md:items-center text-[9px] uppercase tracking-[0.25em] text-white/40 gap-4">
-             <div className="flex items-center gap-4">
-               <span>&copy; {new Date().getFullYear()} OFFLINE LIVING</span>
-               <span className="w-1 h-1 bg-white/20 rounded-full hidden md:block"></span>
-               <span className="hidden md:block">ALL RIGHTS RESERVED</span>
-             </div>
-             <div className="flex gap-8">
-               <Link href="#" className="hover:text-white transition-colors relative group pb-1">
-                 <span className="absolute left-0 right-0 bottom-0 h-[1px] bg-white/0 group-hover:bg-white transition-colors duration-300"></span>
-                 Privacy Policy
-               </Link>
-               <Link href="#" className="hover:text-white transition-colors relative group pb-1">
-                 <span className="absolute left-0 right-0 bottom-0 h-[1px] bg-white/0 group-hover:bg-white transition-colors duration-300"></span>
-                 Terms of Service
-               </Link>
-             </div>
-           </div>
+        <div>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Explore</h4>
+          <ul className="space-y-3 font-light text-gray-400 text-sm">
+            <li><Link href="#" className="hover:text-white transition-colors">Photobooks</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Wall Art</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Keepsakes</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Gift Cards</Link></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Company</h4>
+          <ul className="space-y-3 font-light text-gray-400 text-sm">
+            <li><Link href="#" className="hover:text-white transition-colors">About Us</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Our Craftsmanship</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Journal</Link></li>
+            <li><Link href="#" className="hover:text-white transition-colors">Contact</Link></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Stay Inspired</h4>
+          <p className="text-gray-400 font-light mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
+          <div className="relative group mt-6">
+            <input
+              type="email"
+              placeholder="Email address"
+              className="w-full border-b border-gray-600 pb-2 pr-10 focus:outline-none focus:border-white bg-transparent text-white transition-colors text-sm"
+            />
+            <button className="absolute right-0 top-0 text-gray-400 group-hover:text-white transition-colors">
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 font-light pt-8 border-t border-gray-800">
+        <p>&copy; {new Date().getFullYear()} Offline Living. All rights reserved.</p>
+        <div className="flex gap-6 mt-4 md:mt-0">
+          <Link href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
+          <Link href="#" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
@@ -203,6 +167,7 @@ export function HeaderNav() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -305,8 +270,34 @@ export function HeaderNav() {
           <Link href="/cart" className="hover:opacity-70 transition-opacity">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
           </Link>
+          <button className="md:hidden ml-2 hover:opacity-70" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            )}
+          </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white text-black border-t border-gray-100 shadow-xl overflow-hidden"
+          >
+            <div className="px-6 py-4 flex flex-col gap-4 text-[11px] font-medium tracking-widest uppercase">
+              <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Collections</Link>
+              <Link href="/orders" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Orders</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Craftsmanship</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Journal</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">About</Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

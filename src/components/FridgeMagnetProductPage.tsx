@@ -14,12 +14,13 @@ type MagnetItem = {
   url: string;
   sizeId: string;
   quantity: number;
+  shapeId?: string;
 };
 
 export const FridgeMagnetProductPage = () => {
   const [magnetItems, setMagnetItems] = useState<MagnetItem[]>([]);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
-  
+
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -36,13 +37,13 @@ export const FridgeMagnetProductPage = () => {
     const rect = previewRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
+
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
-    const tiltX = ((y - centerY) / centerY) * -10; 
+
+    const tiltX = ((y - centerY) / centerY) * -10;
     const tiltY = ((x - centerX) / centerX) * 10;
-    
+
     setTilt({ x: tiltX, y: tiltY });
   };
 
@@ -51,7 +52,7 @@ export const FridgeMagnetProductPage = () => {
   const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     if (!validFiles.length) return;
-    
+
     setIsUploading(true);
     setShowError(false);
     setUploadProgress(10);
@@ -85,7 +86,7 @@ export const FridgeMagnetProductPage = () => {
         processed++;
         setUploadProgress(10 + (processed / validFiles.length) * 90);
       }
-      
+
       setMagnetItems(prev => {
         const nextItems = [...prev, ...newItems];
         if (prev.length === 0 && nextItems.length > 0) {
@@ -106,9 +107,8 @@ export const FridgeMagnetProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const addItemsToDatabaseCart = async () => {
-    // Import the server action
-    const { addToCart } = await import('@/app/actions/cart');
+  const addItemsToDatabaseCart = async (clearFirst: boolean = false) => {
+    const { addToCart, clearActiveCart } = await import('@/app/actions/cart');
     const { supabase } = await import('@/lib/supabase');
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -119,15 +119,28 @@ export const FridgeMagnetProductPage = () => {
     }
     
     const productId = 'a2efa28a-f458-4aa3-abb9-15655986b93a'; // Premium Fridge Magnets DB ID
-    const customOptions = { items: magnetItems };
     
-    const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
-    
-    if (!result.success) {
-      alert(result.error || 'Failed to add to cart. Are you logged in?');
+    try {
+      if (clearFirst) {
+        await clearActiveCart(session.user.id);
+      }
+      for (const item of magnetItems) {
+        const sizeConfig = SIZES.find(s => s.id === item.sizeId);
+        const price = sizeConfig ? sizeConfig.price : 0;
+        
+        const customOptions = {
+          items: [item],
+          size: item.sizeId,
+          shape: item.shapeId || 'square',
+        };
+        const result = await addToCart(session.user.id, productId, item.quantity, customOptions, price);
+        if (!result.success) throw new Error(result.error);
+      }
+      return true;
+    } catch (e: any) {
+      alert(e.message || 'Failed to add to cart.');
       return false;
     }
-    return true;
   };
 
   const handleAddToCart = async () => {
@@ -136,15 +149,12 @@ export const FridgeMagnetProductPage = () => {
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    
+
     setIsAddingToCart(true);
     try {
       const success = await addItemsToDatabaseCart();
       if (success) {
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          window.location.href = '/cart';
-        }, 1500);
+        window.location.href = '/cart';
       }
     } catch (error) {
       console.error(error);
@@ -160,12 +170,12 @@ export const FridgeMagnetProductPage = () => {
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    
+
     setIsAddingToCart(true);
     try {
-      const success = await addItemsToDatabaseCart();
+      const success = await addItemsToDatabaseCart(true);
       if (success) {
-        window.location.href = '/cart'; // Redirect to cart
+        window.location.href = '/checkout'; // Redirect to checkout flow
       }
     } catch (error) {
       console.error(error);
@@ -195,6 +205,15 @@ export const FridgeMagnetProductPage = () => {
     }));
   };
 
+  const updateItemSize = (id: string, newSizeId: string) => {
+    setMagnetItems(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, sizeId: newSizeId };
+      }
+      return item;
+    }));
+  };
+
   const grandTotal = magnetItems.reduce((acc, item) => {
     const sizeConfig = SIZES.find(s => s.id === item.sizeId);
     return acc + (sizeConfig ? sizeConfig.price * item.quantity : 0);
@@ -203,24 +222,26 @@ export const FridgeMagnetProductPage = () => {
   const activeItem = magnetItems.find(item => item.id === activeItemId);
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black overflow-x-hidden pt-24 relative selection:bg-[#E85D26] selection:text-white">
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" 
+    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
       ></div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 pt-8 flex flex-col lg:flex-row gap-16 relative">
-        <div className="flex-1 w-full space-y-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-12 lg:px-20 pt-4 lg:pt-8 flex flex-col lg:flex-row gap-8 lg:gap-16 relative">
+
+        {/* Left Column: Form */}
+        <div className="flex-1 w-full space-y-8 lg:space-y-10 relative z-10 order-2 lg:order-1">
           <div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-serif tracking-tight mb-4 text-[#1a1a18]"
+              className="text-4xl md:text-7xl font-serif tracking-tight mb-2 md:mb-4 text-[#1a1a18]"
               style={{ fontFamily: "'DM Serif Display', serif" }}
             >
               Fridge Magnets
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -231,7 +252,7 @@ export const FridgeMagnetProductPage = () => {
           </div>
 
           {magnetItems.length === 0 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -271,38 +292,37 @@ export const FridgeMagnetProductPage = () => {
               </div>
             </motion.div>
           )}
-          <div className="space-y-10">
+          <div className="space-y-8">
             {/* Step 1: Upload */}
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex justify-between items-end mb-4">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Upload Photos</h3>
               </div>
-              
-              <motion.div 
+
+              <motion.div
                 animate={showError && magnetItems.length === 0 ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
-                className={`relative border-2 border-dashed rounded-xl overflow-hidden group transition-all duration-300 ${
-                  isDragging ? 'border-[#E85D26] bg-[#E85D26]/5 scale-[1.02]' : 
-                  (showError && magnetItems.length === 0) ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
-                } ${isUploading ? 'pointer-events-none' : ''}`}
+                className={`relative border-2 border-dashed rounded-xl overflow-hidden group transition-all duration-300 ${isDragging ? 'border-[#E85D26] bg-[#E85D26]/5 scale-[1.02]' :
+                    (showError && magnetItems.length === 0) ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
+                  } ${isUploading ? 'pointer-events-none' : ''}`}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
               >
-                <input 
-                  type="file" multiple accept="image/*" 
+                <input
+                  type="file" multiple accept="image/*"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   onChange={(e) => e.target.files && processFiles(e.target.files)}
                 />
-                
+
                 <div className="flex flex-col items-center justify-center p-8 h-32">
                   <AnimatePresence mode="wait">
                     {isUploading ? (
                       <motion.div key="uploading" className="flex flex-col items-center gap-4 w-full max-w-xs">
                         <div className="w-full h-1 bg-black/10 rounded-full overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-[#E85D26]" 
-                            initial={{ width: 0 }} animate={{ width: `${uploadProgress}%` }} 
+                          <motion.div
+                            className="h-full bg-[#E85D26]"
+                            initial={{ width: 0 }} animate={{ width: `${uploadProgress}%` }}
                           />
                         </div>
                         <p className="font-mono text-xs uppercase tracking-widest text-[#E85D26]">Processing...</p>
@@ -326,7 +346,7 @@ export const FridgeMagnetProductPage = () => {
             {magnetItems.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">2. Configure Magnets</h3>
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
+                <div className="space-y-3 max-h-none lg:max-h-[400px] overflow-visible lg:overflow-y-auto pr-0 lg:pr-2 scrollbar-hide">
                   <AnimatePresence>
                     {magnetItems.map((item) => {
                       const itemSize = SIZES.find(s => s.id === item.sizeId) || SIZES[0];
@@ -334,55 +354,52 @@ export const FridgeMagnetProductPage = () => {
                       const isActive = activeItemId === item.id;
 
                       return (
-                        <motion.div 
+                        <motion.div
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.9, height: 0, marginTop: 0, marginBottom: 0 }}
                           key={item.id}
                           onClick={() => setActiveItemId(item.id)}
-                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row gap-4 items-center ${
-                            isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
-                          }`}
+                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 sm:gap-4 ${isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
+                            }`}
                         >
                           <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
                             <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
                           </div>
 
-                          <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full items-center">
-                            {/* Size Info */}
-                            <div className="flex-1">
-                              <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Size</label>
-                              <div className="w-full bg-white border-2 border-transparent rounded-lg text-sm px-3 py-2.5 font-medium text-black">
-                                {itemSize.label} - ₹{itemSize.price}
+                          <div className="flex-1 flex flex-col gap-2 min-w-0 w-full">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                              {/* Size Selector */}
+                              <div className="flex-1 min-w-0 relative group shadow-sm">
+                                <select
+                                  value={item.sizeId}
+                                  onChange={(e) => updateItemSize(item.id, e.target.value)}
+                                  className="w-full bg-white border border-black/10 hover:border-[#E85D26]/50 rounded-md text-xs pl-2 pr-6 py-1.5 outline-none focus:ring-2 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
+                                >
+                                  {SIZES.map(s => (
+                                    <option key={s.id} value={s.id}>{s.label}</option>
+                                  ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-black/40">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                              </div>
+
+                              {/* Quantity Selector */}
+                              <div className="w-full sm:w-24 flex-shrink-0 flex items-center bg-black/5 rounded-md border border-transparent overflow-hidden h-[30px]">
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">-</button>
+                                <span className="flex-1 text-center text-xs font-medium">{item.quantity}</span>
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">+</button>
                               </div>
                             </div>
 
-                            {/* Quantity Selector */}
-                            <div className="w-full sm:w-32">
-                              <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Quantity</label>
-                              <div className="flex items-center bg-white border-2 border-black/10 rounded-lg overflow-hidden h-[42px]">
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }}
-                                  className="px-3 h-full text-black/60 hover:text-black hover:bg-black/5 transition-colors"
-                                >-</button>
-                                <span className="flex-1 text-center text-sm font-medium">{item.quantity}</span>
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }}
-                                  className="px-3 h-full text-black/60 hover:text-black hover:bg-black/5 transition-colors"
-                                >+</button>
-                              </div>
+                            <div className="flex justify-between items-center px-1 mt-0.5">
+                              <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
+                              <button onClick={(e) => { e.stopPropagation(); removeImage(item.id); }} className="text-black/30 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                Remove
+                              </button>
                             </div>
-                          </div>
-
-                          {/* Price & Remove */}
-                          <div className="flex items-center gap-4 sm:flex-col sm:gap-2 sm:items-end sm:justify-center">
-                            <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); removeImage(item.id); }}
-                              className="text-black/30 hover:text-red-500 transition-colors p-1"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
                           </div>
                         </motion.div>
                       );
@@ -391,7 +408,7 @@ export const FridgeMagnetProductPage = () => {
                 </div>
               </motion.div>
             )}
-            
+
             {/* Add to Cart and Buy Now */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4 space-y-3">
               {showSuccessMessage && (
@@ -399,16 +416,16 @@ export const FridgeMagnetProductPage = () => {
                   Products are added to cart successfully!
                 </div>
               )}
-              
+
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
                   className="flex-1 bg-white text-black border border-black/10 py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-gray-50 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
                 >
                   <span>{isAddingToCart ? 'Adding...' : 'Add to Cart'}</span>
                 </button>
-                <button 
+                <button
                   onClick={handleBuyNow}
                   disabled={isAddingToCart}
                   className="flex-1 bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
@@ -420,8 +437,8 @@ export const FridgeMagnetProductPage = () => {
           </div>
         </div>
 
-        <div 
-          className="flex-1 w-full lg:sticky lg:top-24 h-[600px] flex items-center justify-center relative z-10"
+        <div
+          className="flex-1 w-full lg:sticky lg:top-24 h-[350px] md:h-[500px] lg:h-[600px] flex items-center justify-center relative z-10 order-1 lg:order-2"
           style={{ perspective: '1200px' }}
         >
           {magnetItems.length === 0 ? (
@@ -433,9 +450,9 @@ export const FridgeMagnetProductPage = () => {
             >
               {/* Main Product Image */}
               <div className="w-full h-[60%] rounded-2xl overflow-hidden bg-black/5 relative group shadow-sm border border-black/5">
-                <img 
-                  src={magnet1.src} 
-                  alt="Fridge magnet gallery" 
+                <img
+                  src={magnet1.src}
+                  alt="Fridge magnet gallery"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -453,78 +470,78 @@ export const FridgeMagnetProductPage = () => {
               </div>
             </motion.div>
           ) : (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="w-full max-w-md relative flex justify-center items-center h-full"
-            ref={previewRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
-            <motion.div 
-              className="relative z-10"
-              animate={{ rotateX: tilt.x, rotateY: tilt.y }}
-              transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
-              style={{ transformStyle: 'preserve-3d' }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="w-full max-w-md relative flex justify-center items-center h-full"
+              ref={previewRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             >
-              <motion.div 
-                layout
-                className="transition-colors duration-500 shadow-xl relative bg-white p-3 rounded-lg border border-gray-200"
-                style={{
-                  boxShadow: '0 15px 35px -5px rgba(0, 0, 0, 0.15)'
-                }}
+              <motion.div
+                className="relative z-10"
+                animate={{ rotateX: tilt.x, rotateY: tilt.y }}
+                transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.5 }}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <div className="bg-[#e5e5e5] overflow-hidden relative w-64 sm:w-72 md:w-80 shadow-inner rounded-md aspect-square">
-                  <AnimatePresence mode="popLayout">
-                    {activeItem ? (
-                      <motion.img 
-                        key={activeItem.id}
-                        initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-                        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, filter: 'blur(10px)' }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        src={activeItem.url} 
-                        alt="Preview" 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <motion.div 
-                        key="placeholder"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
-                      >
-                        <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Magnet</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-                
-                <motion.div 
-                  className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay rounded-lg"
-                  animate={{
-                    background: `linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.8) ${25 + tilt.x}%, transparent 30%)`,
+                <motion.div
+                  layout
+                  className="transition-colors duration-500 shadow-xl relative bg-white p-3 rounded-lg border border-gray-200"
+                  style={{
+                    boxShadow: '0 15px 35px -5px rgba(0, 0, 0, 0.15)'
                   }}
-                  transition={{ type: "tween", ease: "linear", duration: 0 }}
+                >
+                  <div className="bg-[#e5e5e5] overflow-hidden relative w-64 sm:w-72 md:w-80 shadow-inner rounded-md aspect-square">
+                    <AnimatePresence mode="popLayout">
+                      {activeItem ? (
+                        <motion.img
+                          key={activeItem.id}
+                          initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+                          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                          exit={{ opacity: 0, filter: 'blur(10px)' }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          src={activeItem.url}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <motion.div
+                          key="placeholder"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
+                        >
+                          <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Magnet</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay rounded-lg"
+                    animate={{
+                      background: `linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.8) ${25 + tilt.x}%, transparent 30%)`,
+                    }}
+                    transition={{ type: "tween", ease: "linear", duration: 0 }}
+                  />
+                </motion.div>
+
+                <motion.div
+                  className="absolute -inset-2 bg-black/10 blur-xl -z-10 rounded-xl"
+                  animate={{
+                    x: tilt.y * -0.5,
+                    y: tilt.x * 0.5 + 10,
+                    opacity: Math.max(0.1, 0.3 - Math.abs(tilt.x) * 0.01)
+                  }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               </motion.div>
-
-              <motion.div 
-                className="absolute -inset-2 bg-black/10 blur-xl -z-10 rounded-xl"
-                animate={{
-                  x: tilt.y * -0.5,
-                  y: tilt.x * 0.5 + 10,
-                  opacity: Math.max(0.1, 0.3 - Math.abs(tilt.x) * 0.01)
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
             </motion.div>
-          </motion.div>
           )}
         </div>
       </div>

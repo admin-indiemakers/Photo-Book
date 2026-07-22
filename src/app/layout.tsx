@@ -13,20 +13,43 @@ export const metadata: Metadata = {
   }
 };
 
+import { DM_Sans, DM_Serif_Display, Caveat, Instrument_Serif } from 'next/font/google';
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+});
+
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-dm-serif',
+  style: ['normal', 'italic'],
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-caveat',
+});
+
+const instrument = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-instrument',
+  style: ['normal', 'italic'],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="antialiased" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Dancing+Script:wght@400..700&family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&family=Outfit:wght@100..900&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Aleo:wght@400;700&family=Amatic+SC:wght@400;700&family=Anton&family=Arvo:wght@400;700&family=Bangers&family=Bebas+Neue&family=Bitter:wght@400;700&family=Cabin:wght@400;700&family=Cinzel:wght@400;700&family=Cookie&family=Cormorant+Garamond:wght@400;700&family=Courgette&family=Crimson+Text:wght@400;700&family=Dosis:wght@400;700&family=EB+Garamond:wght@400;700&family=Fira+Sans:wght@400;700&family=Great+Vibes&family=Heebo:wght@400;700&family=Indie+Flower&family=Karla:wght@400;700&family=Kaushan+Script&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Lobster&family=Open+Sans:wght@400;700&family=Permanent+Marker&family=PT+Serif:wght@400;700&family=Quicksand:wght@400;700&family=Righteous&family=Rokkitt:wght@400;700&family=Rubik:wght@400;700&family=Sacramento&family=Satisfy&family=Shadows+Into+Light&family=Tinos:wght@400;700&family=Work+Sans:wght@400;700&family=Zilla+Slab:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
         <TooltipProvider>
           {children}
         </TooltipProvider>
