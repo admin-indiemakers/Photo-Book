@@ -94,11 +94,11 @@ export const productsData = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] text-white pt-20 pb-10 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+    <footer className="bg-[#1a1a1a] text-white pt-6 md:pt-20 pb-4 md:pb-10 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-12 mb-6 md:mb-20">
         <div className="col-span-1 md:col-span-1">
-          <Link href="/" className="font-serif text-3xl tracking-wide block mb-6">Offline Living</Link>
-          <p className="text-gray-400 font-light text-sm mb-8 leading-relaxed max-w-[250px]">
+          <Link href="/" className="font-serif text-3xl tracking-wide block mb-3 md:mb-6">Offline Living</Link>
+          <p className="text-gray-400 font-light text-sm mb-4 md:mb-8 leading-relaxed max-w-[250px]">
             Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
           </p>
           <div className="flex gap-4 opacity-70">
@@ -111,8 +111,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Explore</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
+          <h4 className="font-semibold mb-2 md:mb-6 uppercase tracking-wider text-[11px] text-gray-300">Explore</h4>
+          <ul className="space-y-1.5 md:space-y-3 font-light text-gray-400 text-sm">
             <li><Link href="#" className="hover:text-white transition-colors">Photobooks</Link></li>
             <li><Link href="#" className="hover:text-white transition-colors">Wall Art</Link></li>
             <li><Link href="#" className="hover:text-white transition-colors">Keepsakes</Link></li>
@@ -121,8 +121,8 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Company</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
+          <h4 className="font-semibold mb-2 md:mb-6 uppercase tracking-wider text-[11px] text-gray-300">Company</h4>
+          <ul className="space-y-1.5 md:space-y-3 font-light text-gray-400 text-sm">
             <li><Link href="#" className="hover:text-white transition-colors">About Us</Link></li>
             <li><Link href="#" className="hover:text-white transition-colors">Our Craftsmanship</Link></li>
             <li><Link href="#" className="hover:text-white transition-colors">Journal</Link></li>
@@ -131,9 +131,9 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Stay Inspired</h4>
-          <p className="text-gray-400 font-light mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
-          <div className="relative group mt-6">
+          <h4 className="font-semibold mb-2 md:mb-6 uppercase tracking-wider text-[11px] text-gray-300">Stay Inspired</h4>
+          <p className="text-gray-400 font-light mb-3 md:mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
+          <div className="relative group mt-3 md:mt-6">
             <input
               type="email"
               placeholder="Email address"
@@ -146,9 +146,9 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 font-light pt-8 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 font-light pt-4 md:pt-8 border-t border-gray-800">
         <p>&copy; {new Date().getFullYear()} Offline Living. All rights reserved.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
+        <div className="flex gap-6 mt-3 md:mt-0">
           <Link href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
           <Link href="#" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
         </div>
@@ -166,6 +166,7 @@ export function HeaderNav() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -267,8 +268,34 @@ export function HeaderNav() {
           <Link href="/cart" className="hover:opacity-70 transition-opacity">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
           </Link>
+          <button className="md:hidden ml-2 hover:opacity-70" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            )}
+          </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white text-black border-t border-gray-100 shadow-xl overflow-hidden"
+          >
+            <div className="px-6 py-4 flex flex-col gap-4 text-[11px] font-medium tracking-widest uppercase">
+              <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Collections</Link>
+              <Link href="/orders" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Orders</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Craftsmanship</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Journal</Link>
+              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">About</Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

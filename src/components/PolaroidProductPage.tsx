@@ -121,22 +121,26 @@ export const PolaroidProductPage = () => {
     processFiles(e.dataTransfer.files);
   }, []);
 
-  const addItemsToDatabaseCart = async () => {
-    const { addToCart } = await import('@/app/actions/cart');
+  const addItemsToDatabaseCart = async (clearFirst: boolean = false) => {
+    const { addToCart, clearActiveCart } = await import('@/app/actions/cart');
     const { supabase } = await import('@/lib/supabase');
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (!session?.user) {
       alert('Please log in to add items to cart');
       window.location.href = '/login';
       return false;
     }
-    
+
+    if (clearFirst) {
+      await clearActiveCart(session.user.id);
+    }
+
     const productId = 'aef5f9c4-9561-4fce-b763-32b9bd55e3ba'; // Custom Polaroids DB ID
     const customOptions = { items: polaroidItems };
-    
+
     const result = await addToCart(session.user.id, productId, 1, customOptions, grandTotal);
-    
+
     if (!result.success) {
       alert(result.error || 'Failed to add to cart. Are you logged in?');
       return false;
@@ -173,15 +177,12 @@ export const PolaroidProductPage = () => {
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    
+
     setIsAddingToCart(true);
     try {
       const success = await addItemsToDatabaseCart();
       if (success) {
-        setShowSuccessMessage(true);
-        setTimeout(() => {
-          window.location.href = '/cart';
-        }, 1500);
+        window.location.href = '/cart';
       }
     } catch (error) {
       console.error(error);
@@ -199,12 +200,12 @@ export const PolaroidProductPage = () => {
       setTimeout(() => setShowError(false), 800);
       return;
     }
-    
+
     setIsAddingToCart(true);
     try {
-      const success = await addItemsToDatabaseCart();
+      const success = await addItemsToDatabaseCart(true);
       if (success) {
-        window.location.href = '/cart'; // Redirect to checkout flow
+        window.location.href = '/checkout'; // Redirect to checkout flow
       }
     } catch (error) {
       console.error(error);
@@ -255,15 +256,15 @@ export const PolaroidProductPage = () => {
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
       ></div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 pt-8 flex flex-col lg:flex-row gap-16 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-12 lg:px-20 pt-4 lg:pt-8 flex flex-col lg:flex-row gap-8 lg:gap-16 relative">
 
         {/* Left Column: Form */}
-        <div className="flex-1 w-full space-y-10 relative z-10">
+        <div className="flex-1 w-full space-y-8 lg:space-y-10 relative z-10 order-2 lg:order-1">
           <div>
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-serif tracking-tight mb-4 text-[#1a1a18]"
+              className="text-4xl md:text-7xl font-serif tracking-tight mb-2 md:mb-4 text-[#1a1a18]"
               style={{ fontFamily: "'DM Serif Display', serif" }}
             >
               Custom Polaroids
@@ -285,7 +286,6 @@ export const PolaroidProductPage = () => {
               transition={{ delay: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 mt-6"
             >
-              {/* Sizes */}
               <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
@@ -295,7 +295,6 @@ export const PolaroidProductPage = () => {
                 <div className="text-xs text-[#6b6560] mt-1">2 different sizes to choose from</div>
               </div>
 
-              {/* Price */}
               <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -313,7 +312,6 @@ export const PolaroidProductPage = () => {
                 </div>
               </div>
 
-              {/* Formats */}
               <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm sm:col-span-2 hover:shadow-md transition-shadow">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-3 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
@@ -327,8 +325,7 @@ export const PolaroidProductPage = () => {
               </div>
             </motion.div>
           )}
-          <div className="space-y-10">
-            {/* Step 1: Upload */}
+          <div className="space-y-8 lg:space-y-10">
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
               <div className="flex justify-between items-end mb-4">
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560]">1. Upload Photos</h3>
@@ -377,18 +374,16 @@ export const PolaroidProductPage = () => {
               </motion.div>
             </motion.div>
 
-            {/* Step 2: Configure Items */}
             {polaroidItems.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b6560] mb-4">2. Configure Polaroids</h3>
 
-                {/* Pack Builder Tracker */}
                 <div className="bg-white/60 p-4 rounded-xl border border-[#E85D26]/20 shadow-sm mb-6">
                   <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-4 flex items-center gap-2 font-bold">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     Pack Builder Status
                   </div>
-                  
+
                   <div className="space-y-5">
                     {total2x3 > 0 && (
                       <div>
@@ -425,6 +420,7 @@ export const PolaroidProductPage = () => {
                   <AnimatePresence>
                     {polaroidItems.map((item) => {
                       const itemSize = SIZES.find(s => s.id === item.sizeId) || SIZES[0];
+                      const itemTotal = item.quantity * (itemSize.price / 16);
                       const isActive = activeItemId === item.id;
 
                       return (
@@ -434,73 +430,44 @@ export const PolaroidProductPage = () => {
                           exit={{ opacity: 0, scale: 0.9, height: 0, marginTop: 0, marginBottom: 0 }}
                           key={item.id}
                           onClick={() => setActiveItemId(item.id)}
-                          className={`relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col gap-4 ${isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
+                          className={`relative p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 sm:gap-4 ${isActive ? 'border-[#E85D26] bg-white shadow-md' : 'border-black/5 bg-white/50 hover:bg-white hover:border-black/20'
                             }`}
                         >
-                          <div className="flex flex-col sm:flex-row gap-4 items-center w-full">
-                            <div className="flex-shrink-0 w-20 h-24 rounded-sm overflow-hidden bg-white border-8 border-b-[24px] border-white shadow-sm">
-                              <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
-                            </div>
-
-                            <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full">
-                              {/* Size Selector */}
-                              <div className="flex-1">
-                                <label className="text-[10px] uppercase font-mono tracking-widest text-[#E85D26] mb-1 block font-bold">Select Size</label>
-                                <div className="relative group shadow-sm">
-                                  <select
-                                    value={item.sizeId}
-                                    onChange={(e) => updateItemSize(item.id, e.target.value)}
-                                    className="w-full bg-white border-2 border-[#E85D26]/40 hover:border-[#E85D26] rounded-lg text-sm pl-3 pr-8 py-2.5 outline-none focus:ring-4 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
-                                  >
-                                    {SIZES.map(s => (
-                                      <option key={s.id} value={s.id}>{s.label} ({s.dimensions}) - ₹{s.price} / pack of 16</option>
-                                    ))}
-                                  </select>
-                                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-[#E85D26]">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Quantity Selector */}
-                              <div className="w-full sm:w-28">
-                                <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Quantity</label>
-                                <div className="flex items-center bg-black/5 rounded-lg border border-transparent overflow-hidden h-[42px]">
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }}
-                                    className="px-3 h-full text-black/60 hover:text-black hover:bg-black/10 transition-colors"
-                                  >-</button>
-                                  <span className="flex-1 text-center text-sm font-medium">{item.quantity}</span>
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }}
-                                    className="px-3 h-full text-black/60 hover:text-black hover:bg-black/10 transition-colors"
-                                  >+</button>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Price & Remove */}
-                            <div className="flex items-center gap-4 sm:flex-col sm:gap-2 sm:items-end sm:justify-center">
-                              <button
-                                onClick={(e) => { e.stopPropagation(); removeImage(item.id); }}
-                                className="text-black/30 hover:text-red-500 transition-colors p-1"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                              </button>
-                            </div>
+                          <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
+                            <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
                           </div>
 
-                          {/* Caption Input */}
-                          <div className="w-full pt-2 border-t border-black/5">
-                            <label className="text-[10px] uppercase font-mono tracking-widest text-black/40 mb-1 block">Caption (Optional)</label>
-                            <input
-                              type="text"
-                              maxLength={30}
-                              value={item.caption}
-                              onChange={(e) => updateItemCaption(item.id, e.target.value)}
-                              className="w-full bg-white border border-black/10 hover:border-black/20 rounded-lg text-sm px-3 py-2 outline-none focus:border-[#E85D26] focus:ring-1 focus:ring-[#E85D26] transition-all text-black placeholder:text-black/30"
-                              placeholder="E.g., Summer 2026..."
-                            />
+                          <div className="flex-1 flex flex-col gap-2 min-w-0 w-full">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                              <div className="flex-1 min-w-0 relative group shadow-sm">
+                                <select
+                                  value={item.sizeId}
+                                  onChange={(e) => updateItemSize(item.id, e.target.value)}
+                                  className="w-full bg-white border border-black/10 hover:border-[#E85D26]/50 rounded-md text-xs pl-2 pr-6 py-1.5 outline-none focus:ring-2 focus:ring-[#E85D26]/10 transition-all appearance-none cursor-pointer font-medium text-black"
+                                >
+                                  {SIZES.map(s => (
+                                    <option key={s.id} value={s.id}>{s.label}</option>
+                                  ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-black/40">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                              </div>
+
+                              <div className="w-full sm:w-24 flex-shrink-0 flex items-center bg-black/5 rounded-md border border-transparent overflow-hidden h-[30px]">
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, -1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">-</button>
+                                <span className="flex-1 text-center text-xs font-medium">{item.quantity}</span>
+                                <button onClick={(e) => { e.stopPropagation(); updateItemQuantity(item.id, 1); }} className="px-2 w-1/3 flex justify-center items-center text-black/60 hover:text-black hover:bg-black/10 transition-colors">+</button>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between items-center px-1 mt-0.5">
+                              <span className="font-medium text-sm text-[#E85D26]">₹{itemTotal.toFixed(2)}</span>
+                              <button onClick={(e) => { e.stopPropagation(); removeImage(item.id); }} className="text-black/30 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                Remove
+                              </button>
+                            </div>
                           </div>
                         </motion.div>
                       );
@@ -510,36 +477,35 @@ export const PolaroidProductPage = () => {
               </motion.div>
             )}
 
-            {/* Add to Cart and Buy Now */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="pt-4 space-y-3">
               {showSuccessMessage && (
                 <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg border border-green-100 text-center font-medium">
                   Products are added to cart successfully!
                 </div>
               )}
-              
+
               <AnimatePresence>
                 {toastError && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: -10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: -10 }} 
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                     className="bg-[#E85D26]/10 text-[#E85D26] text-sm p-3 rounded-lg border border-[#E85D26]/20 shadow-sm text-center font-medium"
                   >
                     {toastError}
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
                   className="flex-1 bg-white text-black border border-black/10 py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-gray-50 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
                 >
                   <span>{isAddingToCart ? 'Adding...' : 'Add to Cart'}</span>
                 </button>
-                <button 
+                <button
                   onClick={handleBuyNow}
                   disabled={isAddingToCart}
                   className="flex-1 bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
@@ -551,9 +517,8 @@ export const PolaroidProductPage = () => {
           </div>
         </div>
 
-        {/* Right Column: Floating Hero Preview */}
         <div
-          className="flex-1 w-full lg:sticky lg:top-24 h-[600px] flex items-center justify-center relative z-10"
+          className="flex-1 w-full lg:sticky lg:top-24 h-[350px] md:h-[500px] lg:h-[600px] flex items-center justify-center relative z-10 order-1 lg:order-2"
           style={{ perspective: '1200px' }}
         >
           {polaroidItems.length === 0 ? (
