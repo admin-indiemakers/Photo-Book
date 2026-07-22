@@ -12,6 +12,20 @@ export default function PreviewMode({ onClose }: { onClose: () => void }) {
   const PAGE_WIDTH = canvasSettings.width || 600;
   const PAGE_HEIGHT = canvasSettings.height || 800;
 
+  useEffect(() => {
+    // Initial auto-scale for mobile screens
+    if (typeof window !== 'undefined') {
+      const maxWidth = window.innerWidth * 0.9;
+      const maxHeight = window.innerHeight * 0.7; 
+      const scaleForWidth = maxWidth / PAGE_WIDTH;
+      const scaleForHeight = maxHeight / PAGE_HEIGHT;
+      const optimalZoom = Math.min(scaleForWidth, scaleForHeight, 1);
+      if (optimalZoom < 1) {
+        setZoom(optimalZoom);
+      }
+    }
+  }, [PAGE_WIDTH, PAGE_HEIGHT]);
+
   const goTo = (index: number) => {
     setCurrentIndex(Math.max(0, Math.min(pages.length - 1, index)));
   };
@@ -169,12 +183,12 @@ export default function PreviewMode({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* Bottom page thumbnails */}
-      <div className="h-16 flex items-center justify-center gap-2 px-4 bg-[#1a1a18]/90 border-t border-white/10 shrink-0">
+      {/* Bottom page thumbnails - horizontal scrolling */}
+      <div className="h-16 flex items-center gap-2 px-4 bg-[#1a1a18]/90 border-t border-white/10 shrink-0 overflow-x-auto no-scrollbar justify-start sm:justify-center">
         {pages.map((p, i) => (
           <button
             key={p.id}
-            className={`w-10 h-12 rounded border-2 transition-all flex items-center justify-center text-[10px] ${
+            className={`w-10 h-12 rounded border-2 transition-all flex shrink-0 items-center justify-center text-[10px] ${
               i === currentIndex
                 ? 'border-[#E85D26] bg-white/10 text-[#E85D26] font-bold'
                 : 'border-white/10 hover:border-white/30 text-white/40'

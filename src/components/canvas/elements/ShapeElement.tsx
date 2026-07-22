@@ -22,19 +22,28 @@ export default function ShapeElement({ element, isSelected, onSelect, onChange, 
     node.scaleX(1);
     node.scaleY(1);
 
+    const newWidth = Math.max(5, node.width() * scaleX);
+    const newHeight = Math.max(5, node.height() * scaleY);
+
     onChange({
       ...element,
-      x: node.x(),
-      y: node.y(),
-      width: Math.max(5, node.width() * scaleX),
-      height: Math.max(5, node.height() * scaleY),
+      x: node.x() - newWidth / 2,
+      y: node.y() - newHeight / 2,
+      width: newWidth,
+      height: newHeight,
       rotation: node.rotation()
     });
   };
 
+  const { x, y, ...restElement } = element;
+
   const commonProps = {
     ref: shapeRef,
-    ...element,
+    ...restElement,
+    x: element.x + element.width / 2,
+    y: element.y + element.height / 2,
+    offsetX: element.width / 2,
+    offsetY: element.height / 2,
     name: 'element-node',
     visible: !element.hidden,
     draggable: !element.locked,
@@ -44,8 +53,8 @@ export default function ShapeElement({ element, isSelected, onSelect, onChange, 
     onDragEnd: onDragEnd || ((e: any) => {
       onChange({
         ...element,
-        x: e.target.x(),
-        y: e.target.y()
+        x: e.target.x() - element.width / 2,
+        y: e.target.y() - element.height / 2
       });
     }),
     onTransformEnd: handleChange,

@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Undo, Redo, ZoomIn, ZoomOut, Download, Grid, Maximize, Ruler, Magnet, Save } from 'lucide-react';
+import { Undo, Redo, ZoomIn, ZoomOut, Grid, Maximize, Ruler, Magnet, Save, AlignHorizontalJustifyCenter } from 'lucide-react';
 import { useEditorStore } from '@/store/useEditorStore';
 interface TopToolbarProps {
   onPreview?: () => void;
@@ -12,7 +12,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
   const {
     toggleGrid, canvasSettings, setZoom,
     undo, redo, canUndo, canRedo,
-    toggleRulers, toggleSnapToObjects,
+    toggleRulers, toggleSnapToObjects, toggleSnapToGrid,
     saveStatus, lastSavedAt,
   } = useEditorStore();
 
@@ -37,11 +37,11 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
   const [showZoomMenu, setShowZoomMenu] = useState(false);
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 bg-[#FFFFFF] border-b border-[#e8e2d9] shadow-sm z-20 shrink-0">
-      <div className="flex items-center gap-4">
-        <a href="/" className="font-serif text-xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity">Offline Living</a>
-        <div className="h-4 w-[1px] bg-[#e8e2d9]" />
-        <span className="text-sm font-medium text-[#6b6560]">Untitled Project</span>
+    <header className="h-14 flex items-center justify-between px-2 lg:px-4 bg-[#FFFFFF] border-b border-[#e8e2d9] shadow-sm z-20 shrink-0 gap-1 w-full overflow-hidden">
+      <div className="flex items-center gap-2 lg:gap-4 shrink-0">
+        <a href="/" className="font-serif text-lg lg:text-xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity truncate">Offline Living</a>
+        <div className="h-4 w-[1px] bg-[#e8e2d9] hidden lg:block" />
+        <span className="text-sm font-medium text-[#6b6560] hidden lg:inline-block truncate">Untitled Project</span>
         {saveStatus === 'saving' && (
           <span className="text-[10px] text-[#a09890] animate-pulse">Saving...</span>
         )}
@@ -53,7 +53,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         )}
       </div>
 
-      <div className="flex items-center gap-4 border border-[#e8e2d9] rounded-md px-2 bg-[#FAF6EE]">
+      <div className="hidden lg:flex items-center gap-4 border border-[#e8e2d9] rounded-md px-2 bg-[#FAF6EE] shrink-0">
         <span className="text-[10px] font-semibold text-[#a09890] uppercase tracking-wider">Size:</span>
         <select
           className="text-xs text-[#1a1a18] bg-transparent outline-none cursor-pointer py-1.5 focus:ring-0"
@@ -76,7 +76,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         </select>
       </div>
 
-      <div className="flex items-center gap-1 bg-[#FAF6EE] p-1 rounded-lg border border-[#e8e2d9]">
+      <div className="hidden md:flex items-center gap-1 bg-[#FAF6EE] p-1 rounded-lg border border-[#e8e2d9]">
         <Button
           variant="ghost" size="icon"
           className={`h-8 w-8 ${canUndo() ? 'text-[#6b6560] hover:text-[#E85D26]' : 'text-[#d4cfc9] cursor-not-allowed'}`}
@@ -150,27 +150,36 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         <div className="h-4 w-[1px] bg-[#e8e2d9] mx-1" />
 
         <Button
-          variant={canvasSettings.showRulers ? "secondary" : "ghost"}
+          variant="ghost"
           size="icon"
-          className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
+          className={`h-8 w-8 transition-colors ${canvasSettings.showRulers ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
           onClick={toggleRulers}
           title="Toggle Rulers"
         >
           <Ruler size={16} />
         </Button>
         <Button
-          variant={canvasSettings.showGrid ? "secondary" : "ghost"}
+          variant="ghost"
           size="icon"
-          className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
+          className={`h-8 w-8 transition-colors ${canvasSettings.showGrid ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
           onClick={toggleGrid}
           title="Toggle Grid"
         >
           <Grid size={16} />
         </Button>
         <Button
-          variant={canvasSettings.snapToObjects ? "secondary" : "ghost"}
+          variant="ghost"
           size="icon"
-          className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
+          className={`h-8 w-8 transition-colors ${canvasSettings.snapToGrid ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
+          onClick={toggleSnapToGrid}
+          title="Snap to Grid"
+        >
+          <AlignHorizontalJustifyCenter size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`h-8 w-8 transition-colors ${canvasSettings.snapToObjects ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
           onClick={toggleSnapToObjects}
           title="Toggle Snap to Objects"
         >
@@ -178,8 +187,8 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         </Button>
       </div>
 
-      <div className="flex items-center gap-3">
-        <Button onClick={onPreview} variant="outline" className="h-9 text-xs font-semibold tracking-wider uppercase border-[#e8e2d9] hover:border-[#E85D26] hover:text-[#E85D26]">Preview</Button>
+      <div className="flex items-center gap-2 shrink-0 ml-auto">
+        <Button onClick={onPreview} variant="outline" className="h-8 lg:h-9 px-2 lg:px-4 text-[10px] lg:text-xs font-semibold tracking-wider uppercase border-[#e8e2d9] hover:border-[#E85D26] hover:text-[#E85D26]">Preview</Button>
         <Button
           onClick={async () => {
             try {
@@ -214,9 +223,11 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
               alert('Failed to save to cart: ' + e.message);
             }
           }}
-          className="h-9 text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white"
+          className="h-8 lg:h-9 px-2 lg:px-4 text-[10px] lg:text-xs font-semibold tracking-wider uppercase bg-[#E85D26] hover:bg-[#D4520A] text-white"
         >
-          <Save size={14} className="mr-2" /> Save & Continue
+          <Save size={14} className="mr-1 lg:mr-2 shrink-0" /> 
+          <span className="hidden sm:inline">Save & Continue</span>
+          <span className="sm:hidden">Save</span>
         </Button>
       </div>
     </header>

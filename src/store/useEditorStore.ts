@@ -110,6 +110,7 @@ interface EditorState {
   deletePage: (id: string) => void;
   reorderPages: (fromIndex: number, toIndex: number) => void;
   updatePageBackground: (pageId: string, bg: Page['background']) => void;
+  applyLayout: (pageId: string, elements: Omit<EditorElement, 'id'>[]) => void;
 
   // Canvas
   setZoom: (zoom: number) => void;
@@ -196,7 +197,7 @@ export const useEditorStore = create<EditorState>()(
             locked: false,
             text: 'World-Class Photo Book Editor',
             fontSize: 24,
-            fontFamily: 'var(--font-sans)',
+            fontFamily: "'DM Sans', sans-serif",
             fill: '#E85D26'
           },
           {
@@ -227,7 +228,7 @@ export const useEditorStore = create<EditorState>()(
         showSafeArea: true,
         showBleed: true,
         showRulers: true,
-        snapToGrid: false,
+        snapToGrid: true,
         snapToObjects: true,
         gridSize: 20,
         width: 600,
@@ -404,6 +405,18 @@ export const useEditorStore = create<EditorState>()(
           const [moved] = newPages.splice(fromIndex, 1);
           newPages.splice(toIndex, 0, moved);
           return { pages: newPages };
+        }),
+
+      applyLayout: (pageId, elements) =>
+        set((state) => {
+          get()._pushHistory('Apply layout');
+          const newElements: EditorElement[] = elements.map(el => ({ ...el, id: generateId() } as EditorElement));
+          return {
+            pages: state.pages.map(p =>
+              p.id === pageId ? { ...p, elements: newElements } : p
+            ),
+            selectedElementIds: []
+          };
         }),
 
       // ============ CANVAS ============

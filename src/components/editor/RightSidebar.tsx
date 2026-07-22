@@ -91,8 +91,9 @@ function PageBackgroundPanel() {
           value={[bg?.opacity ?? 1]}
           min={0} max={1} step={0.05}
           onValueChange={(val: any) => {
+            const opacityVal = Array.isArray(val) ? val[0] : val;
             if (currentPageId) {
-              updatePageBackground(currentPageId, { type: 'solid', value: bg?.value || '#FFFFFF', opacity: val[0] });
+              updatePageBackground(currentPageId, { type: 'solid', value: bg?.value || '#FFFFFF', opacity: opacityVal });
             }
           }}
           className="[&_[role=slider]]:border-[#E85D26] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#E85D26]"
@@ -166,7 +167,7 @@ function PropertiesPanel() {
               <label className="text-[10px] text-[#a09890] uppercase">{label}</label>
               <input
                 type="number"
-                value={Math.round(selectedElement[key])}
+                value={Math.round(selectedElement[key] || 0)}
                 onChange={(e) => handleUpdate(key, Number(e.target.value))}
                 className="w-full h-7 px-2 text-xs border border-[#e8e2d9] rounded-md focus:border-[#E85D26] focus:outline-none bg-[#faf8f5]"
               />
@@ -186,7 +187,7 @@ function PropertiesPanel() {
         <Slider
           value={[selectedElement.rotation || 0]}
           min={-180} max={180} step={1}
-          onValueChange={(val: any) => handleUpdate('rotation', val[0])}
+          onValueChange={(val: any) => handleUpdate('rotation', Array.isArray(val) ? val[0] : val)}
           className="[&_[role=slider]]:border-[#E85D26] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#E85D26]"
         />
       </div>
@@ -202,7 +203,7 @@ function PropertiesPanel() {
         <Slider
           value={[selectedElement.opacity ?? 1]}
           min={0} max={1} step={0.05}
-          onValueChange={(val: any) => handleUpdate('opacity', val[0])}
+          onValueChange={(val: any) => handleUpdate('opacity', Array.isArray(val) ? val[0] : val)}
           className="[&_[role=slider]]:border-[#E85D26] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#E85D26]"
         />
       </div>
@@ -215,17 +216,67 @@ function PropertiesPanel() {
             <h4 className="text-[10px] font-semibold text-[#a09890] uppercase tracking-widest">Typography</h4>
             <div className="space-y-2">
               <select
-                value={selectedElement.fontFamily || 'var(--font-sans)'}
+                value={selectedElement.fontFamily || "'DM Sans', sans-serif"}
                 onChange={(e) => handleUpdate('fontFamily', e.target.value)}
                 className="w-full h-7 px-2 text-xs border border-[#e8e2d9] rounded-md focus:border-[#E85D26] focus:outline-none bg-[#faf8f5]"
+                style={{ fontFamily: selectedElement.fontFamily || "'DM Sans', sans-serif" }}
               >
-                <option value="var(--font-sans)">Sans Serif</option>
-                <option value="var(--font-serif)">Serif</option>
-                <option value="Arial">Arial</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-                <option value="Verdana">Verdana</option>
+                <option value="'DM Sans', sans-serif" style={{ fontFamily: "'DM Sans', sans-serif" }}>DM Sans</option>
+                <option value="'DM Serif Display', serif" style={{ fontFamily: "'DM Serif Display', serif" }}>DM Serif Display</option>
+                <option value="'Instrument Serif', serif" style={{ fontFamily: "'Instrument Serif', serif" }}>Instrument Serif</option>
+                <option value="'Caveat', cursive" style={{ fontFamily: "'Caveat', cursive" }}>Caveat</option>
+                <option value="'Playfair Display', serif" style={{ fontFamily: "'Playfair Display', serif" }}>Playfair Display</option>
+                <option value="'Outfit', sans-serif" style={{ fontFamily: "'Outfit', sans-serif" }}>Outfit</option>
+                <option value="'Inter', sans-serif" style={{ fontFamily: "'Inter', sans-serif" }}>Inter</option>
+                <option value="'Roboto', sans-serif" style={{ fontFamily: "'Roboto', sans-serif" }}>Roboto</option>
+                <option value="'Montserrat', sans-serif" style={{ fontFamily: "'Montserrat', sans-serif" }}>Montserrat</option>
+                <option value="'Lora', serif" style={{ fontFamily: "'Lora', serif" }}>Lora</option>
+                <option value="'Merriweather', serif" style={{ fontFamily: "'Merriweather', serif" }}>Merriweather</option>
+                <option value="'Oswald', sans-serif" style={{ fontFamily: "'Oswald', sans-serif" }}>Oswald</option>
+                <option value="'Raleway', sans-serif" style={{ fontFamily: "'Raleway', sans-serif" }}>Raleway</option>
+                <option value="'Nunito', sans-serif" style={{ fontFamily: "'Nunito', sans-serif" }}>Nunito</option>
+                <option value="'Poppins', sans-serif" style={{ fontFamily: "'Poppins', sans-serif" }}>Poppins</option>
+                <option value="'Dancing Script', cursive" style={{ fontFamily: "'Dancing Script', cursive" }}>Dancing Script</option>
+                <option value="'Pacifico', cursive" style={{ fontFamily: "'Pacifico', cursive" }}>Pacifico</option>
+                <option value="'Josefin Sans', sans-serif" style={{ fontFamily: "'Josefin Sans', sans-serif" }}>Josefin Sans</option>
+                <option value="'Abril Fatface', serif" style={{ fontFamily: "'Abril Fatface', serif" }}>Abril Fatface</option>
+                <option value="'Aleo', serif" style={{ fontFamily: "'Aleo', serif" }}>Aleo</option>
+                <option value="'Amatic SC', cursive" style={{ fontFamily: "'Amatic SC', cursive" }}>Amatic SC</option>
+                <option value="'Anton', sans-serif" style={{ fontFamily: "'Anton', sans-serif" }}>Anton</option>
+                <option value="'Arvo', serif" style={{ fontFamily: "'Arvo', serif" }}>Arvo</option>
+                <option value="'Bangers', cursive" style={{ fontFamily: "'Bangers', cursive" }}>Bangers</option>
+                <option value="'Bebas Neue', sans-serif" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Bebas Neue</option>
+                <option value="'Bitter', serif" style={{ fontFamily: "'Bitter', serif" }}>Bitter</option>
+                <option value="'Cabin', sans-serif" style={{ fontFamily: "'Cabin', sans-serif" }}>Cabin</option>
+                <option value="'Cinzel', serif" style={{ fontFamily: "'Cinzel', serif" }}>Cinzel</option>
+                <option value="'Cookie', cursive" style={{ fontFamily: "'Cookie', cursive" }}>Cookie</option>
+                <option value="'Cormorant Garamond', serif" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Cormorant Garamond</option>
+                <option value="'Courgette', cursive" style={{ fontFamily: "'Courgette', cursive" }}>Courgette</option>
+                <option value="'Crimson Text', serif" style={{ fontFamily: "'Crimson Text', serif" }}>Crimson Text</option>
+                <option value="'Dosis', sans-serif" style={{ fontFamily: "'Dosis', sans-serif" }}>Dosis</option>
+                <option value="'EB Garamond', serif" style={{ fontFamily: "'EB Garamond', serif" }}>EB Garamond</option>
+                <option value="'Fira Sans', sans-serif" style={{ fontFamily: "'Fira Sans', sans-serif" }}>Fira Sans</option>
+                <option value="'Great Vibes', cursive" style={{ fontFamily: "'Great Vibes', cursive" }}>Great Vibes</option>
+                <option value="'Heebo', sans-serif" style={{ fontFamily: "'Heebo', sans-serif" }}>Heebo</option>
+                <option value="'Indie Flower', cursive" style={{ fontFamily: "'Indie Flower', cursive" }}>Indie Flower</option>
+                <option value="'Karla', sans-serif" style={{ fontFamily: "'Karla', sans-serif" }}>Karla</option>
+                <option value="'Kaushan Script', cursive" style={{ fontFamily: "'Kaushan Script', cursive" }}>Kaushan Script</option>
+                <option value="'Lato', sans-serif" style={{ fontFamily: "'Lato', sans-serif" }}>Lato</option>
+                <option value="'Libre Baskerville', serif" style={{ fontFamily: "'Libre Baskerville', serif" }}>Libre Baskerville</option>
+                <option value="'Lobster', cursive" style={{ fontFamily: "'Lobster', cursive" }}>Lobster</option>
+                <option value="'Open Sans', sans-serif" style={{ fontFamily: "'Open Sans', sans-serif" }}>Open Sans</option>
+                <option value="'Permanent Marker', cursive" style={{ fontFamily: "'Permanent Marker', cursive" }}>Permanent Marker</option>
+                <option value="'PT Serif', serif" style={{ fontFamily: "'PT Serif', serif" }}>PT Serif</option>
+                <option value="'Quicksand', sans-serif" style={{ fontFamily: "'Quicksand', sans-serif" }}>Quicksand</option>
+                <option value="'Righteous', cursive" style={{ fontFamily: "'Righteous', cursive" }}>Righteous</option>
+                <option value="'Rokkitt', serif" style={{ fontFamily: "'Rokkitt', serif" }}>Rokkitt</option>
+                <option value="'Rubik', sans-serif" style={{ fontFamily: "'Rubik', sans-serif" }}>Rubik</option>
+                <option value="'Sacramento', cursive" style={{ fontFamily: "'Sacramento', cursive" }}>Sacramento</option>
+                <option value="'Satisfy', cursive" style={{ fontFamily: "'Satisfy', cursive" }}>Satisfy</option>
+                <option value="'Shadows Into Light', cursive" style={{ fontFamily: "'Shadows Into Light', cursive" }}>Shadows Into Light</option>
+                <option value="'Tinos', serif" style={{ fontFamily: "'Tinos', serif" }}>Tinos</option>
+                <option value="'Work Sans', sans-serif" style={{ fontFamily: "'Work Sans', sans-serif" }}>Work Sans</option>
+                <option value="'Zilla Slab', serif" style={{ fontFamily: "'Zilla Slab', serif" }}>Zilla Slab</option>
               </select>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
@@ -241,9 +292,28 @@ function PropertiesPanel() {
                   <label className="text-[10px] text-[#a09890]">Line Height</label>
                   <input
                     type="number"
-                    step="0.1"
                     value={selectedElement.lineHeight || 1.2}
+                    step={0.1}
                     onChange={(e) => handleUpdate('lineHeight', Number(e.target.value))}
+                    className="w-full h-7 px-2 text-xs border border-[#e8e2d9] rounded-md focus:border-[#E85D26] focus:outline-none bg-[#faf8f5]"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-[#a09890]">Color</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="color"
+                    value={selectedElement.fill || '#1a1a18'}
+                    onChange={(e) => handleUpdate('fill', e.target.value)}
+                    className="w-7 h-7 rounded border border-[#e8e2d9] cursor-pointer"
+                    style={{ padding: 0 }}
+                  />
+                  <input
+                    type="text"
+                    value={selectedElement.fill || '#1a1a18'}
+                    onChange={(e) => handleUpdate('fill', e.target.value)}
                     className="w-full h-7 px-2 text-xs border border-[#e8e2d9] rounded-md focus:border-[#E85D26] focus:outline-none bg-[#faf8f5]"
                   />
                 </div>
@@ -516,10 +586,10 @@ export default function RightSidebar() {
         </button>
       </div>
 
-      <ScrollArea className="flex-1 w-full">
+      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden" data-lenis-prevent="true">
         {activeTab === 'properties' && <PropertiesPanel />}
         {activeTab === 'layers' && <LayersPanel />}
-      </ScrollArea>
+      </div>
     </div>
   );
 }

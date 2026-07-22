@@ -1,32 +1,7 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Serif_Display, Caveat, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from "next/script";
-
-const dmSans = DM_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const dmSerif = DM_Serif_Display({
-  variable: "--font-serif",
-  weight: ["400"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-});
-
-const caveat = Caveat({
-  variable: "--font-hand",
-  subsets: ["latin"],
-});
-
-const instrument = Instrument_Serif({
-  variable: "--font-instrument",
-  weight: ["400"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "🦋 Offline Living — Your Story. Beautifully Told.",
@@ -44,11 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
+    <html lang="en" className="antialiased" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&family=Dancing+Script:wght@400..700&family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,wght@0,300..900;1,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&family=Outfit:wght@100..900&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Aleo:wght@400;700&family=Amatic+SC:wght@400;700&family=Anton&family=Arvo:wght@400;700&family=Bangers&family=Bebas+Neue&family=Bitter:wght@400;700&family=Cabin:wght@400;700&family=Cinzel:wght@400;700&family=Cookie&family=Cormorant+Garamond:wght@400;700&family=Courgette&family=Crimson+Text:wght@400;700&family=Dosis:wght@400;700&family=EB+Garamond:wght@400;700&family=Fira+Sans:wght@400;700&family=Great+Vibes&family=Heebo:wght@400;700&family=Indie+Flower&family=Karla:wght@400;700&family=Kaushan+Script&family=Lato:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Lobster&family=Open+Sans:wght@400;700&family=Permanent+Marker&family=PT+Serif:wght@400;700&family=Quicksand:wght@400;700&family=Righteous&family=Rokkitt:wght@400;700&family=Rubik:wght@400;700&family=Sacramento&family=Satisfy&family=Shadows+Into+Light&family=Tinos:wght@400;700&family=Work+Sans:wght@400;700&family=Zilla+Slab:wght@400;700&display=swap" rel="stylesheet" />
+      </head>
+      <body className="flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
         <TooltipProvider>
           {children}
         </TooltipProvider>

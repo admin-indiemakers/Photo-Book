@@ -38,26 +38,11 @@ export default function CanvasWorkspace() {
   const [selectedNodes, setSelectedNodes] = useState<any[]>([]);
   const stageRef = useRef<any>(null);
   const spreadGroupRef = useRef<any>(null);
+  const leftPageRef = useRef<any>(null);
+  const rightPageRef = useRef<any>(null);
   const [selectionRect, setSelectionRect] = useState({ x1: 0, y1: 0, x2: 0, y2: 0, visible: false });
 
-  // Native Konva animation for smooth spread transitions
-  useEffect(() => {
-    if (spreadGroupRef.current) {
-      const node = spreadGroupRef.current;
-      node.opacity(0);
-      node.x(flipDirection === 1 ? 40 : -40);
-
-      node.to({
-        x: 0,
-        opacity: 1,
-        duration: 0.4,
-        easing: (t: number, b: number, c: number, d: number) => {
-          // easeOutQuart
-          return -c * ((t = t / d - 1) * t * t * t - 1) + b;
-        }
-      });
-    }
-  }, [currentSpreadIndex, flipDirection]);
+  // Page turning animation removed
 
   useEffect(() => {
     setMounted(true);
@@ -86,6 +71,17 @@ export default function CanvasWorkspace() {
       clearTimeout(timer);
     };
   }, [mounted, isHydrated]);
+
+  useEffect(() => {
+    if (dimensions.width > 0) {
+      const activeWidth = isCover ? PAGE_WIDTH : SPREAD_WIDTH;
+      // On small screens, auto-scale so the spread fits within 90% of the screen width
+      if (activeWidth * canvasSettings.zoom > dimensions.width * 0.9) {
+        setZoom((dimensions.width * 0.9) / activeWidth);
+      }
+    }
+    // Note: intentionally not depending on canvasSettings.zoom so user can manually zoom after initial fit
+  }, [dimensions.width, isCover, setZoom]);
 
   useEffect(() => {
     if (stageRef.current) {
@@ -203,46 +199,63 @@ export default function CanvasWorkspace() {
   };
 
   const handleDragMove = (e: any, element: any) => {
-    if (!canvasSettings.snapToObjects) return;
     const node = e.target;
-    const { vertical, horizontal } = getSnapLines(element.id);
-    const guides: typeof snapGuides = [];
+    let newX = node.x();
+    let newY = node.y();
 
-    const nodeX = node.x();
-    const nodeY = node.y();
     const nodeW = node.width() * node.scaleX();
     const nodeH = node.height() * node.scaleY();
-    const nodeEdgesX = [nodeX, nodeX + nodeW / 2, nodeX + nodeW];
-    const nodeEdgesY = [nodeY, nodeY + nodeH / 2, nodeY + nodeH];
+    let nodeX = newX - nodeW / 2;
+    let nodeY = newY - nodeH / 2;
+    const guides: typeof snapGuides = [];
 
-    for (const vLine of vertical) {
-      for (const edge of nodeEdgesX) {
-        if (Math.abs(edge - vLine) < SNAP_THRESHOLD) {
-          node.x(nodeX + (vLine - edge));
-          guides.push({ type: 'vertical', position: vLine });
-          break;
+    // Snap to grid
+    if (canvasSettings.snapToGrid && canvasSettings.gridSize > 0) {
+      const gs = canvasSettings.gridSize;
+      const snappedLeft = Math.round(nodeX / gs) * gs;
+      const snappedTop = Math.round(nodeY / gs) * gs;
+      nodeX = snappedLeft;
+      nodeY = snappedTop;
+      newX = nodeX + nodeW / 2;
+      newY = nodeY + nodeH / 2;
+    }
+
+    // Snap to objects (overrides grid if close enough)
+    if (canvasSettings.snapToObjects) {
+      const { vertical, horizontal } = getSnapLines(element.id);
+      const nodeEdgesX = [nodeX, nodeX + nodeW / 2, nodeX + nodeW];
+      const nodeEdgesY = [nodeY, nodeY + nodeH / 2, nodeY + nodeH];
+
+      for (const vLine of vertical) {
+        for (const edge of nodeEdgesX) {
+          if (Math.abs(edge - vLine) < SNAP_THRESHOLD) {
+            newX = (nodeX + (vLine - edge)) + nodeW / 2;
+            guides.push({ type: 'vertical', position: vLine });
+            break;
+          }
+        }
+      }
+      for (const hLine of horizontal) {
+        for (const edge of nodeEdgesY) {
+          if (Math.abs(edge - hLine) < SNAP_THRESHOLD) {
+            newY = (nodeY + (hLine - edge)) + nodeH / 2;
+            guides.push({ type: 'horizontal', position: hLine });
+            break;
+          }
         }
       }
     }
-    for (const hLine of horizontal) {
-      for (const edge of nodeEdgesY) {
-        if (Math.abs(edge - hLine) < SNAP_THRESHOLD) {
-          node.y(nodeY + (hLine - edge));
-          guides.push({ type: 'horizontal', position: hLine });
-          break;
-        }
-      }
-    }
+
+    node.x(newX);
+    node.y(newY);
     setSnapGuides(guides);
   };
 
   const handleDragEnd = (e: any, element: any, isRightPage: boolean) => {
     clearSnapGuides();
-    const newX = e.target.x();
-    // Re-normalize X if it was dropped on the other side? For now keep it within its original page.
     updateElement(isRightPage ? rightPage!.id : leftPage!.id, element.id, {
-      x: newX,
-      y: e.target.y(),
+      x: e.target.x() - element.width / 2,
+      y: e.target.y() - (element.height || 0) / 2,
     });
   };
 
@@ -284,12 +297,36 @@ export default function CanvasWorkspace() {
               targetPageId = rightPage.id;
             }
           }
-          useEditorStore.getState().addElement({
-            type: 'image',
-            src: event.target.result as string,
-            x, y, width: 200, height: 150,
-            rotation: 0, opacity: 1, locked: false,
-          }, targetPageId);
+          const store = useEditorStore.getState();
+          const targetPage = store.pages.find(p => p.id === targetPageId);
+          
+          let replacedPlaceholder = false;
+          if (targetPage) {
+            // Check from top to bottom (reverse order) for an intersecting placeholder
+            const placeholder = [...targetPage.elements].reverse().find(el => {
+              if (el.type === 'image' && el.isPlaceholder) {
+                return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height;
+              }
+              return false;
+            });
+
+            if (placeholder) {
+              store.updateElement(targetPageId!, placeholder.id, { 
+                src: event.target.result as string, 
+                isPlaceholder: false 
+              });
+              replacedPlaceholder = true;
+            }
+          }
+
+          if (!replacedPlaceholder) {
+            store.addElement({
+              type: 'image',
+              src: event.target.result as string,
+              x, y, width: 200, height: 150,
+              rotation: 0, opacity: 1, locked: false,
+            }, targetPageId);
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -460,6 +497,11 @@ export default function CanvasWorkspace() {
                           width={PAGE_WIDTH} height={PAGE_HEIGHT}
                           fill={page.background?.value || 'white'}
                           opacity={page.background?.opacity ?? 1}
+                          onMouseDown={(e) => {
+                            useEditorStore.getState().setCurrentPage(page.id);
+                          }}
+                          stroke={currentPageId === page.id ? '#E85D26' : undefined}
+                          strokeWidth={currentPageId === page.id ? 3 : 0}
                         />
 
                         {/* Elements */}
@@ -470,6 +512,11 @@ export default function CanvasWorkspace() {
                             element: el,
                             isSelected,
                             onSelect: (e: any) => {
+                              // Ensure the page containing the element is set as the active page
+                              if (currentPageId !== page.id) {
+                                useEditorStore.getState().setCurrentPage(page.id);
+                              }
+                              
                               if (e.evt && e.evt.button === 2) {
                                 if (!isSelected) setSelectedElements([el.id]);
                                 return;
@@ -484,9 +531,11 @@ export default function CanvasWorkspace() {
                                 setSelectedElements([el.id]);
                               }
                             },
-                            onChange: (newAttrs: any) => updateElement(page.id, el.id, newAttrs),
+                            onChange: (newAttrs: any) => {
+                              updateElement(page.id, el.id, newAttrs);
+                            },
                             onDragMove: (e: any) => handleDragMove(e, el),
-                            onDragEnd: (e: any) => handleDragEnd(e, el, isRight),
+                            onDragEnd: (e: any) => handleDragEnd(e, el, isRight)
                           };
 
                           if (el.type === 'text') return <TextElement key={el.id} {...props} />;

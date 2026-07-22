@@ -25,10 +25,10 @@ export function MagneticButton({ children, className = "", variant = "dark" }: {
     setPosition({ x: 0, y: 0 });
   };
 
-  const baseClass = "relative group overflow-hidden rounded-full px-8 py-4 flex items-center justify-center text-sm font-medium transition-colors duration-300";
+  const baseClass = "relative group overflow-hidden rounded-full px-8 py-4 flex items-center justify-center text-sm font-medium transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]";
   const variants = {
-    dark: "bg-[#1a1a1a] text-white hover:bg-black",
-    light: "bg-white text-black hover:bg-gray-100"
+    dark: "bg-[#111111] text-white hover:bg-black",
+    light: "bg-white text-[#111111] hover:bg-[#fafafa] border border-[#eaeaea]"
   };
 
   return (
@@ -39,6 +39,7 @@ export function MagneticButton({ children, className = "", variant = "dark" }: {
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       className={`${baseClass} ${variants[variant]} ${className}`}
+      suppressHydrationWarning
     >
       <span className="relative z-10 flex items-center gap-2">
         {children}
@@ -94,63 +95,99 @@ export const productsData = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] text-white pt-20 pb-10 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-        <div className="col-span-1 md:col-span-1">
-          <Link href="/" className="font-serif text-3xl tracking-wide block mb-6">Offline Living</Link>
-          <p className="text-gray-400 font-light text-sm mb-8 leading-relaxed max-w-[250px]">
-            Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
-          </p>
-          <div className="flex gap-4 opacity-70">
-            {/* Social Icons Placeholders */}
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">IG</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">P</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">YT</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">M</div>
+    <footer className="relative bg-[#0a0a0a] text-white pt-24 pb-8 px-6 font-sans overflow-hidden">
+      {/* Matte Noise Texture Overlay */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}
+      />
+
+      <div className="max-w-[1400px] mx-auto relative z-10">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8 mb-20">
+          
+          {/* Left Column: Brand & Vision */}
+          <div className="lg:w-2/5">
+            <Link href="/" className="font-serif italic font-light text-5xl block mb-6 text-white/90">
+              Offline Living.
+            </Link>
+            <p className="text-white/40 font-light text-sm leading-relaxed max-w-sm mb-10">
+              We believe in the power of the tangible. In a world of fleeting pixels, we craft heirlooms meant to be held, passed down, and cherished for generations.
+            </p>
+            <div className="flex gap-6">
+              {["Instagram", "Pinterest", "Twitter"].map((social) => (
+                <Link key={social} href="#" className="relative overflow-hidden group text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">
+                  <span className="block group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{social}</span>
+                  <span className="block absolute top-full left-0 group-hover:-translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">{social}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column: Links & Newsletter */}
+          <div className="lg:w-1/2 flex flex-col md:flex-row justify-between gap-12 lg:gap-16">
+            
+            <div className="md:w-1/3">
+              <h4 className="font-medium mb-6 uppercase tracking-[0.3em] text-[9px] text-white/30">Collections</h4>
+              <ul className="space-y-4 font-light text-white/60 text-[13px]">
+                {["Signature Books", "Gallery Frames", "Keepsakes", "Gift Cards"].map((link) => (
+                  <li key={link}>
+                    <Link href="#" className="hover:text-white transition-colors relative group flex items-center">
+                      <span className="w-0 h-[1px] bg-white mr-0 group-hover:w-4 group-hover:mr-4 transition-all duration-500 ease-out"></span>
+                      {link}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="md:w-2/3 max-w-xs">
+              <h4 className="font-medium mb-6 uppercase tracking-[0.3em] text-[9px] text-white/30">Join The List</h4>
+              <p className="text-white/40 font-light text-[13px] leading-relaxed mb-8">
+                Exclusive releases, editorial insights, and a gentle reminder to print your photos.
+              </p>
+              <div className="relative group border-b border-white/20 pb-3">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  className="w-full focus:outline-none bg-transparent text-white transition-colors text-sm placeholder:text-white/20"
+                  suppressHydrationWarning
+                />
+                <button className="absolute right-0 top-1 text-white/20 group-hover:text-white transition-colors" suppressHydrationWarning>
+                  <ArrowRight className="w-4 h-4 -rotate-45 group-hover:rotate-0 transition-transform duration-500 ease-out" />
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Explore</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
-            <li><Link href="#" className="hover:text-white transition-colors">Photobooks</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Wall Art</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Keepsakes</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Gift Cards</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Company</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
-            <li><Link href="#" className="hover:text-white transition-colors">About Us</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Our Craftsmanship</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Journal</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Contact</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Stay Inspired</h4>
-          <p className="text-gray-400 font-light mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
-          <div className="relative group mt-6">
-            <input
-              type="email"
-              placeholder="Email address"
-              className="w-full border-b border-gray-600 pb-2 pr-10 focus:outline-none focus:border-white bg-transparent text-white transition-colors text-sm"
-            />
-            <button className="absolute right-0 top-0 text-gray-400 group-hover:text-white transition-colors">
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 font-light pt-8 border-t border-gray-800">
-        <p>&copy; {new Date().getFullYear()} Offline Living. All rights reserved.</p>
-        <div className="flex gap-6 mt-4 md:mt-0">
-          <Link href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
+        {/* Massive Typography Backdrop with overlay */}
+        <div className="w-full overflow-hidden flex flex-col justify-end border-t border-white/10 pt-16 relative min-h-[220px]">
+           <h1 
+             className="text-[14vw] leading-[0.75] font-sans font-light tracking-tighter text-white/[0.04] select-none pointer-events-none mt-auto text-center w-full pb-8"
+             style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent 10%, black 80%)' }}
+           >
+             OFFLINE LIVING
+           </h1>
+           
+           {/* Copyright overlaying the massive text at the very bottom */}
+           <div className="absolute bottom-4 left-0 w-full flex flex-col md:flex-row justify-between items-end md:items-center text-[9px] uppercase tracking-[0.25em] text-white/40 gap-4">
+             <div className="flex items-center gap-4">
+               <span>&copy; {new Date().getFullYear()} OFFLINE LIVING</span>
+               <span className="w-1 h-1 bg-white/20 rounded-full hidden md:block"></span>
+               <span className="hidden md:block">ALL RIGHTS RESERVED</span>
+             </div>
+             <div className="flex gap-8">
+               <Link href="#" className="hover:text-white transition-colors relative group pb-1">
+                 <span className="absolute left-0 right-0 bottom-0 h-[1px] bg-white/0 group-hover:bg-white transition-colors duration-300"></span>
+                 Privacy Policy
+               </Link>
+               <Link href="#" className="hover:text-white transition-colors relative group pb-1">
+                 <span className="absolute left-0 right-0 bottom-0 h-[1px] bg-white/0 group-hover:bg-white transition-colors duration-300"></span>
+                 Terms of Service
+               </Link>
+             </div>
+           </div>
         </div>
       </div>
     </footer>
@@ -189,36 +226,36 @@ export function HeaderNav() {
     };
   }, []);
 
-  const navClass = scrolled ? "bg-white text-black shadow-sm" : "bg-transparent text-white";
+  const navClass = scrolled ? "bg-white/80 backdrop-blur-md border-b border-[#eaeaea] text-[#111111]" : "bg-transparent text-white border-b border-transparent";
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${navClass}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${navClass}`} suppressHydrationWarning>
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
-        <Link href="/" className="font-serif text-[22px] tracking-wide">Offline Living</Link>
+        <Link href="/" className="font-sans font-light tracking-tight text-[22px]">Offline Living</Link>
         <div className="hidden md:flex items-center gap-10 text-[11px] font-medium tracking-widest uppercase">
           <div
             className="relative"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <button className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase tracking-widest">
+            <button className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase tracking-widest" suppressHydrationWarning>
               Collections
             </button>
             <AnimatePresence>
               {isHovered && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 mt-4 w-48 bg-white text-black border border-gray-100 shadow-xl rounded-sm overflow-hidden py-2"
+                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-full left-0 mt-6 w-48 bg-white/95 backdrop-blur-md text-[#111111] border border-[#eaeaea] rounded-none overflow-hidden py-4 shadow-sm"
                 >
-                  <Link href="/templates" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Photo Book</Link>
-                  <Link href="/frame" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Photo Frame</Link>
-                  <Link href="/polaroid" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Polaroid</Link>
-                  <Link href="/fridge-magnet" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Fridge Magnet</Link>
-                  <Link href="/acrylic-frames" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Acrylic Frames</Link>
-                  <Link href="/canvas-frames" className="block px-5 py-2 hover:bg-gray-50 transition-colors">Canvas Frames</Link>
+                  <Link href="/templates" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Book</Link>
+                  <Link href="/frame" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Frame</Link>
+                  <Link href="/polaroid" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Polaroid</Link>
+                  <Link href="/fridge-magnet" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Fridge Magnet</Link>
+                  <Link href="/acrylic-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Acrylic Frames</Link>
+                  <Link href="/canvas-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Canvas Frames</Link>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -235,22 +272,23 @@ export function HeaderNav() {
                 <span className="hover:opacity-70 transition-opacity flex items-center gap-2">
                   Profile
                 </span>
-                <div className="absolute top-[80px] right-0 mt-1 w-48 bg-white text-black border border-gray-100 shadow-xl rounded-sm overflow-hidden py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  <div className="px-5 py-3 font-medium text-[10px] border-b border-gray-100 truncate tracking-normal text-gray-500 normal-case">
+                <div className="absolute top-[80px] right-0 mt-2 w-48 bg-white/95 backdrop-blur-md text-[#111111] border border-[#eaeaea] rounded-none overflow-hidden py-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-2 group-hover:translate-y-0 shadow-sm">
+                  <div className="px-6 py-3 font-light text-[10px] border-b border-[#eaeaea] truncate tracking-normal text-[#888888] normal-case">
                     Logged in as<br/>
-                    <span className="font-semibold text-[11px] text-black block mt-0.5">
+                    <span className="font-medium text-[11px] text-[#111111] block mt-1">
                       {user.user_metadata?.full_name || user.email}
                     </span>
                   </div>
                   <Link 
                     href="/orders"
-                    className="block w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors uppercase tracking-widest font-medium text-black border-b border-gray-100"
+                    className="block w-full text-left px-6 py-3 mt-2 hover:bg-[#fafafa] transition-colors uppercase tracking-[0.15em] text-[10px] text-[#111111]"
                   >
                     My Orders
                   </Link>
                   <button 
                     onClick={() => supabase.auth.signOut()}
-                    className="w-full text-left px-5 py-3 hover:bg-gray-50 transition-colors uppercase tracking-widest font-medium text-[#f26523]"
+                    className="w-full text-left px-6 py-3 hover:bg-[#fafafa] transition-colors uppercase tracking-[0.15em] text-[10px] text-red-500"
+                    suppressHydrationWarning
                   >
                     Sign Out
                   </button>
