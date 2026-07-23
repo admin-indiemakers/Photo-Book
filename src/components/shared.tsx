@@ -159,10 +159,12 @@ export function Footer() {
 }
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
 export function HeaderNav() {
+  const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -191,7 +193,12 @@ export function HeaderNav() {
     };
   }, []);
 
-  const navClass = scrolled ? "bg-white/80 backdrop-blur-md border-b border-[#eaeaea] text-[#111111]" : "bg-transparent text-white border-b border-transparent";
+  const isHomePage = pathname === '/';
+  const navClass = scrolled 
+    ? "bg-white/80 backdrop-blur-md border-b border-[#eaeaea] text-[#111111]" 
+    : isHomePage 
+      ? "bg-transparent text-white border-b border-transparent"
+      : "bg-transparent text-[#111111] border-b border-transparent";
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${navClass}`} suppressHydrationWarning>

@@ -35,11 +35,11 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-theme-ivory pt-24 pb-20">
+    <div className="min-h-screen bg-theme-ivory pt-0 pb-20">
       <div className="container max-w-5xl mx-auto px-4">
         
         <div className="text-center mb-20">
-          <Link href="/" className="text-theme-black/60 hover:text-theme-black mb-8 inline-block">&larr; Back to Home</Link>
+          
           <h1 className="text-5xl font-serif text-theme-black mb-4">How It Works</h1>
           <p className="text-lg text-theme-black/70 max-w-2xl mx-auto">
             From digital camera roll to physical heirloom in four simple steps.

@@ -35,7 +35,7 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-24 pb-24">
+      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-0 pb-24">
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}

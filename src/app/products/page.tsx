@@ -91,17 +91,7 @@ export default function AllProductsPage() {
 
       <section className="pt-2 pb-6 md:pt-0 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
         <div className="max-w-7xl mx-auto relative">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: customEase }}
-            className="absolute left-0 top-0 md:top-4 z-10"
-          >
-            <Link href="/" className="group inline-flex items-center gap-3 px-6 py-2.5 bg-white border border-[#e8e2d9] rounded-full text-[10px] uppercase tracking-[0.2em] font-medium text-[#2c2b29] hover:bg-[#f4f2ee] transition-all duration-300 shadow-sm hover:shadow">
-              <svg className="w-3.5 h-3.5 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-              Back to Home
-            </Link>
-          </motion.div>
+
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }}

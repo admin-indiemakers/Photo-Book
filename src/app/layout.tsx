@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from "next/script";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "🦋 Offline Living — Your Story. Beautifully Told.",
@@ -51,6 +52,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
         <TooltipProvider>
+          <Breadcrumbs />
           {children}
         </TooltipProvider>
 

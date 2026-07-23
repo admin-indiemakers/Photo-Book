@@ -8,11 +8,9 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-theme-ivory pt-24 pb-20">
+    <div className="min-h-screen bg-theme-ivory pt-0 pb-20">
       <div className="container max-w-4xl mx-auto px-4">
-        <div className="mb-12">
-          <Link href="/" className="text-theme-black/60 hover:text-theme-black inline-block">&larr; Back to Home</Link>
-        </div>
+        
         
         <h1 className="text-5xl font-serif text-theme-black mb-8">Our Story</h1>
         
