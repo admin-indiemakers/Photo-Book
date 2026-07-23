@@ -36,7 +36,7 @@ export default function SignupPage() {
       } else {
         // Supabase often returns a unique constraint error if user exists
         const errStr = result.error || '';
-        if (errStr.includes('already registered') || errStr.includes('already exists') || errStr.includes('Bearer token')) {
+        if (errStr.includes('already registered') || errStr.includes('already exists')) {
           setError('An account with this email address already exists. Please sign in.');
         } else {
           setError(errStr || 'Failed to create account');
