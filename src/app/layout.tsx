@@ -5,10 +5,10 @@ import Script from "next/script";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "🦋 Offline Living — Your Story. Beautifully Told.",
+  title: "Offline Living — Your Story. Beautifully Told.",
   description: "Turn your photos into archival-quality, layflat photobooks — beautifully designed, printed to last, delivered to your door.",
   openGraph: {
-    title: "🦋 Offline Living — Your Story. Beautifully Told.",
+    title: "Offline Living — Your Story. Beautifully Told.",
     description: "Turn your photos into archival-quality, layflat photobooks — beautifully designed, printed to last, delivered to your door.",
     type: "website",
   }
