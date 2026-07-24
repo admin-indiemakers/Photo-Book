@@ -8,7 +8,11 @@ import { customEase, MagneticButton, productsData, Footer, HeaderNav } from "@/c
 import { CylindricalGallery } from "@/components/CylindricalGallery";
 import { MagneticImage, SplitTextReveal, InfiniteMarquee } from "@/components/PremiumEffects";
 
+import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
+import photobook1 from "../assets/photobook1.jpg";
+import photobook2 from "../assets/photobook2.png";
+import photobook3 from "../assets/photobook3.png";
 
 function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -184,6 +188,7 @@ function FlagshipProductSection() {
             className="col-span-2 relative w-full aspect-video bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
+              <img src={photobook1.src} alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
               <img src="https://images.unsplash.com/photo-1544627836-822bfe450209?q=80&w=2940&auto=format&fit=crop" alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
             </MagneticImage>
             <div className="absolute top-8 left-8 bg-[#fdc930] text-[#111] px-4 py-2 pointer-events-none shadow-md">
@@ -199,7 +204,7 @@ function FlagshipProductSection() {
             className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src="https://images.unsplash.com/photo-1621600411688-4be93cd68504?q=80&w=2800&auto=format&fit=crop" alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+              <img src={photobook2.src} alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
             </MagneticImage>
           </motion.div>
           
@@ -208,13 +213,11 @@ function FlagshipProductSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.4, ease: customEase }}
-            className="col-span-1 relative w-full aspect-[4/5] bg-white p-10 flex flex-col justify-center items-center border border-[#EAEAEA] shadow-sm text-center"
+            className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
-            <div className="w-12 h-[1px] bg-[#111] mb-6"></div>
-            <h4 className="font-serif text-2xl mb-4 text-[#111]">No Lost Details</h4>
-            <p className="text-xs text-[#888] leading-relaxed">
-              Unlike traditional books, our signature layflat binding ensures your photos span seamlessly across the gutter without any visual interruption.
-            </p>
+            <MagneticImage>
+              <img src={photobook3.src} alt="Layflat Binding Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+            </MagneticImage>
           </motion.div>
         </div>
         
@@ -224,7 +227,44 @@ function FlagshipProductSection() {
 }
 
 function ProductCollections() {
-  const homeProducts = productsData.slice(0, 3);
+  const [homeProducts, setHomeProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true);
+        
+        if (data) {
+          const featured = data.filter((p: any) => p.attributes?.is_featured);
+          featured.sort((a: any, b: any) => (a.attributes?.featured_order || 99) - (b.attributes?.featured_order || 99));
+          const mapped = featured.map((item: any) => ({
+            title: item.name,
+            desc: item.description || "",
+            img: item.images?.[0] || "/images/books.png",
+            badge: item.attributes?.featured_badge || "",
+            href: item.category === 'photo_book' ? '/templates' :
+                  item.category === 'photo_frame' ? '/frame' :
+                  item.category === 'polaroid' ? '/polaroid' :
+                  item.category === 'fridge_magnet' ? '/fridge-magnet' :
+                  item.category === 'acrylic_frame' ? '/acrylic-frames' :
+                  item.category === 'photo_canvas' ? '/canvas-frames' : '/products'
+          }));
+          setHomeProducts(mapped.slice(0, 6));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFeatured();
+  }, []);
+
+  const displayProducts = homeProducts.length > 0 ? homeProducts : (!loading ? [] : productsData.slice(0, 6));
 
   return (
     <section className="pt-32 pb-32 px-6 md:px-12 lg:px-24 bg-white text-[#111] border-t border-[#EAEAEA]">
@@ -250,9 +290,13 @@ function ProductCollections() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {homeProducts.map((item, i) => (
+          {displayProducts.length > 0 ? displayProducts.map((item, i) => (
             <ProductCard key={item.title} item={item} index={i} />
-          ))}
+          )) : (
+            <div className="col-span-3 text-center text-[#888] font-light py-12">
+              No featured collections available at the moment.
+            </div>
+          )}
         </div>
       </div>
     </section>
