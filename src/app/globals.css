@@ -150,3 +150,55 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth iframe {
   pointer-events: none;
 }
+
+/* =========================================
+   CUSTOM CURSOR
+   ========================================= */
+body {
+  cursor: none;
+}
+
+a, button, [data-magnetic], input, textarea, select {
+  cursor: none !important;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10000;
+  transition: opacity 0.3s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(232, 93, 38, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Cursor Hover States */
+.cursor-dot.hover {
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0.5;
+}
+
+.cursor-ring.hover {
+  width: 64px;
+  height: 64px;
+  border-color: rgba(232, 93, 38, 0.8);
+  background-color: rgba(232, 93, 38, 0.05);
+}

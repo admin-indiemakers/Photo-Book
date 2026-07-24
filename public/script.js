@@ -110,7 +110,7 @@ function initCursor() {
 
   // Use event delegation for hover states so it works across Next.js route changes
   document.addEventListener('mouseover', (e) => {
-    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo');
+    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo, .hero-card');
     if (target) {
       dot.classList.add('hover');
       ring.classList.add('hover');
@@ -118,7 +118,7 @@ function initCursor() {
   });
 
   document.addEventListener('mouseout', (e) => {
-    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo');
+    const target = e.target.closest('a, button, [data-magnetic], input, .tpl-card, .community__photo, .hero-card');
     if (target) {
       dot.classList.remove('hover');
       ring.classList.remove('hover');

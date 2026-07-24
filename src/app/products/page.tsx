@@ -86,10 +86,10 @@ export default function AllProductsPage() {
   }, []);
 
   return (
-    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-20">
+    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-40">
       <HeaderNav />
 
-      <section className="pt-2 pb-6 md:pt-0 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
+      <section className="pt-2 pb-6 md:pt-40 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
         <div className="max-w-7xl mx-auto relative">
 
 
@@ -97,7 +97,7 @@ export default function AllProductsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: customEase }}
-            className="mb-4 md:mb-16 pt-16 md:pt-0 text-center"
+            className="mb-4 md:mb-16 pt-16 md:pt-40 text-center"
           >
             <h1 className="font-serif text-4xl md:text-7xl text-black mb-3 md:mb-6">Our Collections</h1>
             <p className="text-gray-500 font-light text-xs md:text-lg max-w-2xl mx-auto">

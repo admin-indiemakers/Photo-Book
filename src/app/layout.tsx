@@ -3,6 +3,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from "next/script";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CustomCursor, CinematicGrain, InitialPreloader } from "@/components/PremiumEffects";
 
 export const metadata: Metadata = {
   title: "🦋 Offline Living — Your Story. Beautifully Told.",
@@ -56,9 +57,10 @@ export default function RootLayout({
           {children}
         </TooltipProvider>
 
-        {/* Global Cursor */}
-        <div className="cursor-dot" id="cursorDot"></div>
-        <div className="cursor-ring" id="cursorRing"></div>
+        {/* Ultra-Premium Cinematic Effects */}
+        <InitialPreloader />
+        <CustomCursor />
+        <CinematicGrain />
 
         {/* Global Scripts */}
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" strategy="beforeInteractive" />

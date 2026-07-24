@@ -31,7 +31,7 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-0 pb-24">
+      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -67,7 +67,7 @@ export default function CartPage() {
   const total = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-0 relative selection:bg-[#E85D26] selection:text-white">
+    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-40 relative selection:bg-[#E85D26] selection:text-white">
       {/* Decorative film grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 

@@ -95,63 +95,66 @@ export const productsData = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] text-white pt-20 pb-10 px-6">
+    <footer className="bg-[#FAFAFA] text-[#111111] pt-24 pb-12 px-6 border-t border-[#EAEAEA]">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
         <div className="col-span-1 md:col-span-1">
-          <Link href="/" className="font-serif text-3xl tracking-wide block mb-6">Offline Living</Link>
-          <p className="text-gray-400 font-light text-sm mb-8 leading-relaxed max-w-[250px]">
+          <Link href="/" className="block mb-8">
+            <img src="/images/logoo.png" alt="Offline Living Logo" className="h-40 md:h-64 object-contain origin-left" />
+          </Link>
+          <p className="text-[#555555] font-light text-sm mb-8 leading-relaxed max-w-[250px]">
             Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
           </p>
           <div className="flex gap-4 opacity-70">
             {/* Social Icons Placeholders */}
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">IG</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">P</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">YT</div>
-            <div className="w-5 h-5 border border-white rounded-sm flex items-center justify-center text-[10px]">M</div>
+            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">IG</div>
+            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">P</div>
+            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">YT</div>
+            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">M</div>
           </div>
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Explore</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
-            <li><Link href="#" className="hover:text-white transition-colors">Photobooks</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Wall Art</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Keepsakes</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Gift Cards</Link></li>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-[#888888]">Explore</h4>
+          <ul className="space-y-3 font-light text-[#555555] text-sm">
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Photobooks</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Wall Art</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Keepsakes</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Gift Cards</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Company</h4>
-          <ul className="space-y-3 font-light text-gray-400 text-sm">
-            <li><Link href="#" className="hover:text-white transition-colors">About Us</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Our Craftsmanship</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Journal</Link></li>
-            <li><Link href="#" className="hover:text-white transition-colors">Contact</Link></li>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-[#888888]">Company</h4>
+          <ul className="space-y-3 font-light text-[#555555] text-sm">
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">About Us</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Our Craftsmanship</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Journal</Link></li>
+            <li><Link href="#" className="hover:text-[#111111] transition-colors">Contact</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-gray-300">Stay Inspired</h4>
-          <p className="text-gray-400 font-light mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
+          <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-[#888888]">Stay Inspired</h4>
+          <p className="text-[#555555] font-light mb-4 text-sm leading-relaxed">Exclusive releases and editorial insights on analog living.</p>
           <div className="relative group mt-6">
             <input
               type="email"
               placeholder="Email address"
-              className="w-full border-b border-gray-600 pb-2 pr-10 focus:outline-none focus:border-white bg-transparent text-white transition-colors text-sm"
+              className="w-full border-b border-[#CCCCCC] pb-2 pr-10 focus:outline-none focus:border-[#111111] bg-transparent text-[#111111] transition-colors text-sm placeholder:text-[#AAAAAA]"
+              suppressHydrationWarning
             />
-            <button className="absolute right-0 top-0 text-gray-400 group-hover:text-white transition-colors">
+            <button suppressHydrationWarning className="absolute right-0 top-0 text-[#888888] group-hover:text-[#111111] transition-colors">
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-gray-500 font-light pt-8 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-[#888888] font-light pt-8 border-t border-[#EAEAEA]">
         <p>&copy; {new Date().getFullYear()} Offline Living. All rights reserved.</p>
         <div className="flex gap-6 mt-4 md:mt-0">
-          <Link href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-gray-300 transition-colors">Terms of Service</Link>
+          <Link href="#" className="hover:text-[#111111] transition-colors">Privacy Policy</Link>
+          <Link href="#" className="hover:text-[#111111] transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
@@ -196,14 +199,14 @@ export function HeaderNav() {
   const isHomePage = pathname === '/';
   const navClass = scrolled 
     ? "bg-white/80 backdrop-blur-md border-b border-[#eaeaea] text-[#111111]" 
-    : isHomePage 
-      ? "bg-transparent text-white border-b border-transparent"
-      : "bg-transparent text-[#111111] border-b border-transparent";
+    : "bg-transparent text-[#111111] border-b border-transparent";
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${navClass}`} suppressHydrationWarning>
-      <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
-        <Link href="/" className="font-sans font-light tracking-tight text-[22px]">Offline Living</Link>
+      <div className="max-w-7xl mx-auto px-6 h-24 md:h-32 flex items-center justify-between">
+        <Link href="/" className="flex items-center">
+          <img src="/images/logoo1.png" alt="Offline Living Logo" className="h-12 md:h-20 object-contain" />
+        </Link>
         <div className="hidden md:flex items-center gap-10 text-[11px] font-medium tracking-widest uppercase">
           <div
             className="relative"

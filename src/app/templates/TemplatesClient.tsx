@@ -26,7 +26,7 @@ export default function TemplatesClient() {
     : templates.filter(t => t.category === activeCat);
 
   return (
-    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-20">
+    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-40">
       <HeaderNav />
 
       <section className="pt-2 pb-8 md:pt-4 md:pb-24 px-4 md:px-6 bg-white min-h-screen">

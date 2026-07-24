@@ -35,7 +35,7 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-0 pb-24">
+      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -61,7 +61,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-20 relative selection:bg-[#E85D26] selection:text-white">
+    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-40 relative selection:bg-[#E85D26] selection:text-white">
       {/* Decorative film grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
@@ -108,7 +108,7 @@ export default function OrdersPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:items-end w-full sm:w-auto pt-3 sm:pt-0 border-t border-[#e8e2d9] sm:border-0">
+                    <div className="flex flex-col sm:items-end w-full sm:w-auto pt-3 sm:pt-40 border-t border-[#e8e2d9] sm:border-0">
                       <p className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.15em] text-[#8c857b] mb-1">Order #</p>
                       <p className="font-mono text-[#1a1a18] text-xs">{order.id.substring(0, 8)}</p>
                     </div>
@@ -125,7 +125,7 @@ export default function OrdersPage() {
                     {order.order_items && (
                       <div className="space-y-6">
                         {order.order_items.map((item: any, idx: number) => (
-                          <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center py-5 border-t border-[#e8e2d9] first:border-t-0 first:pt-0">
+                          <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center py-5 border-t border-[#e8e2d9] first:border-t-0 first:pt-40">
                             <div className="flex gap-4 w-full sm:w-auto">
                               <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#ebe8e3] border border-[#e8e2d9] flex-shrink-0">
                                 {item.customization?.items?.[0]?.url ? (

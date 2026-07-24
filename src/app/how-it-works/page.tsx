@@ -35,7 +35,7 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-theme-ivory pt-0 pb-20">
+    <div className="min-h-screen bg-theme-ivory pt-40 pb-20">
       <div className="container max-w-5xl mx-auto px-4">
         
         <div className="text-center mb-20">

@@ -30,15 +30,17 @@ export function Breadcrumbs() {
     return labelMap[path.toLowerCase()] || path.replace(/-/g, ' ');
   };
 
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
+
   return (
-    <div className="w-full px-6 pt-32 pb-4 md:px-12 max-w-[1400px] mx-auto z-40 relative">
+    <div className={`w-full px-6 md:px-12 max-w-[1400px] mx-auto z-40 ${isAuthPage ? 'absolute top-28 left-0 right-0 mix-blend-difference text-white' : 'absolute top-24 left-0 right-0 pt-4 pb-4'}`}>
       <motion.nav 
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center text-[10px] uppercase tracking-[0.2em] font-medium"
+        className={`flex items-center text-[10px] uppercase tracking-[0.2em] font-medium ${isAuthPage ? 'text-white/80' : ''}`}
       >
-        <Link href="/" className="text-gray-400 hover:text-black transition-colors">
+        <Link href="/" className={isAuthPage ? "text-white hover:text-gray-200 transition-colors" : "text-gray-400 hover:text-black transition-colors"}>
           Home
         </Link>
 
@@ -48,13 +50,13 @@ export function Breadcrumbs() {
 
           return (
             <React.Fragment key={path}>
-              <span className="mx-3 text-gray-300 font-light">/</span>
+              <span className={`mx-3 font-light ${isAuthPage ? 'text-white/50' : 'text-gray-300'}`}>/</span>
               {isLast ? (
-                <span className="text-black">
+                <span className={isAuthPage ? 'text-white' : 'text-black'}>
                   {getBreadcrumbLabel(path)}
                 </span>
               ) : (
-                <Link href={href} className="text-gray-400 hover:text-black transition-colors">
+                <Link href={href} className={isAuthPage ? 'text-white/80 hover:text-white transition-colors' : 'text-gray-400 hover:text-black transition-colors'}>
                   {getBreadcrumbLabel(path)}
                 </Link>
               )}
