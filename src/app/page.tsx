@@ -10,6 +10,9 @@ import { MagneticImage, SplitTextReveal, InfiniteMarquee } from "@/components/Pr
 
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
+import photobook1 from "../assets/photobook1.jpg";
+import photobook2 from "../assets/photobook2.png";
+import photobook3 from "../assets/photobook3.png";
 
 function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -173,7 +176,7 @@ function FlagshipProductSection() {
             className="col-span-2 relative w-full aspect-video bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src="https://images.unsplash.com/photo-1544627836-822bfe450209?q=80&w=2940&auto=format&fit=crop" alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000 pointer-events-none" />
+              <img src={photobook1.src} alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
             </MagneticImage>
             <div className="absolute top-8 left-8 bg-[#E85D26] text-white px-4 py-2 pointer-events-none shadow-md">
               <span className="text-[10px] uppercase tracking-[0.3em] font-medium">Flagship Product</span>
@@ -188,7 +191,7 @@ function FlagshipProductSection() {
             className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src="https://images.unsplash.com/photo-1621600411688-4be93cd68504?q=80&w=2800&auto=format&fit=crop" alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+              <img src={photobook2.src} alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
             </MagneticImage>
           </motion.div>
           
@@ -197,13 +200,11 @@ function FlagshipProductSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.4, ease: customEase }}
-            className="col-span-1 relative w-full aspect-[4/5] bg-white p-10 flex flex-col justify-center items-center border border-[#EAEAEA] shadow-sm text-center"
+            className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
-            <div className="w-12 h-[1px] bg-[#111] mb-6"></div>
-            <h4 className="font-serif text-2xl mb-4 text-[#111]">No Lost Details</h4>
-            <p className="text-xs text-[#888] leading-relaxed">
-              Unlike traditional books, our signature layflat binding ensures your photos span seamlessly across the gutter without any visual interruption.
-            </p>
+            <MagneticImage>
+              <img src={photobook3.src} alt="Layflat Binding Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+            </MagneticImage>
           </motion.div>
         </div>
         
