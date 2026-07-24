@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 export function CustomCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -116,7 +116,7 @@ export function MagneticImage({ children, className = "" }: { children: React.Re
 export function SplitTextReveal({ text, className = "", delay = 0 }: { text: string, className?: string, delay?: number }) {
   const words = text.split(" ");
   
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -124,7 +124,7 @@ export function SplitTextReveal({ text, className = "", delay = 0 }: { text: str
     }),
   };
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       y: 0,
