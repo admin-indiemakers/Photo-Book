@@ -4,14 +4,14 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const baseGalleryItems = [
-  { id: 1, title: "EXHIBIT 01", subtitle: "MONOCHROME", date: "PARIS, FR", img: "https://images.unsplash.com/photo-1516280440502-6c2e8a101b0d?q=80&w=2800&auto=format&fit=crop" },
-  { id: 2, title: "EXHIBIT 02", subtitle: "SILHOUETTES", date: "MILAN, IT", img: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=2800&auto=format&fit=crop" },
-  { id: 3, title: "EXHIBIT 03", subtitle: "ARCHITECTURE", date: "LONDON, UK", img: "https://images.unsplash.com/photo-1508214751196-bfdd4ca4ccaa?q=80&w=2800&auto=format&fit=crop" },
-  { id: 4, title: "EXHIBIT 04", subtitle: "STILL LIFE", date: "TOKYO, JP", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2800&auto=format&fit=crop" },
-  { id: 5, title: "EXHIBIT 05", subtitle: "PORTRAITS", date: "NEW YORK, US", img: "https://images.unsplash.com/photo-1519750783826-e2420f4d687f?q=80&w=2800&auto=format&fit=crop" },
-  { id: 6, title: "EXHIBIT 06", subtitle: "LANDSCAPES", date: "OSLO, NO", img: "https://images.unsplash.com/photo-1520092363717-5785a2ce2b51?q=80&w=2800&auto=format&fit=crop" },
-  { id: 7, title: "EXHIBIT 07", subtitle: "MOTION", date: "BERLIN, DE", img: "https://images.unsplash.com/photo-1493225457224-eda0e6fdba39?q=80&w=2800&auto=format&fit=crop" },
-  { id: 8, title: "EXHIBIT 08", subtitle: "TEXTURES", date: "COPENHAGEN, DK", img: "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2800&auto=format&fit=crop" },
+  { id: 1, title: "CUSTOM TEXT", subtitle: "Summer in Italy", date: "PARIS, FR", img: "https://images.unsplash.com/photo-1516280440502-6c2e8a101b0d?q=80&w=2800&auto=format&fit=crop" },
+  { id: 2, title: "CUSTOM TEXT", subtitle: "Sarah & John", date: "MILAN, IT", img: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=2800&auto=format&fit=crop" },
+  { id: 3, title: "CUSTOM TEXT", subtitle: '"To the moon and back"', date: "LONDON, UK", img: "https://images.unsplash.com/photo-1508214751196-bfdd4ca4ccaa?q=80&w=2800&auto=format&fit=crop" },
+  { id: 4, title: "CUSTOM TEXT", subtitle: "04.12.2025", date: "TOKYO, JP", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2800&auto=format&fit=crop" },
+  { id: 5, title: "CUSTOM TEXT", subtitle: '"Forever yours"', date: "NEW YORK, US", img: "https://images.unsplash.com/photo-1519750783826-e2420f4d687f?q=80&w=2800&auto=format&fit=crop" },
+  { id: 6, title: "CUSTOM TEXT", subtitle: "The Miller Family", date: "OSLO, NO", img: "https://images.unsplash.com/photo-1520092363717-5785a2ce2b51?q=80&w=2800&auto=format&fit=crop" },
+  { id: 7, title: "CUSTOM TEXT", subtitle: "Graduation Day", date: "BERLIN, DE", img: "https://images.unsplash.com/photo-1493225457224-eda0e6fdba39?q=80&w=2800&auto=format&fit=crop" },
+  { id: 8, title: "CUSTOM TEXT", subtitle: '"Wild and free"', date: "COPENHAGEN, DK", img: "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2800&auto=format&fit=crop" },
 ];
 
 // Duplicate to create a 16-sided polygon instead of an 8-sided one (makes the cylinder huge and smooth!)
@@ -89,7 +89,7 @@ export function CylindricalGallery() {
               >
                 {/* Clean, editorial image block */}
                 <div className="relative w-full h-[65%] overflow-hidden bg-[#F0F0F0] mb-6">
-                  <img src={item.img} alt={item.subtitle} className="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 hover:grayscale-0 hover:opacity-100 hover:scale-105" draggable="false" />
+                  <img src={item.img} alt={item.subtitle} className="w-full h-full object-cover opacity-90 transition-all duration-700 hover:opacity-100 hover:scale-105" draggable="false" />
                 </div>
                 
                 <div className="flex flex-col text-[#111111] justify-between flex-grow">
@@ -99,7 +99,7 @@ export function CylindricalGallery() {
                   </div>
                   
                   <div className="flex flex-col mt-4">
-                    <h3 className="font-serif font-normal text-2xl tracking-tight leading-none text-[#111]">
+                    <h3 className="font-[family-name:var(--font-instrument)] italic font-normal text-3xl tracking-tight leading-none text-[#111]">
                       {item.subtitle}
                     </h3>
                   </div>
@@ -117,8 +117,15 @@ export function CylindricalGallery() {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-8 text-[#888888] text-[10px] font-sans tracking-[0.3em] uppercase pointer-events-none z-20">
-        Drag to explore 360°
+      <div className="absolute bottom-12 flex flex-col md:flex-row items-center gap-8 md:gap-10 text-[#111] z-20 pointer-events-auto bg-white/90 backdrop-blur-md px-10 py-6 rounded-3xl md:rounded-full border border-[#EAEAEA] shadow-md">
+        <div className="flex flex-col text-center md:text-left mb-2 md:mb-0">
+          <span className="font-[family-name:var(--font-instrument)] italic text-2xl md:text-3xl">Polaroid Cards</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#888] mt-1">Fully customizable text</span>
+        </div>
+        <div className="hidden md:block w-[1px] h-10 bg-[#EAEAEA]"></div>
+        <a href="/polaroid" className="mt-2 md:mt-0 bg-[#111] text-white px-8 py-3 rounded-full text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors">
+          Create Yours
+        </a>
       </div>
     </section>
   );

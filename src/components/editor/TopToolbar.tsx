@@ -39,7 +39,9 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
   return (
     <header className="h-14 flex items-center justify-between px-2 lg:px-4 bg-[#FFFFFF] border-b border-[#e8e2d9] shadow-sm z-20 shrink-0 gap-1 w-full overflow-hidden">
       <div className="flex items-center gap-2 lg:gap-4 shrink-0">
-        <a href="/" className="font-serif text-lg lg:text-xl font-bold text-[#E85D26] hover:opacity-80 transition-opacity truncate">Offline Living</a>
+        <a href="/" className="hover:opacity-80 transition-opacity flex items-center shrink-0">
+          <img src="/images/logoo1.png" alt="Offline Living Logo" className="h-8 object-contain" />
+        </a>
         <div className="h-4 w-[1px] bg-[#e8e2d9] hidden lg:block" />
         <span className="text-sm font-medium text-[#6b6560] hidden lg:inline-block truncate">Untitled Project</span>
         {saveStatus === 'saving' && (

@@ -43,7 +43,7 @@ export default function ReturnsPage() {
             <h2 className="text-2xl font-serif text-theme-black mb-4 mt-0">How to request a replacement</h2>
             <ol className="list-decimal pl-5 space-y-3">
               <li>Take 2-3 clear photos showing the damage or defect.</li>
-              <li>Email the photos to <strong>support@offlineliving.com</strong> along with your order number.</li>
+              <li>Email the photos to <strong>offlinelivingsupport@gmail.com</strong> along with your order number.</li>
               <li>Our team will review your case within 1-2 business days.</li>
               <li>Once approved, a replacement order will be fast-tracked into production.</li>
             </ol>

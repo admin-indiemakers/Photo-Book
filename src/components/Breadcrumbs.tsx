@@ -8,8 +8,8 @@ import { motion } from 'framer-motion';
 export function Breadcrumbs() {
   const pathname = usePathname();
 
-  // Don't show on home page
-  if (!pathname || pathname === '/') {
+  // Don't show on home page or editor page
+  if (!pathname || pathname === '/' || pathname.startsWith('/templates')) {
     return null;
   }
 

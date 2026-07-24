@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 export function CustomCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -34,7 +34,7 @@ export function CustomCursor() {
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 w-4 h-4 bg-[#E85D26] rounded-full pointer-events-none z-[9999]"
+        className="hidden md:block fixed top-0 left-0 w-4 h-4 bg-[#E85D26] rounded-full pointer-events-none z-[9999]"
         animate={{
           x: mousePosition.x - 8,
           y: mousePosition.y - 8,
@@ -44,7 +44,7 @@ export function CustomCursor() {
         transition={{ type: "tween", ease: "backOut", duration: 0.15 }}
       />
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 border border-[#111]/30 rounded-full pointer-events-none z-[9998]"
+        className="hidden md:block fixed top-0 left-0 w-8 h-8 border border-[#111]/30 rounded-full pointer-events-none z-[9998]"
         animate={{
           x: mousePosition.x - 16,
           y: mousePosition.y - 16,
@@ -116,7 +116,7 @@ export function MagneticImage({ children, className = "" }: { children: React.Re
 export function SplitTextReveal({ text, className = "", delay = 0 }: { text: string, className?: string, delay?: number }) {
   const words = text.split(" ");
   
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -124,7 +124,7 @@ export function SplitTextReveal({ text, className = "", delay = 0 }: { text: str
     }),
   };
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       y: 0,

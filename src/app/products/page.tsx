@@ -86,10 +86,10 @@ export default function AllProductsPage() {
   }, []);
 
   return (
-    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-40">
+    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-32 md:pt-40">
       <HeaderNav />
 
-      <section className="pt-2 pb-6 md:pt-40 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
+      <section className="pb-6 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
         <div className="max-w-7xl mx-auto relative">
 
 
@@ -97,10 +97,10 @@ export default function AllProductsPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: customEase }}
-            className="mb-4 md:mb-16 pt-16 md:pt-40 text-center"
+            className="mb-16 md:mb-24 text-center"
           >
-            <h1 className="font-serif text-4xl md:text-7xl text-black mb-3 md:mb-6">Our Collections</h1>
-            <p className="text-gray-500 font-light text-xs md:text-lg max-w-2xl mx-auto">
+            <h1 className="font-[family-name:var(--font-instrument)] italic text-5xl md:text-[80px] text-[#111] mb-6 leading-none">Our Collections</h1>
+            <p className="text-[#555] font-light text-sm md:text-base max-w-xl mx-auto leading-relaxed">
               Explore our full range of premium, archival-quality physical artifacts designed to turn your digital memories into lasting heirlooms.
             </p>
           </motion.div>
@@ -124,23 +124,20 @@ export default function AllProductsPage() {
                       transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
                       className="group cursor-pointer perspective-[1000px]"
                     >
-                      <div className="relative h-[130px] sm:h-[160px] md:h-[600px] w-full rounded-lg md:rounded-2xl overflow-hidden mb-2 md:mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-x-2 group-hover:rotate-y-[-2deg] group-hover:scale-[1.02] shadow-sm hover:shadow-xl">
-                        <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+                      <div className="relative h-[250px] md:h-[500px] w-full bg-[#FAFAFA] border border-[#EAEAEA] mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02] overflow-hidden">
+                        <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover grayscale-[15%] transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-[#EAE5D9] mix-blend-multiply opacity-10"></div>
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
 
                         {badge && (
-                          <div className="absolute top-2 left-2 md:top-6 md:left-6 px-1.5 py-0.5 md:px-3 md:py-1 bg-white text-black text-[8px] md:text-xs uppercase tracking-widest font-semibold rounded-sm">
-                            {badge === "Signature" ? (
-                              <span className="text-[#c5161d]">{badge}</span>
-                            ) : (
-                              <span className="text-[#fdc930]">{badge}</span>
-                            )}
+                          <div className="absolute top-4 left-4 px-3 py-1 bg-white text-[#111] text-[9px] uppercase tracking-widest font-semibold rounded-full border border-[#EAEAEA] shadow-sm">
+                            {badge}
                           </div>
                         )}
                       </div>
 
-                      <h3 className="font-serif text-[11px] sm:text-xs md:text-3xl text-black mb-1 md:mb-3 leading-tight">{item.name}</h3>
-                      <p className="text-gray-600 font-light text-[9px] sm:text-[10px] md:text-lg leading-tight md:leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
+                      <h3 className="font-[family-name:var(--font-instrument)] text-2xl md:text-3xl text-[#111] mb-2 leading-tight">{item.name}</h3>
+                      <p className="text-[#555] font-light text-xs md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
                     </motion.div>
                   </Link>
                 );

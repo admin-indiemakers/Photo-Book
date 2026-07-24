@@ -73,7 +73,7 @@ function HeroSection() {
               }}
               style={{ zIndex: idx }}
             >
-              <img src={photo.src} alt="Polaroid" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700 pointer-events-auto" />
+              <img src={photo.src} alt="Polaroid" className="w-full h-full object-cover transition-all duration-700 pointer-events-auto" />
             </motion.div>
           );
         })}
@@ -101,7 +101,7 @@ function HeroSection() {
         >
           <Link 
             href="/templates"
-            className="w-full sm:w-auto px-12 py-5 bg-white text-[#111] rounded-full text-xs uppercase tracking-[0.2em] font-bold hover:scale-105 shadow-[0_20px_40px_-10px_rgba(255,255,255,0.3)] inline-flex justify-center items-center transition-transform"
+            className="w-full sm:w-auto px-12 py-5 bg-[#fdc930] text-[#111] rounded-full text-xs uppercase tracking-[0.2em] font-bold hover:scale-105 shadow-[0_20px_40px_-10px_rgba(253,201,48,0.3)] inline-flex justify-center items-center transition-transform"
           >
             Start Creating
           </Link>
@@ -131,10 +131,22 @@ function FlagshipProductSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-[#555] font-light text-lg md:text-xl max-w-sm mb-16 leading-relaxed"
+            className="text-[#555] font-light text-lg md:text-xl max-w-sm mb-10 leading-relaxed"
           >
             Our flagship photo book. Hand-bound with seamless layflat pages and printed on ultra-thick, acid-free archival paper. The ultimate permanent home for your most important memories.
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="mb-16"
+          >
+            <Link href="/templates" className="inline-flex items-center gap-2 bg-[#111] text-white px-8 py-4 rounded-full text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors">
+              Create Photobook
+            </Link>
+          </motion.div>
 
           <div className="flex flex-col gap-12 border-l border-[#EAEAEA] pl-8">
             <motion.div 
@@ -172,10 +184,10 @@ function FlagshipProductSection() {
             className="col-span-2 relative w-full aspect-video bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src="https://images.unsplash.com/photo-1544627836-822bfe450209?q=80&w=2940&auto=format&fit=crop" alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000 pointer-events-none" />
+              <img src="https://images.unsplash.com/photo-1544627836-822bfe450209?q=80&w=2940&auto=format&fit=crop" alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
             </MagneticImage>
-            <div className="absolute top-8 left-8 bg-[#E85D26] text-white px-4 py-2 pointer-events-none shadow-md">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-medium">Flagship Product</span>
+            <div className="absolute top-8 left-8 bg-[#fdc930] text-[#111] px-4 py-2 pointer-events-none shadow-md">
+              <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Flagship Product</span>
             </div>
           </motion.div>
           
@@ -258,7 +270,7 @@ function ProductCard({ item, index }: { item: any; index: number }) {
         className="relative flex flex-col gap-8 h-full"
       >
         <div className="flex justify-between items-start w-full">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#E85D26] font-bold">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[#fdc930] font-bold">
             {item.badge || `No. 0${index + 1}`}
           </span>
           <ArrowRight className="w-4 h-4 text-[#111] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out" />
@@ -306,7 +318,7 @@ function Craftsmanship() {
             transition={{ duration: 0.8, ease: customEase }}
             className="font-[family-name:var(--font-instrument)] tracking-tight text-6xl md:text-8xl leading-none mb-12"
           >
-            Tactile <br /> Precision.
+            Gallery <br /> Standard.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -315,26 +327,26 @@ function Craftsmanship() {
             transition={{ duration: 0.8, delay: 0.1, ease: customEase }}
             className="text-lg text-[#555] font-light max-w-md leading-relaxed"
           >
-            Every product is bound, printed, and inspected with meticulous attention to detail. We strip away the unnecessary so only the pure emotion remains.
+            Elevate your space with our premium wall art collection. From solid wood frames to museum-grade acrylics, we craft pieces that demand attention.
           </motion.p>
         </div>
 
         <div className="lg:col-span-7 flex flex-col gap-12">
           {[
             {
-              title: "Archival Papers",
-              desc: "Acid-free, museum-grade matte sheets that resist fading for centuries.",
-              img: "/images/craft1.png"
-            },
-            {
-              title: "Layflat Binding",
-              desc: "Seamless 180-degree spreads. No lost details in the gutter.",
-              img: "/images/craft2.png"
+              title: "Solid Wood Frames",
+              desc: "Handcrafted from sustainably sourced timber, providing a timeless border for your memories.",
+              img: "/images/frames.png"
             },
             {
               title: "Optic Clear Acrylic",
-              desc: "Anti-reflective glass offering vivid contrast and pure clarity.",
-              img: "/images/hero.png" // Reusing an image as placeholder
+              desc: "Anti-reflective museum glass offering vivid contrast, pure clarity, and UV protection.",
+              img: "/images/craft1.png"
+            },
+            {
+              title: "Woven Canvas",
+              desc: "Rich, textured fine-art canvas stretched tightly over premium wooden bars.",
+              img: "/images/craft2.png"
             }
           ].map((feature, i) => (
             <motion.div
@@ -371,9 +383,9 @@ function ParallaxDivider() {
         className="absolute inset-0 w-full h-[140%] -top-[20%]"
       >
         <img 
-          src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2800&auto=format&fit=crop" 
-          alt="Studio Printing" 
-          className="w-full h-full object-cover filter grayscale" 
+          src="/images/editor.png" 
+          alt="The Studio" 
+          className="w-full h-full object-cover" 
         />
       </motion.div>
       <div className="absolute inset-0 bg-[#111]/30 pointer-events-none mix-blend-multiply"></div>
@@ -413,7 +425,7 @@ function QuoteSection() {
               top: mousePosition.y - 280 
             }}
           >
-            <img src={hoverImage} className="w-full h-full object-cover filter grayscale bg-[#FAFAFA]" alt="Hover Reveal" />
+            <img src={hoverImage} className="w-full h-full object-cover bg-[#FAFAFA]" alt="Hover Reveal" />
           </motion.div>
         )}
       </AnimatePresence>

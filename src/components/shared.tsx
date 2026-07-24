@@ -1,9 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 // Custom high-end easing
 export const customEase = [0.16, 1, 0.3, 1] as const;
@@ -104,32 +107,33 @@ export function Footer() {
           <p className="text-[#555555] font-light text-sm mb-8 leading-relaxed max-w-[250px]">
             Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
           </p>
-          <div className="flex gap-4 opacity-70">
-            {/* Social Icons Placeholders */}
-            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">IG</div>
-            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">P</div>
-            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">YT</div>
-            <div className="w-5 h-5 border border-[#111111] rounded-sm flex items-center justify-center text-[10px]">M</div>
+          <div className="flex gap-4 opacity-70 mt-6">
+            <a href="#" className="w-8 h-8 flex items-center justify-center text-[#111] hover:text-[#E85D26] hover:bg-[#FAFAFA] rounded-full transition-colors">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="#" className="w-8 h-8 flex items-center justify-center text-[#111] hover:text-[#E85D26] hover:bg-[#FAFAFA] rounded-full transition-colors">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </a>
           </div>
         </div>
 
         <div>
           <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-[#888888]">Explore</h4>
           <ul className="space-y-3 font-light text-[#555555] text-sm">
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Photobooks</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Wall Art</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Keepsakes</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Gift Cards</Link></li>
+            <li><Link href="/templates" className="hover:text-[#111111] transition-colors">Photo Books</Link></li>
+            <li><Link href="/frame" className="hover:text-[#111111] transition-colors">Photo Frames</Link></li>
+            <li><Link href="/polaroid" className="hover:text-[#111111] transition-colors">Polaroids</Link></li>
+            <li><Link href="/fridge-magnet" className="hover:text-[#111111] transition-colors">Fridge Magnets</Link></li>
+            <li><Link href="/acrylic-frames" className="hover:text-[#111111] transition-colors">Acrylic Frames</Link></li>
+            <li><Link href="/canvas-frames" className="hover:text-[#111111] transition-colors">Canvas Frames</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-semibold mb-6 uppercase tracking-wider text-[11px] text-[#888888]">Company</h4>
           <ul className="space-y-3 font-light text-[#555555] text-sm">
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">About Us</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Our Craftsmanship</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Journal</Link></li>
-            <li><Link href="#" className="hover:text-[#111111] transition-colors">Contact</Link></li>
+            <li><Link href="/about" className="hover:text-[#111111] transition-colors">About Us</Link></li>
+            <li><Link href="/contact" className="hover:text-[#111111] transition-colors">Contact</Link></li>
           </ul>
         </div>
 
@@ -153,18 +157,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-[#888888] font-light pt-8 border-t border-[#EAEAEA]">
         <p>&copy; {new Date().getFullYear()} Offline Living. All rights reserved.</p>
         <div className="flex gap-6 mt-4 md:mt-0">
-          <Link href="#" className="hover:text-[#111111] transition-colors">Privacy Policy</Link>
-          <Link href="#" className="hover:text-[#111111] transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-[#111111] transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-[#111111] transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
   );
 }
-
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import type { User } from "@supabase/supabase-js";
 
 export function HeaderNav() {
   const pathname = usePathname();
@@ -207,13 +206,13 @@ export function HeaderNav() {
         <Link href="/" className="flex items-center">
           <img src="/images/logoo1.png" alt="Offline Living Logo" className="h-12 md:h-20 object-contain" />
         </Link>
-        <div className="hidden md:flex items-center gap-10 text-[11px] font-medium tracking-widest uppercase">
+        <div className="hidden md:flex items-center gap-10 font-[family-name:var(--font-instrument)] italic text-xl md:text-2xl">
           <div
             className="relative"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <button className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase tracking-widest" suppressHydrationWarning>
+            <button className="hover:opacity-70 transition-opacity flex items-center gap-1" suppressHydrationWarning>
               Collections
             </button>
             <AnimatePresence>
@@ -235,12 +234,10 @@ export function HeaderNav() {
               )}
             </AnimatePresence>
           </div>
-          <Link href="#" className="hover:opacity-70 transition-opacity">Craftsmanship</Link>
-          <Link href="#" className="hover:opacity-70 transition-opacity">Journal</Link>
-          <Link href="/orders" className="hover:opacity-70 transition-opacity">Orders</Link>
-          <Link href="#" className="hover:opacity-70 transition-opacity">About</Link>
+          <Link href="/about" className="hover:opacity-70 transition-opacity">About</Link>
+          <Link href="/contact" className="hover:opacity-70 transition-opacity">Contact</Link>
         </div>
-        <div className="flex items-center gap-6 text-[11px] font-medium tracking-widest uppercase">
+        <div className="flex items-center gap-6 font-[family-name:var(--font-instrument)] italic text-xl md:text-2xl">
           {isClient ? (
             user ? (
               <div className="relative group cursor-pointer h-24 flex items-center">
@@ -298,12 +295,11 @@ export function HeaderNav() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-white text-black border-t border-gray-100 shadow-xl overflow-hidden"
           >
-            <div className="px-6 py-4 flex flex-col gap-4 text-[11px] font-medium tracking-widest uppercase">
+            <div className="px-6 py-4 flex flex-col gap-4 font-[family-name:var(--font-instrument)] italic text-2xl">
               <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Collections</Link>
               <Link href="/orders" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Orders</Link>
-              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Craftsmanship</Link>
-              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Journal</Link>
-              <Link href="#" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">About</Link>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">About</Link>
+              <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity">Contact</Link>
             </div>
           </motion.div>
         )}

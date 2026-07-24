@@ -12,7 +12,10 @@ export const metadata: Metadata = {
     title: "Offline Living — Your Story. Beautifully Told.",
     description: "Turn your photos into archival-quality, layflat photobooks — beautifully designed, printed to last, delivered to your door.",
     type: "website",
-  }
+  },
+  icons: {
+    icon: "/images/logoo-icon.svg",
+  },
 };
 
 import { DM_Sans, DM_Serif_Display, Caveat, Instrument_Serif } from 'next/font/google';

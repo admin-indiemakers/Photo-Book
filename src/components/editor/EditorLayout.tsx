@@ -40,6 +40,8 @@ export default function EditorLayout() {
   const selectedElementIds = useEditorStore(state => state.selectedElementIds);
   const [prevSelected, setPrevSelected] = useState(selectedElementIds);
 
+  const [desktopLeftOpen, setDesktopLeftOpen] = useState(true);
+
   React.useEffect(() => {
     // Auto-switch to properties if an element is added while the 'Add' tab is open
     if (selectedElementIds.length > 0 && selectedElementIds !== prevSelected) {
@@ -73,7 +75,7 @@ export default function EditorLayout() {
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden relative bg-transparent">
         {/* Center Workspace (Canvas) */}
-        <main className="flex-1 relative overflow-hidden bg-transparent">
+        <main className={`flex-1 relative overflow-hidden bg-transparent transition-all duration-300 ${desktopLeftOpen ? 'lg:ml-0' : 'lg:-ml-[160px]'}`}>
           <CanvasWorkspace />
 
           <FloatingObjectToolbar />
@@ -112,8 +114,18 @@ export default function EditorLayout() {
           </div>
         </main>
 
+        {/* Desktop Toggle Handle for Left Sidebar */}
+        <div className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 z-30 pointer-events-auto transition-all duration-300 ${desktopLeftOpen ? 'left-[330px]' : 'left-0'}`}>
+          <button 
+            onClick={() => setDesktopLeftOpen(!desktopLeftOpen)}
+            className="bg-white/95 backdrop-blur border border-[#e8e2d9] border-l-0 rounded-r-xl p-1.5 py-4 shadow-[4px_0_10px_rgba(0,0,0,0.05)] text-[#6b6560] hover:text-[#E85D26] transition-colors flex items-center justify-center"
+          >
+            {desktopLeftOpen ? <ChevronLeft size={18} strokeWidth={3} /> : <LayoutGrid size={18} strokeWidth={2} className="mx-1" />}
+          </button>
+        </div>
+
         {/* Left Sidebar (Desktop Dock / Mobile Sheet) */}
-        <div className={`fixed inset-x-0 bottom-16 h-[60vh] z-40 lg:h-auto lg:absolute lg:inset-auto lg:left-6 lg:top-6 lg:bottom-24 lg:w-80 lg:z-20 pointer-events-none transition-transform duration-300 lg:translate-y-0 ${mobileTab === 'left' ? 'translate-y-0' : 'translate-y-[150%] lg:translate-y-0'}`}>
+        <div className={`fixed inset-x-0 bottom-16 h-[60vh] z-40 lg:h-auto lg:absolute lg:inset-auto lg:top-6 lg:bottom-24 lg:w-80 lg:z-20 pointer-events-none transition-all duration-300 ${mobileTab === 'left' ? 'translate-y-0' : 'translate-y-[150%]'} lg:translate-y-0 ${desktopLeftOpen ? 'lg:left-6 lg:translate-x-0 lg:opacity-100' : 'lg:left-0 lg:-translate-x-[110%] lg:opacity-0'}`}>
           <div className="pointer-events-auto h-full w-full rounded-t-2xl lg:rounded-2xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-2xl bg-[#FAF6EE] flex flex-col">
             <div className="lg:hidden flex items-center justify-between p-3 border-b border-[#e8e2d9] bg-white">
               <span className="font-serif font-medium">Add Elements</span>
