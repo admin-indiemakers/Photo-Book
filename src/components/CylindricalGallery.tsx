@@ -3,15 +3,24 @@
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import polaroid1 from "../assets/polaroid1.jpg";
+import polaroid2 from "../assets/polaroid2.jpg";
+import polaroid3 from "../assets/polaroid3.jpg";
+import polaroid4 from "../assets/polaroid4.png";
+import polaroid5 from "../assets/polaroid5.png";
+import polaroid6 from "../assets/polaroid6.png";
+import polaroid7 from "../assets/polaroid7.jpg";
+import polaroid8 from "../assets/polaroid8.jpg";
+
 const baseGalleryItems = [
-  { id: 1, title: "EXHIBIT 01", subtitle: "MONOCHROME", date: "PARIS, FR", img: "https://images.unsplash.com/photo-1516280440502-6c2e8a101b0d?q=80&w=2800&auto=format&fit=crop" },
-  { id: 2, title: "EXHIBIT 02", subtitle: "SILHOUETTES", date: "MILAN, IT", img: "https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=2800&auto=format&fit=crop" },
-  { id: 3, title: "EXHIBIT 03", subtitle: "ARCHITECTURE", date: "LONDON, UK", img: "https://images.unsplash.com/photo-1508214751196-bfdd4ca4ccaa?q=80&w=2800&auto=format&fit=crop" },
-  { id: 4, title: "EXHIBIT 04", subtitle: "STILL LIFE", date: "TOKYO, JP", img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2800&auto=format&fit=crop" },
-  { id: 5, title: "EXHIBIT 05", subtitle: "PORTRAITS", date: "NEW YORK, US", img: "https://images.unsplash.com/photo-1519750783826-e2420f4d687f?q=80&w=2800&auto=format&fit=crop" },
-  { id: 6, title: "EXHIBIT 06", subtitle: "LANDSCAPES", date: "OSLO, NO", img: "https://images.unsplash.com/photo-1520092363717-5785a2ce2b51?q=80&w=2800&auto=format&fit=crop" },
-  { id: 7, title: "EXHIBIT 07", subtitle: "MOTION", date: "BERLIN, DE", img: "https://images.unsplash.com/photo-1493225457224-eda0e6fdba39?q=80&w=2800&auto=format&fit=crop" },
-  { id: 8, title: "EXHIBIT 08", subtitle: "TEXTURES", date: "COPENHAGEN, DK", img: "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2800&auto=format&fit=crop" },
+  { id: 1, title: "EXHIBIT 01", subtitle: "MONOCHROME", date: "PARIS, FR", img: polaroid1.src },
+  { id: 2, title: "EXHIBIT 02", subtitle: "SILHOUETTES", date: "MILAN, IT", img: polaroid2.src },
+  { id: 3, title: "EXHIBIT 03", subtitle: "ARCHITECTURE", date: "LONDON, UK", img: polaroid3.src },
+  { id: 4, title: "EXHIBIT 04", subtitle: "STILL LIFE", date: "TOKYO, JP", img: polaroid4.src },
+  { id: 5, title: "EXHIBIT 05", subtitle: "PORTRAITS", date: "NEW YORK, US", img: polaroid5.src },
+  { id: 6, title: "EXHIBIT 06", subtitle: "LANDSCAPES", date: "OSLO, NO", img: polaroid6.src },
+  { id: 7, title: "EXHIBIT 07", subtitle: "MOTION", date: "BERLIN, DE", img: polaroid7.src },
+  { id: 8, title: "EXHIBIT 08", subtitle: "TEXTURES", date: "COPENHAGEN, DK", img: polaroid8.src },
 ];
 
 // Duplicate to create a 16-sided polygon instead of an 8-sided one (makes the cylinder huge and smooth!)
@@ -89,7 +98,7 @@ export function CylindricalGallery() {
               >
                 {/* Clean, editorial image block */}
                 <div className="relative w-full h-[65%] overflow-hidden bg-[#F0F0F0] mb-6">
-                  <img src={item.img} alt={item.subtitle} className="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 hover:grayscale-0 hover:opacity-100 hover:scale-105" draggable="false" />
+                  <img src={item.img} alt={item.subtitle} className="w-full h-full object-cover opacity-90 transition-all duration-700 hover:opacity-100 hover:scale-105" draggable="false" />
                 </div>
                 
                 <div className="flex flex-col text-[#111111] justify-between flex-grow">
