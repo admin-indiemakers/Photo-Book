@@ -106,7 +106,7 @@ export default function TemplatesClient() {
 
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-gray-500 font-light mt-auto text-[9px] md:text-base gap-0.5 md:gap-0">
                     <span className="hidden md:inline">{tpl.pages} Pages</span>
-                    <span className="text-black font-medium text-[10px] md:text-base">From ${tpl.price}</span>
+                    <span className="text-black font-medium text-[10px] md:text-base">From ₹{tpl.price}</span>
                   </div>
                 </motion.div>
               ))}

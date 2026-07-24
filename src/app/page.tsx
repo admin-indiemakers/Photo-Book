@@ -8,6 +8,7 @@ import { customEase, MagneticButton, productsData, Footer, HeaderNav } from "@/c
 import { CylindricalGallery } from "@/components/CylindricalGallery";
 import { MagneticImage, SplitTextReveal, InfiniteMarquee } from "@/components/PremiumEffects";
 
+import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 
 function HeroSection() {
@@ -212,7 +213,44 @@ function FlagshipProductSection() {
 }
 
 function ProductCollections() {
-  const homeProducts = productsData.slice(0, 3);
+  const [homeProducts, setHomeProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true);
+        
+        if (data) {
+          const featured = data.filter((p: any) => p.attributes?.is_featured);
+          featured.sort((a: any, b: any) => (a.attributes?.featured_order || 99) - (b.attributes?.featured_order || 99));
+          const mapped = featured.map((item: any) => ({
+            title: item.name,
+            desc: item.description || "",
+            img: item.images?.[0] || "/images/books.png",
+            badge: item.attributes?.featured_badge || "",
+            href: item.category === 'photo_book' ? '/templates' :
+                  item.category === 'photo_frame' ? '/frame' :
+                  item.category === 'polaroid' ? '/polaroid' :
+                  item.category === 'fridge_magnet' ? '/fridge-magnet' :
+                  item.category === 'acrylic_frame' ? '/acrylic-frames' :
+                  item.category === 'photo_canvas' ? '/canvas-frames' : '/products'
+          }));
+          setHomeProducts(mapped.slice(0, 6));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFeatured();
+  }, []);
+
+  const displayProducts = homeProducts.length > 0 ? homeProducts : (!loading ? [] : productsData.slice(0, 6));
 
   return (
     <section className="pt-32 pb-32 px-6 md:px-12 lg:px-24 bg-white text-[#111] border-t border-[#EAEAEA]">
@@ -238,9 +276,13 @@ function ProductCollections() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {homeProducts.map((item, i) => (
+          {displayProducts.length > 0 ? displayProducts.map((item, i) => (
             <ProductCard key={item.title} item={item} index={i} />
-          ))}
+          )) : (
+            <div className="col-span-3 text-center text-[#888] font-light py-12">
+              No featured collections available at the moment.
+            </div>
+          )}
         </div>
       </div>
     </section>
