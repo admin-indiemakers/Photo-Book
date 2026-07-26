@@ -32,6 +32,7 @@ export const AcrylicFramesProductPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showError, setShowError] = useState(false);
+  const [toastError, setToastError] = useState<string | null>(null);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
@@ -82,6 +83,9 @@ export const AcrylicFramesProductPage = () => {
 
         if (!result.success) {
           console.error("Upload error", result.error);
+          setToastError(result.error || "Failed to upload image. It might be too large.");
+          setTimeout(() => setToastError(null), 3000);
+          setShowError(true);
         } else if (result.url) {
           newItems.push({
             id: Math.random().toString(36).substring(7),
