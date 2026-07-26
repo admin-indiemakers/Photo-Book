@@ -5,15 +5,20 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeaderNav, Footer, customEase, MagneticButton } from '@/components/shared';
 
+import wanderlustImg from '@/assets/Wanderlust.jpg';
+import yearInReviewImg from '@/assets/Year in Review.jpg';
+import milestonesImg from '@/assets/Milestones.jpg';
+import familyRecipesImg from '@/assets/Family Recipes.jpg';
+
 const templates = [
-  { id: 'wanderlust', name: 'Wanderlust', category: 'Travel', pages: 12, price: 39, image: '/images/tpl_wanderlust.png' },
+  { id: 'wanderlust', name: 'Wanderlust', category: 'Travel', pages: 12, price: 39, image: wanderlustImg.src },
   { id: 'wedding-bliss', name: 'Wedding Bliss', category: 'Wedding', pages: 40, price: 89, image: '/images/tpl_wedding.png' },
   { id: 'little-one', name: 'Little One', category: 'Family', pages: 24, price: 49, image: '/images/tpl_baby.png' },
   { id: 'family-time', name: 'Family Time', category: 'Family', pages: 36, price: 69, image: '/images/tpl_family.png' },
-  { id: 'milestones', name: 'Milestones', category: 'Occasions', pages: 28, price: 59, image: '/images/tpl_milestones.png' },
-  { id: 'year-in-review', name: 'Year in Review', category: 'Occasions', pages: 50, price: 99, image: '/images/tpl_review.png' },
+  { id: 'milestones', name: 'Milestones', category: 'Occasions', pages: 28, price: 59, image: milestonesImg.src },
+  { id: 'year-in-review', name: 'Year in Review', category: 'Occasions', pages: 50, price: 99, image: yearInReviewImg.src },
   { id: 'portfolio', name: 'Creative Portfolio', category: 'Portfolio', pages: 20, price: 45, image: '/images/tpl_portfolio.png' },
-  { id: 'recipe-book', name: 'Family Recipes', category: 'Family', pages: 30, price: 55, image: '/images/tpl_family.png' }
+  { id: 'recipe-book', name: 'Family Recipes', category: 'Family', pages: 30, price: 55, image: familyRecipesImg.src }
 ];
 
 const categories = ['All', 'Travel', 'Wedding', 'Family', 'Occasions', 'Portfolio'];

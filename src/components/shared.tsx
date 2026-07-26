@@ -98,13 +98,13 @@ export const productsData = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#FAFAFA] text-[#111111] pt-24 pb-12 px-6 border-t border-[#EAEAEA]">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+    <footer className="bg-[#FAFAFA] text-[#111111] pt-12 md:pt-20 pb-8 px-6 border-t border-[#EAEAEA]">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 md:mb-16">
         <div className="col-span-1 md:col-span-1">
-          <Link href="/" className="block mb-8">
-            <img src="/images/logoo.png" alt="Offline Living Logo" className="h-40 md:h-64 object-contain origin-left" />
+          <Link href="/" className="block mb-4 md:mb-8">
+            <img src="/images/logoo.png" alt="Offline Living Logo" className="h-16 md:h-24 object-contain origin-left" />
           </Link>
-          <p className="text-[#555555] font-light text-sm mb-8 leading-relaxed max-w-[250px]">
+          <p className="text-[#555555] font-light text-sm mb-6 md:mb-8 leading-relaxed max-w-[250px]">
             Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
           </p>
           <div className="flex gap-4 opacity-70 mt-6">

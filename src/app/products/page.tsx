@@ -124,20 +124,20 @@ export default function AllProductsPage() {
                       transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
                       className="group cursor-pointer perspective-[1000px]"
                     >
-                      <div className="relative h-[250px] md:h-[500px] w-full bg-[#FAFAFA] border border-[#EAEAEA] mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02] overflow-hidden">
+                      <div className="relative h-[150px] sm:h-[180px] md:h-[500px] w-full bg-[#FAFAFA] border border-[#EAEAEA] mb-3 md:mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02] overflow-hidden">
                         <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover grayscale-[15%] transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
                         <div className="absolute inset-0 bg-[#EAE5D9] mix-blend-multiply opacity-10"></div>
                         <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
 
                         {badge && (
-                          <div className="absolute top-4 left-4 px-3 py-1 bg-white text-[#111] text-[9px] uppercase tracking-widest font-semibold rounded-full border border-[#EAEAEA] shadow-sm">
+                          <div className="absolute top-2 left-2 md:top-4 md:left-4 px-1.5 py-0.5 md:px-3 md:py-1 bg-white text-[#111] text-[6px] md:text-[9px] uppercase tracking-widest font-semibold rounded-full border border-[#EAEAEA] shadow-sm">
                             {badge}
                           </div>
                         )}
                       </div>
 
-                      <h3 className="font-[family-name:var(--font-instrument)] text-2xl md:text-3xl text-[#111] mb-2 leading-tight">{item.name}</h3>
-                      <p className="text-[#555] font-light text-xs md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
+                      <h3 className="font-[family-name:var(--font-instrument)] text-[15px] leading-[1.1] md:text-3xl text-[#111] mb-1 md:mb-2 line-clamp-2 md:line-clamp-none">{item.name}</h3>
+                      <p className="text-[#555] font-light text-[9px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
                     </motion.div>
                   </Link>
                 );
