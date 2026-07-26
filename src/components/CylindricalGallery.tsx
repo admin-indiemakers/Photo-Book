@@ -13,14 +13,14 @@ import polaroid7 from "../assets/polaroid7.jpg";
 import polaroid8 from "../assets/polaroid8.jpg";
 
 const baseGalleryItems = [
-  { id: 1, title: "EXHIBIT 01", subtitle: "MONOCHROME", date: "PARIS, FR", img: polaroid1.src },
-  { id: 2, title: "EXHIBIT 02", subtitle: "SILHOUETTES", date: "MILAN, IT", img: polaroid2.src },
-  { id: 3, title: "EXHIBIT 03", subtitle: "ARCHITECTURE", date: "LONDON, UK", img: polaroid3.src },
-  { id: 4, title: "EXHIBIT 04", subtitle: "STILL LIFE", date: "TOKYO, JP", img: polaroid4.src },
-  { id: 5, title: "EXHIBIT 05", subtitle: "PORTRAITS", date: "NEW YORK, US", img: polaroid5.src },
-  { id: 6, title: "EXHIBIT 06", subtitle: "LANDSCAPES", date: "OSLO, NO", img: polaroid6.src },
-  { id: 7, title: "EXHIBIT 07", subtitle: "MOTION", date: "BERLIN, DE", img: polaroid7.src },
-  { id: 8, title: "EXHIBIT 08", subtitle: "TEXTURES", date: "COPENHAGEN, DK", img: polaroid8.src },
+  { id: 1, title: "COLLECTION 01", subtitle: "HEART SHAPE", date: "WALL DECOR", img: polaroid1.src },
+  { id: 2, title: "COLLECTION 02", subtitle: "FAIRY LIGHTS", date: "HOME DECOR", img: polaroid2.src },
+  { id: 3, title: "COLLECTION 03", subtitle: "CORNER ART", date: "INTERIORS", img: polaroid3.src },
+  { id: 4, title: "COLLECTION 04", subtitle: "GIFT BOX", date: "PRESENTS", img: polaroid4.src },
+  { id: 5, title: "COLLECTION 05", subtitle: "THE STACK", date: "MEMORIES", img: polaroid5.src },
+  { id: 6, title: "COLLECTION 06", subtitle: "MINI EASEL", date: "DESK ART", img: polaroid6.src },
+  { id: 7, title: "COLLECTION 07", subtitle: "PHOTO RING", date: "KEEPSAKES", img: polaroid7.src },
+  { id: 8, title: "COLLECTION 08", subtitle: "WALL HANGING", date: "HOME DECOR", img: polaroid8.src },
 ];
 
 // Duplicate to create a 16-sided polygon instead of an 8-sided one (makes the cylinder huge and smooth!)
@@ -56,7 +56,7 @@ export function CylindricalGallery() {
   const radius = Math.round((itemWidth / 2) / Math.tan(Math.PI / numItems)); 
 
   return (
-    <section className="relative w-full h-[80vh] md:h-[90vh] bg-white overflow-hidden flex flex-col justify-center items-center cursor-grab active:cursor-grabbing border-t border-[#EAEAEA]">
+    <section className="relative w-full h-[60vh] md:h-[90vh] bg-white overflow-hidden flex flex-col justify-center items-center cursor-grab active:cursor-grabbing border-t border-[#EAEAEA]">
       
       {/* Invisible 2D Drag Pane */}
       <motion.div 
@@ -72,7 +72,7 @@ export function CylindricalGallery() {
 
       {/* 3D Scene Container */}
       <div 
-        className="relative w-full max-w-[1200px] h-[500px] md:h-[600px] flex justify-center items-center perspective-[1200px] md:perspective-[1600px] pointer-events-none"
+        className="relative w-full max-w-[1200px] h-[450px] md:h-[600px] flex justify-center items-center perspective-[1200px] md:perspective-[1600px] pointer-events-none"
         style={{ 
           clipPath: "ellipse(130% 90% at 50% 50%)"
         }}
@@ -90,7 +90,7 @@ export function CylindricalGallery() {
                 key={item.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`absolute w-[260px] sm:w-[320px] h-[380px] sm:h-[480px] bg-[#FAFAFA] rounded-sm flex flex-col backface-hidden shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-[#EAEAEA] select-none cursor-pointer transition-colors p-4`}
+                className={`absolute w-[260px] sm:w-[320px] h-[380px] sm:h-[480px] bg-[#FAFAFA] rounded-sm flex flex-col [backface-visibility:hidden] shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-[#EAEAEA] select-none cursor-pointer transition-colors p-4`}
                 style={{
                   transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                 }}
@@ -126,13 +126,13 @@ export function CylindricalGallery() {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-12 flex flex-col md:flex-row items-center gap-8 md:gap-10 text-[#111] z-20 pointer-events-auto bg-white/90 backdrop-blur-md px-10 py-6 rounded-3xl md:rounded-full border border-[#EAEAEA] shadow-md">
-        <div className="flex flex-col text-center md:text-left mb-2 md:mb-0">
-          <span className="font-[family-name:var(--font-instrument)] italic text-2xl md:text-3xl">Polaroid Cards</span>
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#888] mt-1">Fully customizable text</span>
+      <div className="absolute bottom-6 md:bottom-12 flex flex-row items-center justify-between gap-2 md:gap-10 text-[#111] z-20 pointer-events-auto bg-white/90 backdrop-blur-md px-5 py-3 md:px-10 md:py-6 rounded-full border border-[#EAEAEA] shadow-md w-[90%] max-w-[400px] md:w-auto md:max-w-none">
+        <div className="flex flex-col text-left">
+          <span className="font-[family-name:var(--font-instrument)] italic text-xl md:text-3xl">Polaroid Cards</span>
+          <span className="text-[7px] sm:text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-[#888] mt-0.5 md:mt-1">Fully customizable text</span>
         </div>
         <div className="hidden md:block w-[1px] h-10 bg-[#EAEAEA]"></div>
-        <a href="/polaroid" className="mt-2 md:mt-0 bg-[#111] text-white px-8 py-3 rounded-full text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors">
+        <a href="/polaroid" className="bg-[#111] text-white px-4 py-2 md:px-8 md:py-3 rounded-full text-[9px] md:text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors whitespace-nowrap">
           Create Yours
         </a>
       </div>

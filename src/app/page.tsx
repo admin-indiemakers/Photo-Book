@@ -13,6 +13,14 @@ import { useState, useEffect } from "react";
 import photobook1 from "../assets/photobook1.jpg";
 import photobook2 from "../assets/photobook2.png";
 import photobook3 from "../assets/photobook3.png";
+import photobook10 from "../assets/photobook13.jpg";
+import photobook11 from "../assets/photobook11.jpg";
+import photobook12 from "../assets/photobook1.jpg";
+import a1 from "../assets/a1.jpg";
+import a2 from "../assets/a2.jpg";
+import a3 from "../assets/a3.jpg";
+import a4 from "../assets/a4.jpg";
+import a5 from "../assets/a5.jpg";
 
 function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -31,16 +39,16 @@ function HeroSection() {
   }, []);
 
   const photos = [
-    { src: "/images/hero.png", baseRotate: -15, baseTranslate: { x: -20, y: 10 } },
-    { src: "/images/keepsakes.png", baseRotate: 8, baseTranslate: { x: 30, y: -20 } },
-    { src: "/images/craft1.png", baseRotate: -5, baseTranslate: { x: -40, y: -30 } },
-    { src: "/images/tpl_wedding.png", baseRotate: 20, baseTranslate: { x: 50, y: 30 } },
-    { src: "/images/books.png", baseRotate: 0, baseTranslate: { x: 0, y: 0 } },
+    { src: a1.src, baseRotate: -15, baseTranslate: { x: -20, y: 10 } },
+    { src: a2.src, baseRotate: 8, baseTranslate: { x: 30, y: -20 } },
+    { src: a3.src, baseRotate: -5, baseTranslate: { x: -40, y: -30 } },
+    { src: a4.src, baseRotate: 20, baseTranslate: { x: 50, y: 30 } },
+    { src: a5.src, baseRotate: 0, baseTranslate: { x: 0, y: 0 } },
   ];
 
   return (
-    <section 
-      className="relative w-full h-screen overflow-hidden bg-[#FAFAFA] text-[#111111] flex items-center justify-center cursor-crosshair"
+    <section
+      className="relative w-full h-[50vh] md:h-screen overflow-hidden bg-[#FAFAFA] text-[#111111] flex items-center justify-center cursor-crosshair"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -50,7 +58,7 @@ function HeroSection() {
           // Calculate scatter effect based on mouse distance from center
           // The further the mouse is from center, the more they scatter
           const scatterMagnitude = isHovering ? Math.sqrt(mousePosition.x ** 2 + mousePosition.y ** 2) * 450 : 0;
-          
+
           // Each photo scatters in a slightly different direction
           const scatterDirectionX = photo.baseTranslate.x > 0 ? 1 : photo.baseTranslate.x < 0 ? -1 : (mousePosition.x > 0 ? -1 : 1);
           const scatterDirectionY = photo.baseTranslate.y > 0 ? 1 : photo.baseTranslate.y < 0 ? -1 : (mousePosition.y > 0 ? -1 : 1);
@@ -58,19 +66,19 @@ function HeroSection() {
           return (
             <motion.div
               key={idx}
-              className="absolute w-[280px] md:w-[400px] aspect-[4/5] bg-white p-4 pb-16 shadow-[0_30px_60px_rgba(0,0,0,0.1)] border border-[#EAEAEA]"
+              className="absolute w-[160px] sm:w-[240px] md:w-[400px] aspect-[4/5] bg-white p-2 pb-6 md:p-4 md:pb-16 shadow-[0_30px_60px_rgba(0,0,0,0.1)] border border-[#EAEAEA]"
               initial={{ opacity: 0, scale: 0.5, rotate: 0 }}
-              animate={{ 
-                opacity: 1, 
+              animate={{
+                opacity: 1,
                 scale: 1,
                 rotate: photo.baseRotate + (mousePosition.x * photo.baseRotate * 1.5),
                 x: photo.baseTranslate.x + (scatterDirectionX * scatterMagnitude) + (mousePosition.x * -80 * idx),
                 y: photo.baseTranslate.y + (scatterDirectionY * scatterMagnitude) + (mousePosition.y * -80 * idx),
               }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 80, 
-                damping: 25, 
+              transition={{
+                type: "spring",
+                stiffness: 80,
+                damping: 25,
                 mass: 1.5,
                 opacity: { duration: 1, delay: idx * 0.1 },
                 scale: { duration: 1, delay: idx * 0.1 }
@@ -84,7 +92,7 @@ function HeroSection() {
       </div>
 
       {/* Foreground Typography */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, delay: 1 }}
@@ -103,30 +111,30 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 1.8, ease: customEase }}
           className="flex flex-col sm:flex-row items-center gap-6 mt-12 pointer-events-auto"
         >
-          <Link 
+          <Link
             href="/templates"
-            className="w-full sm:w-auto px-12 py-5 bg-[#fdc930] text-[#111] rounded-full text-xs uppercase tracking-[0.2em] font-bold hover:scale-105 shadow-[0_20px_40px_-10px_rgba(253,201,48,0.3)] inline-flex justify-center items-center transition-transform"
+            className="w-full sm:w-auto px-12 py-5 bg-transparent border border-white text-white rounded-full text-xs uppercase tracking-[0.2em] font-bold hover:scale-105 hover:bg-white hover:text-black shadow-[0_20px_40px_-10px_rgba(255,255,255,0.1)] inline-flex justify-center items-center transition-all"
           >
             Start Creating
           </Link>
         </motion.div>
       </motion.div>
-      
+
     </section>
   );
 }
 
 function FlagshipProductSection() {
   return (
-    <section className="w-full bg-[#FAFAFA] py-32 md:py-48 px-6 md:px-12 lg:px-24 border-t border-[#EAEAEA]">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
-        
+    <section className="w-full bg-[#FAFAFA] py-12 md:py-24 px-6 md:px-12 lg:px-24 border-t border-[#EAEAEA]">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+
         {/* Left Side: Real Product Copy */}
         <div className="flex flex-col lg:col-span-5 lg:sticky lg:top-32">
-          <div className="text-[50px] md:text-[80px] leading-[1] font-medium tracking-tight text-[#111] mb-8">
-            <SplitTextReveal text="The Signature" delay={0.2} />
+          <div className="text-[40px] sm:text-[50px] md:text-[80px] leading-[1] font-[family-name:var(--font-instrument)] font-medium tracking-tight text-[#111] mb-6 md:mb-8">
+            <SplitTextReveal text="The Keepsake" delay={0.2} />
             <span className="font-[family-name:var(--font-instrument)] font-normal italic text-[#888] block overflow-hidden mt-2">
-              <SplitTextReveal text="Layflat Album." delay={0.3} />
+              <SplitTextReveal text="Memory Book." delay={0.3} />
             </span>
           </div>
 
@@ -137,7 +145,7 @@ function FlagshipProductSection() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-[#555] font-light text-lg md:text-xl max-w-sm mb-10 leading-relaxed"
           >
-            Our flagship photo book. Hand-bound with seamless layflat pages and printed on ultra-thick, acid-free archival paper. The ultimate permanent home for your most important memories.
+            A beautiful home for your family's journey. Personalize each page with cherished moments, cute stickers, and heartfelt notes. Crafted with love to last a lifetime.
           </motion.p>
 
           <motion.div
@@ -145,34 +153,34 @@ function FlagshipProductSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="mb-16"
+            className="mb-12 md:mb-16"
           >
-            <Link href="/templates" className="inline-flex items-center gap-2 bg-[#111] text-white px-8 py-4 rounded-full text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors">
+            <Link href="/templates" className="inline-flex justify-center md:justify-start w-full md:w-auto items-center gap-2 bg-[#111] text-white px-8 py-4 rounded-full text-xs uppercase tracking-widest hover:bg-[#E85D26] transition-colors">
               Create Photobook
             </Link>
           </motion.div>
 
-          <div className="flex flex-col gap-12 border-l border-[#EAEAEA] pl-8">
-            <motion.div 
+          <div className="flex flex-col gap-8 md:gap-12 border-l-0 md:border-l border-[#EAEAEA] pl-0 md:pl-8">
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              <h3 className="font-[family-name:var(--font-instrument)] text-5xl md:text-6xl text-[#111] mb-3">800gsm</h3>
-              <p className="text-sm text-[#888] font-light max-w-[200px] leading-relaxed uppercase tracking-widest">
-                Ultra-thick rigid pages that never bend
+              <h3 className="font-[family-name:var(--font-instrument)] text-4xl md:text-6xl text-[#111] mb-2 md:mb-3">Forever</h3>
+              <p className="text-[10px] md:text-sm text-[#888] font-light max-w-[200px] leading-relaxed uppercase tracking-widest">
+                Preserve your little one's earliest milestones
               </p>
             </motion.div>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <h3 className="font-[family-name:var(--font-instrument)] text-5xl md:text-6xl text-[#111] mb-3">180°</h3>
-              <p className="text-sm text-[#888] font-light max-w-[200px] leading-relaxed uppercase tracking-widest">
-                Seamless panoramic spreads
+              <h3 className="font-[family-name:var(--font-instrument)] text-4xl md:text-6xl text-[#111] mb-2 md:mb-3">Timeless</h3>
+              <p className="text-[10px] md:text-sm text-[#888] font-light max-w-[200px] leading-relaxed uppercase tracking-widest">
+                A permanent home for fleeting moments
               </p>
             </motion.div>
           </div>
@@ -180,7 +188,7 @@ function FlagshipProductSection() {
 
         {/* Right Side: Real Product Images in Bento Box */}
         <div className="lg:col-span-7 grid grid-cols-2 gap-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -188,15 +196,12 @@ function FlagshipProductSection() {
             className="col-span-2 relative w-full aspect-video bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src={photobook1.src} alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
-              <img src="https://images.unsplash.com/photo-1544627836-822bfe450209?q=80&w=2940&auto=format&fit=crop" alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
+              <img src={photobook10.src} alt="Keepsake Memory Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
+              <img src={photobook10.src} alt="Premium Layflat Photo Book Open" className="w-full h-full object-cover transition-all duration-1000 pointer-events-none" />
             </MagneticImage>
-            <div className="absolute top-8 left-8 bg-[#fdc930] text-[#111] px-4 py-2 pointer-events-none shadow-md">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Flagship Product</span>
-            </div>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -204,11 +209,11 @@ function FlagshipProductSection() {
             className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src={photobook2.src} alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+              <img src={photobook11.src} alt="Thick Paper Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
             </MagneticImage>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -216,11 +221,11 @@ function FlagshipProductSection() {
             className="col-span-1 relative w-full aspect-[4/5] bg-white p-4 border border-[#EAEAEA] overflow-hidden group shadow-sm"
           >
             <MagneticImage>
-              <img src={photobook3.src} alt="Layflat Binding Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
+              <img src={photobook12.src} alt="Layflat Binding Detail" className="w-full h-full object-cover bg-[#F9F9F9] transform group-hover:scale-105 transition-transform duration-1000 pointer-events-none" />
             </MagneticImage>
           </motion.div>
         </div>
-        
+
       </div>
     </section>
   );
@@ -237,7 +242,7 @@ function ProductCollections() {
           .from('products')
           .select('*')
           .eq('is_active', true);
-        
+
         if (data) {
           const featured = data.filter((p: any) => p.attributes?.is_featured);
           featured.sort((a: any, b: any) => (a.attributes?.featured_order || 99) - (b.attributes?.featured_order || 99));
@@ -247,11 +252,11 @@ function ProductCollections() {
             img: item.images?.[0] || "/images/books.png",
             badge: item.attributes?.featured_badge || "",
             href: item.category === 'photo_book' ? '/templates' :
-                  item.category === 'photo_frame' ? '/frame' :
-                  item.category === 'polaroid' ? '/polaroid' :
+              item.category === 'photo_frame' ? '/frame' :
+                item.category === 'polaroid' ? '/polaroid' :
                   item.category === 'fridge_magnet' ? '/fridge-magnet' :
-                  item.category === 'acrylic_frame' ? '/acrylic-frames' :
-                  item.category === 'photo_canvas' ? '/canvas-frames' : '/products'
+                    item.category === 'acrylic_frame' ? '/acrylic-frames' :
+                      item.category === 'photo_canvas' ? '/canvas-frames' : '/products'
           }));
           setHomeProducts(mapped.slice(0, 6));
         }
@@ -267,29 +272,29 @@ function ProductCollections() {
   const displayProducts = homeProducts.length > 0 ? homeProducts : (!loading ? [] : productsData.slice(0, 6));
 
   return (
-    <section className="pt-32 pb-32 px-6 md:px-12 lg:px-24 bg-white text-[#111] border-t border-[#EAEAEA]">
+    <section className="pt-16 md:pt-32 pb-12 md:pb-16 px-6 md:px-12 lg:px-24 bg-white text-[#111] border-t border-[#EAEAEA]">
       <div className="max-w-[1400px] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: customEase }}
-          className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8 border-b border-[#EAEAEA] pb-12"
+          className="flex flex-row justify-between items-end mb-8 md:mb-20 gap-4 md:gap-8 border-b border-[#EAEAEA] pb-6 md:pb-12"
         >
-          <h2 className="font-[family-name:var(--font-instrument)] tracking-tight text-5xl md:text-7xl lg:text-[90px] max-w-2xl leading-none">
+          <h2 className="font-[family-name:var(--font-instrument)] tracking-tight text-4xl md:text-7xl lg:text-[90px] max-w-[60%] md:max-w-2xl leading-none">
             Curated Formats.
           </h2>
-          <Link href="/products" className="group flex items-center gap-4 cursor-pointer">
-            <span className="text-[10px] uppercase tracking-[0.25em] font-medium text-[#111] transition-colors">
+          <Link href="/products" className="group flex flex-row items-center justify-end gap-3 md:gap-4 cursor-pointer">
+            <span className="text-[8px] md:text-[10px] uppercase tracking-[0.25em] font-medium text-[#111] transition-colors text-right">
               View Archive
             </span>
-            <div className="w-12 h-12 rounded-full border border-[#EAEAEA] flex items-center justify-center group-hover:bg-[#111] group-hover:border-[#111] transition-colors duration-500 shadow-sm">
-              <ArrowRight className="w-4 h-4 text-[#111] group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all duration-500 ease-[0.16,1,0.3,1]" />
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#EAEAEA] flex items-center justify-center group-hover:bg-[#111] group-hover:border-[#111] transition-colors duration-500 shadow-sm flex-shrink-0">
+              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-[#111] group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all duration-500 ease-[0.16,1,0.3,1]" />
             </div>
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-2 md:gap-8">
           {displayProducts.length > 0 ? displayProducts.map((item, i) => (
             <ProductCard key={item.title} item={item} index={i} />
           )) : (
@@ -305,22 +310,22 @@ function ProductCollections() {
 
 function ProductCard({ item, index }: { item: any; index: number }) {
   return (
-    <Link href={item.href} className="group block w-full bg-[#FAFAFA] p-6 border border-[#EAEAEA] hover:shadow-xl transition-shadow duration-700">
+    <Link href={item.href} className="group block w-full bg-[#FAFAFA] p-3 md:p-6 border border-[#EAEAEA] hover:shadow-xl transition-shadow duration-700">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, delay: index * 0.15, ease: customEase }}
-        className="relative flex flex-col gap-8 h-full"
+        className="relative flex flex-col gap-3 md:gap-8 h-full"
       >
         <div className="flex justify-between items-start w-full">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#fdc930] font-bold">
+          <span className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-[#fdc930] font-bold">
             {item.badge || `No. 0${index + 1}`}
           </span>
-          <ArrowRight className="w-4 h-4 text-[#111] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out" />
+          <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-[#111] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out" />
         </div>
-        
-        <div className="relative w-full aspect-square overflow-hidden bg-white border border-[#EAEAEA] shadow-sm flex items-center justify-center p-8">
+
+        <div className="relative w-full aspect-square overflow-hidden bg-white border border-[#EAEAEA] shadow-sm flex items-center justify-center p-3 md:p-8">
           <img
             src={item.img}
             alt={item.title}
@@ -329,10 +334,10 @@ function ProductCard({ item, index }: { item: any; index: number }) {
         </div>
 
         <div className="mt-auto">
-          <h3 className="font-serif text-2xl tracking-tight text-[#111] mb-2">
+          <h3 className="font-serif text-xs md:text-2xl tracking-tight text-[#111] mb-1 md:mb-2 line-clamp-1">
             {item.title}
           </h3>
-          <p className="text-[#888] font-light text-sm max-w-[85%] leading-relaxed">
+          <p className="text-[#888] font-light text-[9px] md:text-sm max-w-full md:max-w-[85%] leading-relaxed line-clamp-2 md:line-clamp-none">
             {item.desc}
           </p>
         </div>
@@ -343,8 +348,8 @@ function ProductCard({ item, index }: { item: any; index: number }) {
 
 function Craftsmanship() {
   return (
-    <section className="bg-[#FAFAFA] text-[#111] py-32 md:py-48 px-6 md:px-12 lg:px-24 border-t border-[#EAEAEA]">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+    <section className="bg-[#FAFAFA] text-[#111] py-16 md:py-48 px-6 md:px-12 lg:px-24 border-t border-[#EAEAEA]">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
         <div className="lg:col-span-5 lg:sticky lg:top-32">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -399,14 +404,14 @@ function Craftsmanship() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: customEase }}
-              className="flex flex-col md:flex-row gap-8 items-center bg-white border border-[#EAEAEA] p-6 hover:shadow-lg transition-shadow duration-500 group"
+              className="flex flex-row md:flex-row gap-4 md:gap-8 items-center bg-white border border-[#EAEAEA] p-4 md:p-6 hover:shadow-lg transition-shadow duration-500 group text-left"
             >
-              <div className="w-full md:w-48 aspect-square overflow-hidden bg-[#FAFAFA] flex-shrink-0 flex items-center justify-center p-6 border border-[#EAEAEA]">
+              <div className="w-20 sm:w-24 md:w-48 aspect-square overflow-hidden bg-[#FAFAFA] flex-shrink-0 flex items-center justify-center p-2 md:p-6 border border-[#EAEAEA]">
                 <img src={feature.img} alt={feature.title} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-[1s]" />
               </div>
               <div>
-                <h4 className="text-2xl font-serif tracking-tight mb-3 text-[#111]">{feature.title}</h4>
-                <p className="text-[#888] font-light text-sm max-w-md leading-relaxed">{feature.desc}</p>
+                <h4 className="text-lg md:text-2xl font-serif tracking-tight mb-1 md:mb-3 text-[#111]">{feature.title}</h4>
+                <p className="text-[#888] font-light text-xs md:text-sm max-w-md leading-relaxed">{feature.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -422,18 +427,18 @@ function ParallaxDivider() {
 
   return (
     <section className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden border-y border-[#EAEAEA]">
-      <motion.div 
+      <motion.div
         style={{ y }}
         className="absolute inset-0 w-full h-[140%] -top-[20%]"
       >
-        <img 
-          src="/images/editor.png" 
-          alt="The Studio" 
-          className="w-full h-full object-cover" 
+        <img
+          src="/images/editor.png"
+          alt="The Studio"
+          className="w-full h-full object-cover"
         />
       </motion.div>
       <div className="absolute inset-0 bg-[#111]/30 pointer-events-none mix-blend-multiply"></div>
-      
+
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <h2 className="text-white font-serif text-5xl md:text-8xl italic opacity-90 mix-blend-overlay">The Studio</h2>
       </div>
@@ -454,8 +459,8 @@ function QuoteSection() {
   }, []);
 
   return (
-    <section className="py-32 md:py-56 px-6 bg-white flex flex-col items-center justify-center relative overflow-hidden border-t border-[#EAEAEA]">
-      
+    <section className="pt-16 md:pt-56 pb-8 md:pb-12 px-6 bg-white flex flex-col items-center justify-center relative overflow-hidden border-t border-[#EAEAEA]">
+
       <AnimatePresence>
         {hoverImage && (
           <motion.div
@@ -464,9 +469,9 @@ function QuoteSection() {
             exit={{ opacity: 0, scale: 0.8, rotate: 5 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className="fixed pointer-events-none z-0 w-[300px] md:w-[450px] aspect-[4/5] overflow-hidden shadow-2xl border border-[#EAEAEA]"
-            style={{ 
-              left: mousePosition.x - 225, 
-              top: mousePosition.y - 280 
+            style={{
+              left: mousePosition.x - 225,
+              top: mousePosition.y - 280
             }}
           >
             <img src={hoverImage} className="w-full h-full object-cover bg-[#FAFAFA]" alt="Hover Reveal" />
@@ -476,7 +481,7 @@ function QuoteSection() {
 
       {/* Decorative top line */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-24 bg-[#EAEAEA]" />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -488,19 +493,19 @@ function QuoteSection() {
         <div className="text-[#FAFAFA] font-serif text-[180px] md:text-[280px] leading-none absolute -top-20 md:-top-32 left-1/2 -translate-x-1/2 pointer-events-none select-none">
           &ldquo;
         </div>
-        
+
         <h3 className="font-[family-name:var(--font-instrument)] italic font-normal text-5xl md:text-6xl lg:text-[80px] text-[#111] leading-[1.1] mb-16 relative z-10">
-          Simplicity is the ultimate <span 
+          Simplicity is the ultimate <span
             className="relative inline-block cursor-crosshair text-[#E85D26] hover:text-[#111] transition-colors duration-500"
             onMouseEnter={() => setHoverImage("/images/books.png")}
             onMouseLeave={() => setHoverImage(null)}
-          >sophistication</span>.<br className="hidden md:block" /> We <span 
+          >sophistication</span>.<br className="hidden md:block" /> We <span
             className="relative inline-block cursor-crosshair text-[#E85D26] hover:text-[#111] transition-colors duration-500"
             onMouseEnter={() => setHoverImage("/images/frames.png")}
             onMouseLeave={() => setHoverImage(null)}
           >frame</span> what matters.
         </h3>
-        
+
         <div className="flex items-center justify-center gap-6">
           <span className="w-12 h-[1px] bg-[#EAEAEA]" />
           <p className="text-[10px] uppercase tracking-[0.4em] font-medium text-[#888]">
