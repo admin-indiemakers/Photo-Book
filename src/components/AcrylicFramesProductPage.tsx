@@ -78,7 +78,7 @@ export const AcrylicFramesProductPage = () => {
     setUploadProgress(10);
 
     try {
-      const { uploadImageAction } = await import('@/app/actions/upload');
+      const { uploadImageAction } = await import('@/lib/uploadClient');
       const newItems: FrameItem[] = [];
       let processed = 0;
 

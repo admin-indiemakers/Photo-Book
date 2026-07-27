@@ -33,3 +33,24 @@ export async function uploadImageAction(formData: FormData) {
     return { success: false, error: err.message || 'An error occurred during upload' };
   }
 }
+
+export async function getSignedUploadUrlAction(filePath: string) {
+  try {
+    const { data, error } = await supabaseAdmin.storage
+      .from('customer-uploads')
+      .createSignedUploadUrl(filePath);
+      
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    
+    return { 
+      success: true, 
+      signedUrl: data.signedUrl, 
+      token: data.token, 
+      path: data.path 
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'An error occurred generating signed URL' };
+  }
+}
