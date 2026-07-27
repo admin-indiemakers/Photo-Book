@@ -83,7 +83,7 @@ export const FridgeMagnetProductPage = () => {
     setUploadProgress(10);
 
     try {
-      const { uploadImageAction } = await import('@/app/actions/upload');
+      const { uploadImageAction } = await import('@/lib/uploadClient');
       const newItems: MagnetItem[] = [];
       let processed = 0;
 
