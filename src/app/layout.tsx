@@ -3,7 +3,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Script from "next/script";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { CustomCursor, CinematicGrain } from "@/components/PremiumEffects";
+import { CinematicGrain } from "@/components/PremiumEffects";
 
 export const metadata: Metadata = {
   title: "Offline Living — Your Story. Beautifully Told.",
@@ -61,7 +61,6 @@ export default function RootLayout({
         </TooltipProvider>
 
         {/* Ultra-Premium Cinematic Effects */}
-        <CustomCursor />
         <CinematicGrain />
 
         {/* Global Scripts */}

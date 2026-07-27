@@ -138,7 +138,7 @@ export const AcrylicFramesProductPage = () => {
     if (!session?.user) {
       setToastError('Please log in to add items to cart. Redirecting...');
       setShowError(true);
-      setTimeout(() => { window.location.href = '/login'; }, 1500);
+      setTimeout(() => { supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }, 1500);
       return false;
     }
     

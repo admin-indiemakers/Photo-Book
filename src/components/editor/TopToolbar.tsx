@@ -199,7 +199,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
               const { data: { session } } = await supabase.auth.getSession();
               if (!session?.user) {
                 alert('Please login to continue');
-                window.location.href = '/login';
+                supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
                 return;
               }
 

@@ -49,44 +49,15 @@ body {
   color: var(--text);
   background: var(--ivory);
   overflow-x: hidden;
-  cursor: none;
   line-height: 1.6;
 }
 
-a { text-decoration: none; color: inherit; cursor: none; }
-button { border: none; background: none; font-family: inherit; cursor: none; outline: none; }
+a { text-decoration: none; color: inherit; }
+button { border: none; background: none; font-family: inherit; outline: none; }
 ul, ol { list-style: none; }
 img { max-width: 100%; display: block; }
 
-/* ---------- Custom Cursor ---------- */
-.cursor-dot {
-  position: fixed;
-  top: 0; left: 0;
-  width: 10px; height: 10px;
-  background: var(--orange);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 10000;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out);
-  mix-blend-mode: difference;
-}
 
-.cursor-ring {
-  position: fixed;
-  top: 0; left: 0;
-  width: 40px; height: 40px;
-  border: 1.5px solid rgba(232, 93, 38, 0.35);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out),
-              border-color 0.3s ease, background 0.3s ease;
-}
-
-.cursor-dot.hover { width: 50px; height: 50px; background: rgba(232,93,38,0.12); mix-blend-mode: normal; }
-.cursor-ring.hover { width: 50px; height: 50px; border-color: var(--orange); }
 
 /* ---------- Container ---------- */
 .container {
@@ -1017,7 +988,6 @@ img { max-width: 100%; display: block; }
   font-size: 12px;
   color: var(--white);
   outline: none;
-  cursor: none;
   transition: border-color 0.3s ease;
 }
 .footer__nl-input::placeholder { color: rgba(255,255,255,0.3); }
