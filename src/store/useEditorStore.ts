@@ -221,7 +221,7 @@ export const useEditorStore = create<EditorState>()(
       flipDirection: 1,
       selectedElementIds: [],
       canvasSettings: {
-        zoom: 1,
+        zoom: 0.42,
         panX: 0,
         panY: 0,
         showGrid: false,
