@@ -48,7 +48,7 @@ function HeroSection() {
 
   return (
     <section
-      className="relative w-full h-[50vh] md:h-screen overflow-hidden bg-[#FAFAFA] text-[#111111] flex items-center justify-center cursor-crosshair"
+      className="relative w-full h-[50vh] md:h-screen overflow-hidden bg-[#FAFAFA] text-[#111111] flex items-center justify-center "
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -496,11 +496,11 @@ function QuoteSection() {
 
         <h3 className="font-[family-name:var(--font-instrument)] italic font-normal text-5xl md:text-6xl lg:text-[80px] text-[#111] leading-[1.1] mb-16 relative z-10">
           Simplicity is the ultimate <span
-            className="relative inline-block cursor-crosshair text-[#E85D26] hover:text-[#111] transition-colors duration-500"
+            className="relative inline-block  text-[#E85D26] hover:text-[#111] transition-colors duration-500"
             onMouseEnter={() => setHoverImage("/images/books.png")}
             onMouseLeave={() => setHoverImage(null)}
           >sophistication</span>.<br className="hidden md:block" /> We <span
-            className="relative inline-block cursor-crosshair text-[#E85D26] hover:text-[#111] transition-colors duration-500"
+            className="relative inline-block  text-[#E85D26] hover:text-[#111] transition-colors duration-500"
             onMouseEnter={() => setHoverImage("/images/frames.png")}
             onMouseLeave={() => setHoverImage(null)}
           >frame</span> what matters.

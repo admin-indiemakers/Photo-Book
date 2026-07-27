@@ -12,6 +12,13 @@ const SIZES = [
   { id: '4x4', label: 'Square', dimensions: '4inch X 4 inch', price: 499 }
 ];
 
+const FONT_OPTIONS = [
+  { id: 'font-caveat', label: 'Handwriting', family: "var(--font-hand, 'Caveat', cursive)", size: '22px' },
+  { id: 'font-inter', label: 'Modern', family: "var(--font-sans, 'Inter', sans-serif)", size: '14px' },
+  { id: 'font-serif', label: 'Classic', family: "var(--font-serif, 'DM Serif Display', serif)", size: '16px' },
+  { id: 'font-mono', label: 'Typewriter', family: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace", size: '14px' },
+];
+
 type PolaroidItem = {
   id: string;
   url: string;
@@ -19,6 +26,7 @@ type PolaroidItem = {
   sizeId: string;
   quantity: number;
   caption: string;
+  fontId?: string;
 };
 
 export const PolaroidProductPage = () => {
@@ -42,7 +50,7 @@ export const PolaroidProductPage = () => {
       }
     }, 100);
     return () => clearTimeout(timeout);
-  }, [polaroidItems]);
+  }, [polaroidItems.length]);
 
   // Cropper states
   const [isCropping, setIsCropping] = useState(false);
@@ -109,7 +117,8 @@ export const PolaroidProductPage = () => {
             url: result.url,
             sizeId: SIZES[0].id,
             quantity: 1,
-            caption: ''
+            caption: '',
+            fontId: 'font-caveat'
           });
         }
         processed++;
@@ -144,7 +153,7 @@ export const PolaroidProductPage = () => {
     if (!session?.user) {
       setToastError('Please log in to add items to cart. Redirecting...');
       setShowError(true);
-      setTimeout(() => { window.location.href = '/login'; }, 1500);
+      setTimeout(() => { supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } }); }, 1500);
       return false;
     }
 
@@ -257,6 +266,10 @@ export const PolaroidProductPage = () => {
 
   const updateItemCaption = (id: string, newCaption: string) => {
     setPolaroidItems(prev => prev.map(item => item.id === id ? { ...item, caption: newCaption } : item));
+  };
+
+  const updateItemFont = (id: string, newFontId: string) => {
+    setPolaroidItems(prev => prev.map(item => item.id === id ? { ...item, fontId: newFontId } : item));
   };
 
   // The grandTotal and totals are already calculated above.
@@ -512,8 +525,26 @@ export const PolaroidProductPage = () => {
                               </div>
                             </div>
 
-                            <div className="flex justify-end items-center px-1 mt-0.5">
-                              <button onClick={(e) => { e.stopPropagation(); removeImage(item.id); }} className="text-black/30 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider">
+                            <div className="flex justify-between items-center px-1 mt-0.5 gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add a caption (optional)"
+                                value={item.caption || ''}
+                                onChange={(e) => updateItemCaption(item.id, e.target.value)}
+                                maxLength={25}
+                                className="flex-1 min-w-0 bg-transparent border-b border-black/10 hover:border-[#E85D26]/50 focus:border-[#E85D26] outline-none transition-all font-medium text-black placeholder:font-normal placeholder:text-black/40 h-8"
+                                style={{ fontFamily: FONT_OPTIONS.find(f => f.id === (item.fontId || 'font-caveat'))?.family, fontSize: FONT_OPTIONS.find(f => f.id === (item.fontId || 'font-caveat'))?.size }}
+                              />
+                              <select 
+                                  value={item.fontId || 'font-caveat'}
+                                  onChange={(e) => updateItemFont(item.id, e.target.value)}
+                                  className="bg-transparent border-b border-black/10 hover:border-[#E85D26]/50 text-[10px] py-1 outline-none transition-all cursor-pointer text-black/60 focus:text-black w-24 flex-shrink-0 uppercase font-bold tracking-wider"
+                                >
+                                  {FONT_OPTIONS.map(font => (
+                                    <option key={font.id} value={font.id}>{font.label}</option>
+                                  ))}
+                              </select>
+                              <button onClick={(e) => { e.stopPropagation(); removeImage(item.id); }} className="text-black/30 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider flex-shrink-0 ml-2">
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 Remove
                               </button>
@@ -618,7 +649,6 @@ export const PolaroidProductPage = () => {
               >
                 {/* Polaroid Frame */}
                 <motion.div
-                  layout
                   className={`transition-all duration-500 shadow-2xl relative bg-white ${activeSize?.id === '2.5x3' ? 'p-3 pb-12' : 'p-4 pb-16'}`}
                   style={{
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(0,0,0,0.05)'
@@ -702,8 +732,8 @@ export const PolaroidProductPage = () => {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-2xl text-black/80 whitespace-nowrap overflow-hidden text-ellipsis w-full"
-                        style={{ fontFamily: "var(--font-hand, 'Caveat', cursive)" }}
+                        className="text-black/80 whitespace-nowrap overflow-hidden text-ellipsis w-full"
+                        style={{ fontFamily: FONT_OPTIONS.find(f => f.id === (activeItem?.fontId || 'font-caveat'))?.family, fontSize: FONT_OPTIONS.find(f => f.id === (activeItem?.fontId || 'font-caveat'))?.size }}
                       >
                         {activeItem?.caption || ""}
                       </motion.p>
