@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
 :root {
   --background: #FAF6EE;
   --foreground: #1a1a18;
@@ -130,7 +131,8 @@
 }
 
 /* Lenis Scroll CSS */
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -157,7 +159,12 @@ body {
   cursor: none;
 }
 
-a, button, [data-magnetic], input, textarea, select {
+a,
+button,
+[data-magnetic],
+input,
+textarea,
+select {
   cursor: none !important;
 }
 

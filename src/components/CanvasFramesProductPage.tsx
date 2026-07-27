@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import canvas1 from '../assets/Canvas Frame1.jpg';
 import canvas2 from '../assets/Canvas Frame2.jpg';
 import canvas3 from '../assets/Canvas Frame3.jpg';
+import Cropper from 'react-easy-crop';
+import getCroppedImg from '@/utils/cropImage';
 
 const SIZES = [
   { id: '3x3', label: '3x3', dimensions: '3inch X 3inch', price: 90.00, ratio: 'aspect-square' },
@@ -19,6 +21,7 @@ const SIZES = [
 type FrameItem = {
   id: string;
   url: string;
+  croppedUrl?: string;
   sizeId: string;
   quantity: number;
 };
@@ -36,12 +39,19 @@ export const CanvasFramesProductPage = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+  // Cropper states
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const previewRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!previewRef.current) return;
+    if (!previewRef.current || isCropping) return;
     const rect = previewRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -55,7 +65,9 @@ export const CanvasFramesProductPage = () => {
     setTilt({ x: tiltX, y: tiltY });
   };
 
-  const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
+  const handleMouseLeave = () => {
+    if (!isCropping) setTilt({ x: 0, y: 0 });
+  };
 
   const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
@@ -124,8 +136,9 @@ export const CanvasFramesProductPage = () => {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session?.user) {
-      alert('Please log in to add items to cart');
-      window.location.href = '/login';
+      setToastError('Please log in to add items to cart. Redirecting...');
+      setShowError(true);
+      setTimeout(() => { window.location.href = '/login'; }, 1500);
       return false;
     }
     
@@ -226,6 +239,48 @@ export const CanvasFramesProductPage = () => {
 
   const activeItem = frameItems.find(item => item.id === activeItemId);
   const activeSize = activeItem ? SIZES.find(s => s.id === activeItem.sizeId) : SIZES[0];
+
+  const getNumericAspect = (ratioStr?: string) => {
+    if (!ratioStr || ratioStr === 'aspect-square') return 1;
+    const match = ratioStr.match(/aspect-\[(.+)\/(.+)\]/);
+    if (match) return parseFloat(match[1]) / parseFloat(match[2]);
+    return 1;
+  };
+
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleSaveCrop = async () => {
+    if (!activeItem || !croppedAreaPixels) return;
+    try {
+      const croppedImage = await getCroppedImg(activeItem.url, croppedAreaPixels, rotation);
+      setFrameItems(prev => prev.map(item => {
+        if (item.id === activeItem.id) {
+          return { ...item, croppedUrl: croppedImage };
+        }
+        return item;
+      }));
+      setIsCropping(false);
+      setTilt({ x: 0, y: 0 });
+    } catch (e) {
+      console.error(e);
+      alert('Failed to crop image');
+    }
+  };
+
+  const handleCancelCrop = () => {
+    setIsCropping(false);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  const handleEditClick = () => {
+    setIsCropping(true);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
+    setTilt({ x: 0, y: 0 });
+  };
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
@@ -373,7 +428,7 @@ export const CanvasFramesProductPage = () => {
                           }`}
                         >
                           <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
-                            <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
+                            <img src={item.croppedUrl || item.url} alt="thumbnail" className="w-full h-full object-cover" />
                           </div>
 
                           <div className="flex-1 flex flex-col gap-2 min-w-0 w-full">
@@ -510,33 +565,71 @@ export const CanvasFramesProductPage = () => {
                       layout
                       className={`bg-[#e5e5e5] overflow-hidden relative shadow-inner ${activeSize?.ratio || 'aspect-square'} w-48 sm:w-60 md:w-72 max-h-[75vh]`}
                     >
-                      <AnimatePresence mode="wait">
-                        {activeItem ? (
-                          <motion.img
-                            key={activeItem.id}
-                            initial={{ opacity: 0, scale: 1.05, filter: 'blur(5px)' }}
-                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                            exit={{ opacity: 0, scale: 0.95, filter: 'blur(5px)' }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                            src={activeItem.url}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
+                      {isCropping && activeItem ? (
+                        <div className="absolute inset-0 z-50 bg-black/90">
+                          <Cropper
+                            image={activeItem.url}
+                            crop={crop}
+                            zoom={zoom}
+                            rotation={rotation}
+                            aspect={getNumericAspect(activeSize?.ratio)}
+                            onCropChange={setCrop}
+                            onRotationChange={setRotation}
+                            onCropComplete={onCropComplete}
+                            onZoomChange={setZoom}
                           />
-                        ) : (
-                          <motion.div
-                            key="placeholder"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
-                          >
-                            <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Frame</span>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/20 w-[90%]">
+                             <div className="flex items-center gap-4 w-full px-2">
+                               <span className="text-white text-xs font-bold">Rotate</span>
+                               <input type="range" min={0} max={360} value={rotation} onChange={(e) => setRotation(Number(e.target.value))} className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer" />
+                             </div>
+                             <div className="flex items-center gap-4 w-full px-2">
+                               <span className="text-white text-xs font-bold">Zoom</span>
+                               <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer" />
+                             </div>
+                             <div className="flex gap-2 w-full mt-1">
+                               <button onClick={handleSaveCrop} className="flex-1 bg-[#E85D26] text-white py-1.5 rounded-lg font-bold text-xs hover:bg-[#d6521e]">Save</button>
+                               <button onClick={handleCancelCrop} className="flex-1 bg-white/20 text-white py-1.5 rounded-lg font-bold text-xs hover:bg-white/30">Cancel</button>
+                             </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <AnimatePresence mode="wait">
+                          {activeItem ? (
+                            <>
+                              <motion.img
+                                key={activeItem.id}
+                                initial={{ opacity: 0, scale: 1.05, filter: 'blur(5px)' }}
+                                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0, scale: 0.95, filter: 'blur(5px)' }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                src={activeItem.croppedUrl || activeItem.url}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute top-2 right-2 z-20">
+                                <button onClick={handleEditClick} className="bg-white/90 p-2 rounded-lg shadow-sm hover:bg-white text-black text-xs font-bold flex items-center gap-1.5 transition-colors">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                  Adjust
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <motion.div
+                              key="placeholder"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
+                            >
+                              <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Frame</span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
                     </motion.div>
                   </div>
 

@@ -144,6 +144,62 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
     // Mark cart as converted
     await supabaseAdmin.from('carts').update({ status: 'converted', updated_at: new Date().toISOString() }).eq('id', cart.id);
 
+    // Push to Shiprocket via our backend API
+    try {
+      const shiprocketOrderData = {
+        order_id: orderNumber,
+        order_date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        pickup_location: "Primary", // Ensure you have a 'Primary' location set in Shiprocket settings
+        billing_customer_name: deliveryInfo.full_name,
+        billing_last_name: "",
+        billing_address: deliveryInfo.address_line1,
+        billing_address_2: deliveryInfo.address_line2 || "",
+        billing_city: deliveryInfo.city,
+        billing_pincode: deliveryInfo.postal_code,
+        billing_state: deliveryInfo.state,
+        billing_country: deliveryInfo.country || "India",
+        billing_email: deliveryInfo.email,
+        billing_phone: deliveryInfo.phone,
+        shipping_is_billing: true,
+        order_items: orderItemsToInsert.map((item: any) => ({
+          name: item.product_name,
+          sku: item.product_id.substring(0, 8),
+          units: item.quantity,
+          selling_price: item.unit_price,
+          discount: 0,
+          tax: 0,
+          hsn: 44140000
+        })),
+        payment_method: "Prepaid",
+        shipping_charges: 0,
+        giftwrap_charges: 0,
+        transaction_charges: 0,
+        total_discount: 0,
+        sub_total: total,
+        length: 10,
+        breadth: 15,
+        height: 20,
+        weight: 0.5 // Default placeholder weight (kg)
+      };
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      
+      const shiprocketRes = await fetch(`${backendUrl}/shipping/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderData: shiprocketOrderData })
+      });
+      
+      if (!shiprocketRes.ok) {
+        console.error("Failed to push to Shiprocket:", await shiprocketRes.text());
+        // Not failing checkout if shipping push fails, it can be retried
+      } else {
+        console.log("Successfully pushed order to Shiprocket!");
+      }
+    } catch (shipErr) {
+      console.error("Error communicating with Shiprocket backend API:", shipErr);
+    }
+
     return { success: true, orderId: order.id };
   } catch (err: any) {
     return { success: false, error: err.message };

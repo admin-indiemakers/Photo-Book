@@ -1,9 +1,11 @@
 'use client';
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import magnet1 from '../assets/fridge_magnet1.webp';
-import magnet2 from '../assets/fridge_magnet2.webp';
-import magnet3 from '../assets/fridge_magnet3.jpg';
+import magnet1 from '../assets/polariod fridge magnet 5.png';
+import magnet2 from '../assets/polariod fridge magnet 2.jpg';
+import magnet3 from '../assets/polariod fridge magnet 4.jpg';
+import Cropper from 'react-easy-crop';
+import getCroppedImg from '../utils/cropImage';
 
 const SIZES = [
   { id: 'standard', label: 'Standard', dimensions: 'Standard Size', price: 299 }
@@ -12,6 +14,7 @@ const SIZES = [
 type MagnetItem = {
   id: string;
   url: string;
+  croppedUrl?: string;
   sizeId: string;
   quantity: number;
   shapeId?: string;
@@ -29,12 +32,19 @@ export const FridgeMagnetProductPage = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+  // Cropper states
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
   // 3D Tilt effect
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const previewRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!previewRef.current) return;
+    if (!previewRef.current || isCropping) return;
     const rect = previewRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -48,7 +58,9 @@ export const FridgeMagnetProductPage = () => {
     setTilt({ x: tiltX, y: tiltY });
   };
 
-  const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
+  const handleMouseLeave = () => {
+    if (!isCropping) setTilt({ x: 0, y: 0 });
+  };
 
   const processFiles = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
@@ -115,15 +127,16 @@ export const FridgeMagnetProductPage = () => {
     const { addToCart, clearActiveCart } = await import('@/app/actions/cart');
     const { supabase } = await import('@/lib/supabase');
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (!session?.user) {
-      alert('Please log in to add items to cart');
-      window.location.href = '/login';
+      setToastError('Please log in to add items to cart. Redirecting...');
+      setShowError(true);
+      setTimeout(() => { window.location.href = '/login'; }, 1500);
       return false;
     }
-    
+
     const productId = 'a2efa28a-f458-4aa3-abb9-15655986b93a'; // Premium Fridge Magnets DB ID
-    
+
     try {
       if (clearFirst) {
         await clearActiveCart(session.user.id);
@@ -131,7 +144,7 @@ export const FridgeMagnetProductPage = () => {
       for (const item of magnetItems) {
         const sizeConfig = SIZES.find(s => s.id === item.sizeId);
         const price = sizeConfig ? sizeConfig.price : 0;
-        
+
         const customOptions = {
           items: [item],
           size: item.sizeId,
@@ -225,6 +238,41 @@ export const FridgeMagnetProductPage = () => {
 
   const activeItem = magnetItems.find(item => item.id === activeItemId);
 
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleSaveCrop = async () => {
+    if (!activeItem || !croppedAreaPixels) return;
+    try {
+      const croppedImage = await getCroppedImg(activeItem.url, croppedAreaPixels, rotation);
+      setMagnetItems(prev => prev.map(item => {
+        if (item.id === activeItem.id) {
+          return { ...item, croppedUrl: croppedImage };
+        }
+        return item;
+      }));
+      setIsCropping(false);
+      setTilt({ x: 0, y: 0 });
+    } catch (e) {
+      console.error(e);
+      alert('Failed to crop image');
+    }
+  };
+
+  const handleCancelCrop = () => {
+    setIsCropping(false);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  const handleEditClick = () => {
+    setIsCropping(true);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
+    setTilt({ x: 0, y: 0 });
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
       <div
@@ -243,7 +291,7 @@ export const FridgeMagnetProductPage = () => {
               className="text-4xl md:text-7xl font-serif tracking-tight mb-2 md:mb-4 text-[#1a1a18]"
               style={{ fontFamily: "'DM Serif Display', serif" }}
             >
-              Fridge Magnets
+              Polaroid Fridge Magnet
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -307,7 +355,7 @@ export const FridgeMagnetProductPage = () => {
                 animate={showError && magnetItems.length === 0 ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
                 className={`relative border-2 border-dashed rounded-xl overflow-hidden group transition-all duration-300 ${isDragging ? 'border-[#E85D26] bg-[#E85D26]/5 scale-[1.02]' :
-                    (showError && magnetItems.length === 0) ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
+                  (showError && magnetItems.length === 0) ? 'border-red-500 bg-red-50' : 'border-black/10 bg-white/50 hover:bg-white hover:border-[#E85D26]/50'
                   } ${isUploading ? 'pointer-events-none' : ''}`}
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
@@ -368,7 +416,7 @@ export const FridgeMagnetProductPage = () => {
                             }`}
                         >
                           <div className="flex-shrink-0 w-16 h-16 rounded-md overflow-hidden bg-[#e5e5e5] border border-black/10">
-                            <img src={item.url} alt="thumbnail" className="w-full h-full object-cover" />
+                            <img src={item.croppedUrl || item.url} alt="thumbnail" className="w-full h-full object-cover" />
                           </div>
 
                           <div className="flex-1 flex flex-col gap-2 min-w-0 w-full">
@@ -497,33 +545,71 @@ export const FridgeMagnetProductPage = () => {
                   }}
                 >
                   <div className="bg-[#e5e5e5] overflow-hidden relative w-64 sm:w-72 md:w-80 shadow-inner rounded-md aspect-square">
-                    <AnimatePresence mode="popLayout">
-                      {activeItem ? (
-                        <motion.img
-                          key={activeItem.id}
-                          initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-                          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                          exit={{ opacity: 0, filter: 'blur(10px)' }}
-                          transition={{ duration: 0.6, ease: "easeOut" }}
-                          src={activeItem.url}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
+                    {isCropping && activeItem ? (
+                      <div className="absolute inset-0 z-50 bg-black/90">
+                        <Cropper
+                          image={activeItem.url}
+                          crop={crop}
+                          zoom={zoom}
+                          rotation={rotation}
+                          aspect={1}
+                          onCropChange={setCrop}
+                          onRotationChange={setRotation}
+                          onCropComplete={onCropComplete}
+                          onZoomChange={setZoom}
                         />
-                      ) : (
-                        <motion.div
-                          key="placeholder"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
-                        >
-                          <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Magnet</span>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/20 w-[90%]">
+                           <div className="flex items-center gap-4 w-full px-2">
+                             <span className="text-white text-xs font-bold">Rotate</span>
+                             <input type="range" min={0} max={360} value={rotation} onChange={(e) => setRotation(Number(e.target.value))} className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer" />
+                           </div>
+                           <div className="flex items-center gap-4 w-full px-2">
+                             <span className="text-white text-xs font-bold">Zoom</span>
+                             <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer" />
+                           </div>
+                           <div className="flex gap-2 w-full mt-1">
+                             <button onClick={handleSaveCrop} className="flex-1 bg-[#E85D26] text-white py-1.5 rounded-lg font-bold text-xs hover:bg-[#d6521e]">Save</button>
+                             <button onClick={handleCancelCrop} className="flex-1 bg-white/20 text-white py-1.5 rounded-lg font-bold text-xs hover:bg-white/30">Cancel</button>
+                           </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <AnimatePresence mode="popLayout">
+                        {activeItem ? (
+                          <>
+                            <motion.img
+                              key={activeItem.id}
+                              initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+                              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                              exit={{ opacity: 0, filter: 'blur(10px)' }}
+                              transition={{ duration: 0.6, ease: "easeOut" }}
+                              src={activeItem.croppedUrl || activeItem.url}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-2 right-2 z-20">
+                              <button onClick={handleEditClick} className="bg-white/90 p-2 rounded-lg shadow-sm hover:bg-white text-black text-xs font-bold flex items-center gap-1.5 transition-colors">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                Adjust
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="w-full h-full flex flex-col items-center justify-center text-black/20 bg-[#e5e5e5]"
+                          >
+                            <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="font-mono text-[10px] uppercase tracking-widest opacity-50">Empty Magnet</span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
                   </div>
 
                   <motion.div

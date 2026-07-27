@@ -74,8 +74,8 @@ export const productsData = [
     href: "/polaroid"
   },
   {
-    title: "Fridge Magnet",
-    desc: "Premium brass fridge magnets for everyday joy.",
+    title: "Polaroid Fridge Magnet",
+    desc: "Premium polaroid fridge magnets for everyday joy.",
     img: "/images/craft1.png",
     badge: "",
     href: "/fridge-magnet"
@@ -123,7 +123,7 @@ export function Footer() {
             <li><Link href="/templates" className="hover:text-[#111111] transition-colors">Photo Books</Link></li>
             <li><Link href="/frame" className="hover:text-[#111111] transition-colors">Photo Frames</Link></li>
             <li><Link href="/polaroid" className="hover:text-[#111111] transition-colors">Polaroids</Link></li>
-            <li><Link href="/fridge-magnet" className="hover:text-[#111111] transition-colors">Fridge Magnets</Link></li>
+            <li><Link href="/fridge-magnet" className="hover:text-[#111111] transition-colors">Polaroid Fridge Magnet</Link></li>
             <li><Link href="/acrylic-frames" className="hover:text-[#111111] transition-colors">Acrylic Frames</Link></li>
             <li><Link href="/canvas-frames" className="hover:text-[#111111] transition-colors">Canvas Frames</Link></li>
           </ul>
@@ -172,6 +172,18 @@ export function HeaderNav() {
   const [user, setUser] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin, // Redirect straight to home page
+      },
+    });
+    if (error) {
+      console.error('Google login error:', error.message);
+    }
+  };
 
   useEffect(() => {
     setIsClient(true);
@@ -222,14 +234,16 @@ export function HeaderNav() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute top-full left-0 mt-6 w-48 bg-white/95 backdrop-blur-md text-[#111111] border border-[#eaeaea] rounded-none overflow-hidden py-4 shadow-sm"
+                  className="absolute top-full left-0 mt-0 pt-2 w-48 rounded-none shadow-sm"
                 >
-                  <Link href="/templates" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Book</Link>
-                  <Link href="/frame" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Frame</Link>
-                  <Link href="/polaroid" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Polaroid</Link>
-                  <Link href="/fridge-magnet" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Fridge Magnet</Link>
-                  <Link href="/acrylic-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Acrylic Frames</Link>
-                  <Link href="/canvas-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Canvas Frames</Link>
+                  <div className="bg-white/95 backdrop-blur-md text-[#111111] border border-[#eaeaea] py-4">
+                    <Link href="/templates" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Book</Link>
+                    <Link href="/frame" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Photo Frame</Link>
+                    <Link href="/polaroid" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Polaroid</Link>
+                    <Link href="/fridge-magnet" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Polaroid Fridge Magnet</Link>
+                    <Link href="/acrylic-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Acrylic Frames</Link>
+                    <Link href="/canvas-frames" className="block px-6 py-2 hover:bg-[#fafafa] hover:text-black transition-colors font-light">Canvas Frames</Link>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -267,9 +281,9 @@ export function HeaderNav() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="hover:opacity-70 transition-opacity">
+              <button onClick={handleGoogleLogin} className="hover:opacity-70 transition-opacity">
                 Sign In
-              </Link>
+              </button>
             )
           ) : (
             <div className="w-12 h-4" />

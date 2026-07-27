@@ -74,14 +74,9 @@ export default function CanvasWorkspace() {
 
   useEffect(() => {
     if (dimensions.width > 0) {
-      const activeWidth = isCover ? PAGE_WIDTH : SPREAD_WIDTH;
-      // On small screens, auto-scale so the spread fits within 90% of the screen width
-      if (activeWidth * canvasSettings.zoom > dimensions.width * 0.9) {
-        setZoom((dimensions.width * 0.9) / activeWidth);
-      }
+      setZoom(0.42);
     }
-    // Note: intentionally not depending on canvasSettings.zoom so user can manually zoom after initial fit
-  }, [dimensions.width, isCover, setZoom]);
+  }, [dimensions.width, setZoom]);
 
   useEffect(() => {
     if (stageRef.current) {
