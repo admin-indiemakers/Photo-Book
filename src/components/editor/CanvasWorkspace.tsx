@@ -73,10 +73,22 @@ export default function CanvasWorkspace() {
   }, [mounted, isHydrated]);
 
   useEffect(() => {
-    if (dimensions.width > 0) {
-      setZoom(0.42);
+    if (dimensions.width > 0 && dimensions.height > 0) {
+      if (window.innerWidth >= 1024) {
+        setZoom(0.43);
+      } else {
+        const activeWidth = isCover ? PAGE_WIDTH : PAGE_WIDTH * 2;
+        const availableWidth = dimensions.width - 40; // 20px padding on each side
+        const availableHeight = dimensions.height - 140; // Account for top and bottom bars
+        
+        const scaleForWidth = availableWidth / activeWidth;
+        const scaleForHeight = availableHeight / PAGE_HEIGHT;
+        
+        const optimalZoom = Math.min(scaleForWidth, scaleForHeight, 1);
+        setZoom(optimalZoom);
+      }
     }
-  }, [dimensions.width, setZoom]);
+  }, [dimensions.width, dimensions.height, isCover, PAGE_WIDTH, PAGE_HEIGHT, setZoom]);
 
   useEffect(() => {
     if (stageRef.current) {
@@ -248,9 +260,23 @@ export default function CanvasWorkspace() {
 
   const handleDragEnd = (e: any, element: any, isRightPage: boolean) => {
     clearSnapGuides();
+    const finalX = e.target.x() - element.width / 2;
+    const finalY = e.target.y() - (element.height || 0) / 2;
+    
+    if (!isCover && leftPage && rightPage) {
+      const store = useEditorStore.getState();
+      if (!isRightPage && finalX > PAGE_WIDTH) {
+        store.moveElementBetweenPages(element.id, leftPage.id, rightPage.id, { x: finalX - PAGE_WIDTH, y: finalY });
+        return;
+      } else if (isRightPage && finalX < 0) {
+        store.moveElementBetweenPages(element.id, rightPage.id, leftPage.id, { x: finalX + PAGE_WIDTH, y: finalY });
+        return;
+      }
+    }
+
     updateElement(isRightPage ? rightPage!.id : leftPage!.id, element.id, {
-      x: e.target.x() - element.width / 2,
-      y: e.target.y() - (element.height || 0) / 2,
+      x: finalX,
+      y: finalY,
     });
   };
 
@@ -340,9 +366,7 @@ export default function CanvasWorkspace() {
     >
       {dimensions.width > 0 && (
         <>
-          <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 10, background: 'rgba(0,0,0,0.5)', color: 'white', padding: 5, fontSize: 10 }}>
-            Debug: Spread={currentSpreadIndex}, Pages={pages.length}, Left={leftPageIndex}, Right={rightPageIndex} | Pan: {currentPanX}, {currentPanY} | Dim: {dimensions.width}x{dimensions.height}
-          </div>
+
           {canvasSettings.showRulers && (
             <>
               <RulerCorner />
@@ -452,17 +476,14 @@ export default function CanvasWorkspace() {
                     shadowColor="rgba(0,0,0,0.15)" shadowBlur={15} shadowOffsetY={0} shadowOffsetX={0}
                   />
 
-                  {/* Render Pages */}
+                  {/* Render Page Backgrounds First */}
                   {[leftPage, rightPage].map((page, index) => {
                     const isRight = index === 1;
-                    if (isCover && !isRight) return null; // Cover has no left side
-
+                    if (isCover && !isRight) return null;
                     const offsetX = isCover ? 0 : (isRight ? PAGE_WIDTH : 0);
-
                     if (!page) {
-                      // Contextual Layout Guard for missing page in spread
                       return (
-                        <Group key={`fallback-${index}`} x={offsetX} y={0}>
+                        <Group key={`fallback-bg-${index}`} x={offsetX} y={0}>
                           <Rect
                             x={0} y={0}
                             width={PAGE_WIDTH} height={PAGE_HEIGHT}
@@ -472,6 +493,36 @@ export default function CanvasWorkspace() {
                             strokeWidth={1}
                             dash={[5, 5]}
                           />
+                        </Group>
+                      );
+                    }
+                    return (
+                      <Group key={`bg-${page.id}`} x={offsetX} y={0}>
+                        <Rect
+                          name="page-background"
+                          x={0} y={0}
+                          width={PAGE_WIDTH} height={PAGE_HEIGHT}
+                          fill={page.background?.value || 'white'}
+                          opacity={page.background?.opacity ?? 1}
+                          onMouseDown={(e) => {
+                            useEditorStore.getState().setCurrentPage(page.id);
+                          }}
+                          stroke={currentPageId === page.id ? '#E85D26' : undefined}
+                          strokeWidth={currentPageId === page.id ? 3 : 0}
+                        />
+                      </Group>
+                    );
+                  })}
+
+                  {/* Render Page Elements */}
+                  {[leftPage, rightPage].map((page, index) => {
+                    const isRight = index === 1;
+                    if (isCover && !isRight) return null;
+                    const offsetX = isCover ? 0 : (isRight ? PAGE_WIDTH : 0);
+
+                    if (!page) {
+                      return (
+                        <Group key={`fallback-els-${index}`} x={offsetX} y={0}>
                           <Text
                             x={0} y={PAGE_HEIGHT / 2 - 10}
                             width={PAGE_WIDTH}
@@ -485,20 +536,7 @@ export default function CanvasWorkspace() {
                     }
 
                     return (
-                      <Group key={page.id} x={offsetX} y={0}>
-                        <Rect
-                          name="page-background"
-                          x={0} y={0}
-                          width={PAGE_WIDTH} height={PAGE_HEIGHT}
-                          fill={page.background?.value || 'white'}
-                          opacity={page.background?.opacity ?? 1}
-                          onMouseDown={(e) => {
-                            useEditorStore.getState().setCurrentPage(page.id);
-                          }}
-                          stroke={currentPageId === page.id ? '#E85D26' : undefined}
-                          strokeWidth={currentPageId === page.id ? 3 : 0}
-                        />
-
+                      <Group key={`els-${page.id}`} x={offsetX} y={0}>
                         {/* Elements */}
                         {page.elements.map((el) => {
                           const isSelected = selectedElementIds.includes(el.id);

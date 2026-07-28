@@ -26,6 +26,7 @@ export default function TextElement({ element, isSelected, onSelect, onChange, o
 
     const newWidth = Math.max(5, node.width() * scaleX);
     const newHeight = Math.max(5, node.height() * scaleY);
+    const newFontSize = Math.max(1, (element.fontSize || 16) * scaleY);
 
     onChange({
       ...element,
@@ -33,6 +34,7 @@ export default function TextElement({ element, isSelected, onSelect, onChange, o
       y: node.y() - newHeight / 2,
       width: newWidth,
       height: newHeight,
+      fontSize: newFontSize,
       rotation: node.rotation()
     });
   };

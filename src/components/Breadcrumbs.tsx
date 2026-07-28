@@ -9,7 +9,7 @@ export function Breadcrumbs() {
   const pathname = usePathname();
 
   // Don't show on home page or editor page
-  if (!pathname || pathname === '/' || pathname.startsWith('/templates')) {
+  if (!pathname || pathname === '/' || pathname.startsWith('/templates') || pathname.startsWith('/editor')) {
     return null;
   }
 
