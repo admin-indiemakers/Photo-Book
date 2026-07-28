@@ -299,16 +299,27 @@ export default function LeftSidebar() {
                     <h4 className="text-xs font-semibold text-[#1a1a18] mb-3">Your Uploads</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {uploadedPhotos.map((src, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleAddImage(src)}
-                          className="w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#e8e2d9] hover:border-[#E85D26] hover:shadow-md transition-all group relative bg-[#FAF6EE]"
-                        >
-                          <img src={src} alt={`Upload ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                            <span className="text-white opacity-0 group-hover:opacity-100 font-medium text-xs drop-shadow-md">Add</span>
-                          </div>
-                        </button>
+                        <div key={i} className="relative group w-full aspect-[4/3]">
+                          <button
+                            onClick={() => handleAddImage(src)}
+                            className="w-full h-full rounded-lg overflow-hidden border border-[#e8e2d9] hover:border-[#E85D26] hover:shadow-md transition-all relative bg-[#FAF6EE]"
+                          >
+                            <img src={src} alt={`Upload ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                              <span className="text-white opacity-0 group-hover:opacity-100 font-medium text-xs drop-shadow-md">Add</span>
+                            </div>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setUploadedPhotos(prev => prev.filter((_, index) => index !== i));
+                            }}
+                            className="absolute top-1 right-1 w-6 h-6 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                            title="Remove image"
+                          >
+                            <span className="text-lg font-bold leading-none -mt-0.5">&times;</span>
+                          </button>
+                        </div>
                       ))}
                     </div>
                   </div>

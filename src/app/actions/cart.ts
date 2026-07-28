@@ -3,14 +3,27 @@
 import { supabaseAdmin, supabase } from '@/lib/supabase';
 import { revalidatePath } from 'next/cache';
 
+async function getCustomerId(userId: string) {
+  if (!userId) return null;
+  const { data: customer } = await supabaseAdmin
+    .from('customers')
+    .select('id')
+    .eq('auth_user_id', userId)
+    .maybeSingle();
+  return customer?.id || null;
+}
+
 export async function getCart(userId: string) {
   if (!userId) return { success: false, error: 'Not authenticated' };
 
   try {
+    const customerId = await getCustomerId(userId);
+    if (!customerId) return { success: true, cart: null }; // No customer yet
+
     const { data: cart, error } = await supabaseAdmin
       .from('carts')
       .select('*, cart_items(*, products(*))')
-      .eq('customer_id', userId)
+      .eq('customer_id', customerId)
       .eq('status', 'active')
       .maybeSingle();
 
@@ -25,10 +38,13 @@ export async function clearActiveCart(userId: string) {
   if (!userId) return { success: false, error: 'Not authenticated' };
 
   try {
+    const customerId = await getCustomerId(userId);
+    if (!customerId) return { success: true };
+
     const { data: cart } = await supabaseAdmin
       .from('carts')
       .select('id')
-      .eq('customer_id', userId)
+      .eq('customer_id', customerId)
       .eq('status', 'active')
       .maybeSingle();
 
@@ -48,18 +64,43 @@ export async function addToCart(userId: string, productId: string, quantity: num
   if (!userId) return { success: false, error: 'Please log in to add items to cart' };
 
   try {
+    // Ensure customer exists
+    let { data: customer } = await supabaseAdmin
+      .from('customers')
+      .select('id')
+      .eq('auth_user_id', userId)
+      .maybeSingle();
+
+    if (!customer) {
+      const { data: authData } = await supabaseAdmin.auth.admin.getUserById(userId);
+      const user = authData?.user;
+      const email = user?.email || `user_${userId}@example.com`;
+      const fullName = user?.user_metadata?.full_name || 'Guest';
+
+      const { data: newCustomer, error: custError } = await supabaseAdmin
+        .from('customers')
+        .insert({ auth_user_id: userId, email: email, full_name: fullName })
+        .select('id')
+        .single();
+      
+      if (custError) throw custError;
+      customer = newCustomer;
+    }
+
+    const customerId = customer.id;
+
     // Find or create active cart
     let { data: cart } = await supabaseAdmin
       .from('carts')
       .select('id')
-      .eq('customer_id', userId)
+      .eq('customer_id', customerId)
       .eq('status', 'active')
       .maybeSingle();
 
     if (!cart) {
       const { data: newCart, error: createError } = await supabaseAdmin
         .from('carts')
-        .insert({ customer_id: userId, status: 'active' })
+        .insert({ customer_id: customerId, status: 'active' })
         .select()
         .single();
       
@@ -94,11 +135,14 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
   if (!userId) return { success: false, error: 'Not authenticated' };
 
   try {
+    const customerId = await getCustomerId(userId);
+    if (!customerId) return { success: false, error: 'Customer profile not found' };
+
     // Get active cart
     const { data: cart } = await supabaseAdmin
       .from('carts')
       .select('*, cart_items(*, products(*))')
-      .eq('customer_id', userId)
+      .eq('customer_id', customerId)
       .eq('status', 'active')
       .maybeSingle();
 
@@ -114,7 +158,7 @@ export async function checkoutCart(userId: string, deliveryInfo: any) {
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
-        customer_id: userId,
+        customer_id: customerId,
         order_number: orderNumber,
         status: 'pending',
         total,

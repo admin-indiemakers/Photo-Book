@@ -143,7 +143,7 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
         <Button
           variant="ghost" size="icon"
           className="h-8 w-8 text-[#6b6560] hover:text-[#E85D26]"
-          onClick={() => setZoom(1)}
+          onClick={() => setZoom(canvasSettings.zoom === 1 ? 0.43 : 1)}
           title="Fit to 100%"
         >
           <Maximize size={16} />
@@ -168,24 +168,6 @@ export default function TopToolbar({ onPreview, onValidate }: TopToolbarProps) {
           title="Toggle Grid"
         >
           <Grid size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`h-8 w-8 transition-colors ${canvasSettings.snapToGrid ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
-          onClick={toggleSnapToGrid}
-          title="Snap to Grid"
-        >
-          <AlignHorizontalJustifyCenter size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`h-8 w-8 transition-colors ${canvasSettings.snapToObjects ? 'bg-[#E85D26] text-white hover:bg-[#D4520A]' : 'text-[#6b6560] hover:bg-[#f4efeb] hover:text-[#E85D26]'}`}
-          onClick={toggleSnapToObjects}
-          title="Toggle Snap to Objects"
-        >
-          <Magnet size={16} />
         </Button>
       </div>
 

@@ -68,28 +68,50 @@ export default function BottomStrip() {
 
               {/* Left Page (if exists) */}
               {spread.left ? (
-                <button
-                  onClick={() => handlePageClick(spread.left.id, spread.index)}
-                  className={`w-10 h-14 bg-[#FAF6EE] shadow-sm flex items-center justify-center transition-all 
-                    ${currentPageId === spread.left.id ? 'ring-2 ring-[#E85D26] ring-inset bg-white z-10' : 'border border-[#d2cec5] hover:border-[#E85D26]'}
-                    rounded-l-sm`}
-                >
-                  <span className="text-[10px] text-[#6b6560] font-medium">{pages.findIndex(p => p.id === spread.left.id) + 1}</span>
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() => handlePageClick(spread.left.id, spread.index)}
+                    className={`w-10 h-14 bg-[#FAF6EE] shadow-sm flex items-center justify-center transition-all 
+                      ${currentPageId === spread.left.id ? 'ring-2 ring-[#E85D26] ring-inset bg-white z-10' : 'border border-[#d2cec5] hover:border-[#E85D26]'}
+                      rounded-l-sm`}
+                  >
+                    <span className="text-[10px] text-[#6b6560] font-medium">{pages.findIndex(p => p.id === spread.left.id) + 1}</span>
+                  </button>
+                  {pages.length > 1 && (
+                    <button
+                      onClick={() => useEditorStore.getState().deletePage(spread.left.id)}
+                      className="absolute -top-2 -left-2 w-4 h-4 bg-red-500 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-sm z-20"
+                      title="Delete page"
+                    >
+                      <span className="text-xs leading-none -mt-0.5">&times;</span>
+                    </button>
+                  )}
+                </div>
               ) : (
                 <div className="w-10 h-14 bg-transparent" />
               )}
 
               {/* Right Page (if exists) */}
               {spread.right && (
-                <button
-                  onClick={() => handlePageClick(spread.right.id, spread.index)}
-                  className={`w-10 h-14 bg-[#FAF6EE] shadow-sm flex items-center justify-center transition-all 
-                    ${currentPageId === spread.right.id ? 'ring-2 ring-[#E85D26] ring-inset bg-white z-10' : 'border border-[#d2cec5] hover:border-[#E85D26]'}
-                    ${spread.left ? 'rounded-r-sm' : 'rounded-sm'}`}
-                >
-                  <span className="text-[10px] text-[#6b6560] font-medium">{pages.findIndex(p => p.id === spread.right.id) + 1}</span>
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() => handlePageClick(spread.right.id, spread.index)}
+                    className={`w-10 h-14 bg-[#FAF6EE] shadow-sm flex items-center justify-center transition-all 
+                      ${currentPageId === spread.right.id ? 'ring-2 ring-[#E85D26] ring-inset bg-white z-10' : 'border border-[#d2cec5] hover:border-[#E85D26]'}
+                      ${spread.left ? 'rounded-r-sm' : 'rounded-sm'}`}
+                  >
+                    <span className="text-[10px] text-[#6b6560] font-medium">{pages.findIndex(p => p.id === spread.right.id) + 1}</span>
+                  </button>
+                  {pages.length > 1 && (
+                    <button
+                      onClick={() => useEditorStore.getState().deletePage(spread.right.id)}
+                      className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 shadow-sm z-20"
+                      title="Delete page"
+                    >
+                      <span className="text-xs leading-none -mt-0.5">&times;</span>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           );
