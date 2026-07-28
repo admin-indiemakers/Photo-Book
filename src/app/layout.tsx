@@ -52,9 +52,26 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory">
+      <head>
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-5FNBNK1V8P"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-5FNBNK1V8P');
+          `}
+        </Script>
+      </head>
+      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
         <TooltipProvider>
           <Breadcrumbs />
           {children}
