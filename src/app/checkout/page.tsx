@@ -86,7 +86,7 @@ export default function CheckoutPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
@@ -133,11 +133,11 @@ export default function CheckoutPage() {
             Secure Checkout
           </h1>
         </motion.div>
-        
+
         <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8 lg:gap-16">
           {/* Checkout Form */}
           <div className="lg:col-span-7">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
               className="bg-white/80 backdrop-blur rounded-3xl p-5 sm:p-10 shadow-sm border border-black/5"
             >
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 Delivery Information
               </div>
-              
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 {error && (
                   <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100 flex items-start gap-3">
@@ -206,8 +206,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="sticky bottom-4 z-50 lg:static lg:bottom-auto mt-8">
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={submitting}
                     className="w-full bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform lg:hover:-translate-y-1 disabled:opacity-50 disabled:transform-none disabled:hover:shadow-none flex justify-center items-center gap-2 shadow-[0_0_40px_rgba(0,0,0,0.15)] lg:shadow-none"
                   >
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-5">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
               className="bg-white p-5 sm:p-8 rounded-3xl shadow-xl shadow-black/5 border border-black/5 lg:sticky lg:top-32"
             >
@@ -235,15 +235,15 @@ export default function CheckoutPage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
                 Order Details
               </div>
-              
+
               <div className="space-y-4 mb-8 lg:max-h-[400px] lg:overflow-y-auto pr-2 custom-scrollbar">
                 {items.map((item: any) => (
                   <div key={item.id} className="flex gap-4 p-3 hover:bg-black/5 rounded-xl transition-colors">
                     <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-black/5 flex-shrink-0 border border-black/10">
                       {item.custom_options?.items?.[0]?.url || item.products?.images?.[0] ? (
-                        <img 
-                          src={item.custom_options?.items?.[0]?.url || item.products?.images?.[0]} 
-                          alt={item.products?.name || 'Product'} 
+                        <img
+                          src={item.custom_options?.items?.[0]?.url || item.products?.images?.[0]}
+                          alt={item.products?.name || 'Product'}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -252,7 +252,7 @@ export default function CheckoutPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 flex flex-col justify-center">
                       <p className="font-serif text-lg text-[#1a1a18] leading-tight mb-1">{item.products?.name || 'Product'}</p>
                       <p className="text-sm text-[#6b6560]">Qty: {item.quantity}</p>
@@ -263,14 +263,14 @@ export default function CheckoutPage() {
                         );
                       })}
                     </div>
-                    
+
                     <div className="flex items-center">
                       <p className="font-medium text-[#E85D26]">₹{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
               <div className="space-y-3 pt-6 border-t border-black/10">
                 <div className="flex justify-between text-sm text-[#6b6560]">
                   <span>Subtotal</span>

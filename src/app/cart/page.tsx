@@ -32,7 +32,7 @@ export default function CartPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
@@ -45,7 +45,7 @@ export default function CartPage() {
     return (
       <div className="min-h-screen pt-32 px-6 flex flex-col items-center justify-center bg-[#F7F5F0] relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
-        
+
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a18] mb-4 tracking-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>Your Cart</h1>
           <p className="text-[#6b6560] mb-8 font-light text-lg">{error || 'Please log in to view your cart.'}</p>
@@ -78,7 +78,7 @@ export default function CartPage() {
           </h1>
           <p className="text-lg text-[#6b6560] font-light">Review your premium selections before checkout.</p>
         </motion.div>
-        
+
         {items.length === 0 ? (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-24 bg-white/60 rounded-3xl border border-black/5 shadow-sm backdrop-blur-sm">
             <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -96,8 +96,8 @@ export default function CartPage() {
             <div className="lg:col-span-8 space-y-6">
               <AnimatePresence>
                 {items.map((item: any, index: number) => (
-                  <motion.div 
-                    key={item.id} 
+                  <motion.div
+                    key={item.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -105,9 +105,9 @@ export default function CartPage() {
                   >
                     <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-black/5 flex-shrink-0 border border-black/5 group-hover:border-[#E85D26]/30 transition-colors">
                       {item.custom_options?.items?.[0]?.url || item.products?.images?.[0] ? (
-                        <img 
-                          src={item.custom_options?.items?.[0]?.url || item.products?.images?.[0]} 
-                          alt={item.products?.name || 'Product'} 
+                        <img
+                          src={item.custom_options?.items?.[0]?.url || item.products?.images?.[0]}
+                          alt={item.products?.name || 'Product'}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
                       ) : (
@@ -117,26 +117,26 @@ export default function CartPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 flex flex-col justify-between py-1">
                       <div>
                         <div className="flex justify-between items-start mb-1">
                           <h3 className="font-serif text-2xl text-[#1a1a18]">{item.products?.name || 'Product'}</h3>
                           <p className="font-medium text-lg text-[#E85D26]">₹{(item.price * item.quantity).toFixed(2)}</p>
                         </div>
-                        
+
                         <div className="mb-4">
                           <p className="text-sm font-medium text-[#1a1a18] mb-1">Quantity: {item.quantity} <span className="text-[#6b6560] font-normal text-xs">(₹{item.price.toFixed(2)} each)</span></p>
-                          
+
                           <div className="space-y-1 mt-2 border-l-2 border-[#E85D26]/30 pl-3 py-1">
                             {item.custom_options && Object.keys(item.custom_options).map(key => {
                               if (key === 'items' || key === 'pdfData') return null;
-                              
+
                               const val = item.custom_options[key];
                               let displayVal = val;
                               if (Array.isArray(val)) displayVal = `${val.length} items selected`;
                               else if (typeof val === 'object') displayVal = JSON.stringify(val);
-                              
+
                               return (
                                 <p key={key} className="text-xs text-[#6b6560] capitalize"><span className="font-medium text-[#1a1a18]">{key}:</span> {displayVal}</p>
                               );
@@ -144,7 +144,7 @@ export default function CartPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-4">
                         <button className="text-xs font-mono uppercase tracking-widest text-black/40 hover:text-red-500 transition-colors flex items-center gap-1 group/btn">
                           <svg className="w-4 h-4 group-hover/btn:-rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -156,10 +156,10 @@ export default function CartPage() {
                 ))}
               </AnimatePresence>
             </div>
-            
+
             {/* Order Summary */}
             <div className="lg:col-span-4 relative">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
                 className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-black/5 lg:sticky lg:top-32"
               >
@@ -167,7 +167,7 @@ export default function CartPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                   Order Summary
                 </div>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#6b6560]">Subtotal ({items.length} items)</span>
@@ -186,11 +186,11 @@ export default function CartPage() {
                     <span className="text-3xl font-serif text-[#1a1a18]">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
-                
+
                 <Link href="/checkout" className="block w-full bg-[#1a1a18] text-white text-center py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform hover:-translate-y-1">
                   Proceed to Checkout
                 </Link>
-                
+
                 <div className="mt-6 pt-6 border-t border-black/5 grid grid-cols-3 gap-2">
                   <div className="flex flex-col items-center text-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-[#6b6560]">
