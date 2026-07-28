@@ -129,6 +129,7 @@ interface EditorState {
   // Element CRUD
   addElement: (element: any, targetPageId?: string) => void;
   updateElement: (pageId: string, elementId: string, attrs: any) => void;
+  moveElementBetweenPages: (elementId: string, sourcePageId: string, targetPageId: string, newAttrs: any) => void;
   deleteSelectedElements: () => void;
 
   // Clipboard
@@ -505,6 +506,33 @@ export const useEditorStore = create<EditorState>()(
             };
           }),
         })),
+
+      moveElementBetweenPages: (elementId, sourcePageId, targetPageId, newAttrs) =>
+        set((state) => {
+          let elementToMove: EditorElement | null = null;
+          const newPages = state.pages.map((page) => {
+            if (page.id === sourcePageId) {
+              elementToMove = page.elements.find(el => el.id === elementId) || null;
+              if (elementToMove) {
+                 elementToMove = { ...elementToMove, ...newAttrs };
+              }
+              return { ...page, elements: page.elements.filter(el => el.id !== elementId) };
+            }
+            return page;
+          });
+          
+          if (!elementToMove) return state;
+
+          return {
+            pages: newPages.map((page) => {
+              if (page.id === targetPageId) {
+                return { ...page, elements: [...page.elements, elementToMove!] };
+              }
+              return page;
+            }),
+            currentPageId: targetPageId
+          };
+        }),
 
       deleteSelectedElements: () =>
         set((state) => {

@@ -453,10 +453,16 @@ function PropertiesPanel() {
                 <label className="text-[10px] text-[#a09890]">Border Color</label>
                 <div className="flex items-center gap-2">
                   <input type="color" value={selectedElement.stroke || '#000000'}
-                    onChange={(e) => handleUpdate('stroke', e.target.value)}
+                    onChange={(e) => {
+                      handleUpdate('stroke', e.target.value);
+                      if (!selectedElement.strokeWidth) handleUpdate('strokeWidth', 2);
+                    }}
                     className="w-7 h-7 rounded border border-[#e8e2d9] cursor-pointer" />
                   <input type="text" value={selectedElement.stroke || ''}
-                    onChange={(e) => handleUpdate('stroke', e.target.value)}
+                    onChange={(e) => {
+                      handleUpdate('stroke', e.target.value);
+                      if (e.target.value && !selectedElement.strokeWidth) handleUpdate('strokeWidth', 2);
+                    }}
                     placeholder="none"
                     className="flex-1 h-7 px-2 text-xs border border-[#e8e2d9] rounded-md focus:border-[#E85D26] focus:outline-none bg-[#faf8f5] font-mono" />
                 </div>
@@ -476,7 +482,7 @@ function PropertiesPanel() {
 }
 
 // ============ LAYERS TAB ============
-function LayersPanel() {
+function LayersPanel({ onNavigateToProperties }: { onNavigateToProperties?: () => void }) {
   const {
     pages, currentPageId, selectedElementIds, setSelectedElements,
     updateElement, toggleLockSelected, toggleHideSelected,
@@ -495,10 +501,11 @@ function LayersPanel() {
   };
 
   const getElementIcon = (el: EditorElement) => {
-    if (el.type === 'text') return 'T';
-    if (el.type === 'image') return '🖼';
-    if (el.type === 'shape') return '◆';
-    return '•';
+    if (el.type === 'text') return <span className="font-serif font-bold text-xs">T</span>;
+    if (el.type === 'image' && el.src) return <img src={el.src} alt="layer" className="w-4 h-4 object-cover rounded-[2px] border border-[#e8e2d9]" />;
+    if (el.type === 'image') return <span>🖼</span>;
+    if (el.type === 'shape') return <span className="text-[10px]">◆</span>;
+    return <span>•</span>;
   };
 
   return (
@@ -516,7 +523,10 @@ function LayersPanel() {
                   ? 'bg-[#E85D26]/10 text-[#E85D26]'
                   : 'hover:bg-[#f4efeb] text-[#1a1a18]'
                   } ${el.hidden ? 'opacity-40' : ''}`}
-                onClick={() => setSelectedElements([el.id])}
+                onClick={() => {
+                  setSelectedElements([el.id]);
+                  onNavigateToProperties?.();
+                }}
               >
                 <span className="w-5 text-center text-sm flex-shrink-0">{getElementIcon(el)}</span>
                 <span className="flex-1 truncate text-[11px]">{getElementLabel(el)}</span>
@@ -588,7 +598,7 @@ export default function RightSidebar() {
 
       <div className="flex-1 w-full overflow-y-auto overflow-x-hidden" data-lenis-prevent="true">
         {activeTab === 'properties' && <PropertiesPanel />}
-        {activeTab === 'layers' && <LayersPanel />}
+        {activeTab === 'layers' && <LayersPanel onNavigateToProperties={() => setActiveTab('properties')} />}
       </div>
     </div>
   );

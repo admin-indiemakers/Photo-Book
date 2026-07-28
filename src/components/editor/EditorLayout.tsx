@@ -49,8 +49,8 @@ export default function EditorLayout() {
         setMobileTab('right');
       }
     }
-    // Auto-close properties if user clicks empty canvas (deselects)
-    if (selectedElementIds.length === 0 && mobileTab === 'right') {
+    // Auto-close properties if user deselects an element (but not if they just opened the panel manually)
+    if (selectedElementIds.length === 0 && prevSelected.length > 0 && mobileTab === 'right') {
       setMobileTab(null);
     }
     setPrevSelected(selectedElementIds);

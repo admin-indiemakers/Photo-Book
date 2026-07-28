@@ -172,6 +172,8 @@ export default function PreviewMode({ onClose }: { onClose: () => void }) {
                         height: '100%',
                         backgroundColor: el.fill || '#E85D26',
                         borderRadius: el.shapeType === 'circle' ? '50%' : (el.cornerRadius || 0),
+                        clipPath: el.shapeType === 'star' ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' : 
+                                  el.shapeType === 'polygon' ? 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' : undefined,
                         border: el.stroke ? `${el.strokeWidth || 1}px solid ${el.stroke}` : undefined,
                         opacity: el.opacity ?? 1,
                       }}
