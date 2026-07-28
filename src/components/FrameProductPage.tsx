@@ -3,6 +3,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/cropImage';
+import { trackViewItem, trackAddToCart } from '@/lib/gtag';
 
 const SIZES = [
   { id: '3x3', label: '3x3', dimensions: '3inch X 3inch', price: 135.00, ratio: 'aspect-square' },
@@ -37,6 +38,10 @@ export const FrameProductPage = () => {
 
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  useEffect(() => {
+    trackViewItem({ id: 'photo-frames', name: 'Photo Frames', price: 135, category: 'Frames' });
+  }, []);
 
   // Cropper states
   const [isCropping, setIsCropping] = useState(false);

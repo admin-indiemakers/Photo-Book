@@ -1,11 +1,12 @@
 'use client';
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import polaroid1 from '@/assets/Polariod 3.jpg';
 import polaroid2 from '@/assets/Polariod 1.jpg';
 import polaroid3 from '@/assets/Polariod 2.jpg';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/cropImage';
+import { trackViewItem, trackAddToCart } from '@/lib/gtag';
 
 const SIZES = [
   { id: '2.5x3', label: 'Mini', dimensions: '2.5inch X 3 inch', price: 299 },
@@ -40,6 +41,10 @@ export const PolaroidProductPage = () => {
   const [toastError, setToastError] = useState<string | null>(null);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  useEffect(() => {
+    trackViewItem({ id: 'polaroid-prints', name: 'Polaroid Prints', price: 299, category: 'Polaroids' });
+  }, []);
 
   // Force scroll recalculation when items change so Lenis knows the page got taller
   React.useEffect(() => {
@@ -170,6 +175,8 @@ export const PolaroidProductPage = () => {
       alert(result.error || 'Failed to add to cart. Are you logged in?');
       return false;
     }
+
+    trackAddToCart({ id: 'polaroid-prints', name: 'Polaroid Prints', price: grandTotal, quantity: polaroidItems.length || 1, category: 'Polaroids' });
     return true;
   };
 
