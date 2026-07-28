@@ -10,8 +10,7 @@ bodyHtml = bodyHtml.replace(/stroke-linecap=/g, 'strokeLinecap=');
 bodyHtml = bodyHtml.replace(/for=/g, 'htmlFor=');
 bodyHtml = bodyHtml.replace(/<!--([\s\S]*?)-->/g, '{/* $1 */}');
 
-// Properly make img and input tags self-closing
-// Using a better regex that handles any character inside the tag
+
 bodyHtml = bodyHtml.replace(/<(img|input)([^>]*?)\/?>/g, '<$1$2 />');
 bodyHtml = bodyHtml.replace(/<br>/g, '<br />');
 
@@ -26,12 +25,12 @@ bodyHtml = bodyHtml.replace(/<a href="#" className="nav__link" data-magnetic>Cre
 bodyHtml = bodyHtml.replace(/<a href="#" className="btn-cta" data-magnetic>\s*Start Creating <span className="arr">→<\/span>\s*<\/a>/g, '<a href="/editor" className="btn-cta" data-magnetic>\n              Start Creating <span className="arr">→</span>\n            </a>');
 bodyHtml = bodyHtml.replace(/<a href="#" className="link-arrow editor__link" data-magnetic>Explore Editor <span>→<\/span><\/a>/g, '<a href="/editor" className="link-arrow editor__link" data-magnetic>Explore Editor <span>→</span></a>');
 
-fs.writeFileSync('src/app/LandingHtml.tsx', 
-'\'use client\';\n\n' +
-'export const LandingHtml = () => (\n' +
-'  <>\n' +
-'    ' + bodyHtml + '\n' +
-'  </>\n' +
-');'
+fs.writeFileSync('src/app/LandingHtml.tsx',
+    '\'use client\';\n\n' +
+    'export const LandingHtml = () => (\n' +
+    '  <>\n' +
+    '    ' + bodyHtml + '\n' +
+    '  </>\n' +
+    ');'
 );
 console.log('Fixed');
