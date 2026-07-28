@@ -26,6 +26,8 @@ export default function TransformerWrapper({ selectedNodes }: TransformerWrapper
 
   const invZoom = 1 / canvasSettings.zoom;
 
+  const isLocked = selectedNodes.some(n => n.attrs.draggable === false); // We set draggable={!locked} in elements
+
   return (
     <Transformer
       ref={trRef}
@@ -35,21 +37,22 @@ export default function TransformerWrapper({ selectedNodes }: TransformerWrapper
         }
         return newBox;
       }}
-      borderStroke="#E85D26"
-      anchorStroke="#E85D26"
+      borderStroke={isLocked ? "#a09890" : "#E85D26"}
+      anchorStroke={isLocked ? "#a09890" : "#E85D26"}
       anchorFill="#FFFFFF"
       anchorSize={Math.max(6, 8 * invZoom)}
       anchorCornerRadius={2 * invZoom}
       borderStrokeWidth={1.5 * invZoom}
-      borderDash={[]}
+      borderDash={isLocked ? [4, 4] : []}
       rotateAnchorOffset={20 * invZoom}
       rotateAnchorCursor="grab"
-      enabledAnchors={[
+      enabledAnchors={isLocked ? [] : [
         'top-left', 'top-center', 'top-right',
         'middle-left', 'middle-right',
         'bottom-left', 'bottom-center', 'bottom-right',
       ]}
-      rotateEnabled={true}
+      resizeEnabled={!isLocked}
+      rotateEnabled={!isLocked}
       padding={2}
       ignoreStroke={true}
       keepRatio={false}

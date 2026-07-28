@@ -403,14 +403,6 @@ export default function CanvasWorkspace() {
             draggable={false}
           >
             <Layer>
-              {/* Canvas background grid */}
-              {canvasSettings.showGrid && (
-                <Rect
-                  x={0} y={0}
-                  width={dimensions.width} height={dimensions.height}
-                  fillPatternImage={undefined}
-                />
-              )}
 
               <Group
                 x={currentPanX} y={currentPanY}
@@ -513,6 +505,30 @@ export default function CanvasWorkspace() {
                       </Group>
                     );
                   })}
+
+                  {/* Canvas background grid */}
+                  {canvasSettings.showGrid && canvasSettings.gridSize > 0 && (
+                    <Group>
+                      {Array.from({ length: Math.ceil(ACTIVE_SPREAD_WIDTH / canvasSettings.gridSize) + 1 }).map((_, i) => (
+                        <Line
+                          key={`v-grid-${i}`}
+                          points={[i * canvasSettings.gridSize, 0, i * canvasSettings.gridSize, PAGE_HEIGHT]}
+                          stroke="#e8e2d9"
+                          strokeWidth={1 / canvasSettings.zoom}
+                          listening={false}
+                        />
+                      ))}
+                      {Array.from({ length: Math.ceil(PAGE_HEIGHT / canvasSettings.gridSize) + 1 }).map((_, i) => (
+                        <Line
+                          key={`h-grid-${i}`}
+                          points={[0, i * canvasSettings.gridSize, ACTIVE_SPREAD_WIDTH, i * canvasSettings.gridSize]}
+                          stroke="#e8e2d9"
+                          strokeWidth={1 / canvasSettings.zoom}
+                          listening={false}
+                        />
+                      ))}
+                    </Group>
+                  )}
 
                   {/* Render Page Elements */}
                   {[leftPage, rightPage].map((page, index) => {
