@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getCart } from '../actions/cart';
 import { supabase } from '@/lib/supabase';
+import { HeaderNav, Footer } from '@/components/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPage() {
@@ -32,11 +33,13 @@ export default function CartPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
+        <HeaderNav />
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
         />
+        <div className="fixed bottom-0 w-full"><Footer /></div>
       </div>
     );
   }
@@ -44,6 +47,7 @@ export default function CartPage() {
   if (error || !cartData) {
     return (
       <div className="min-h-screen pt-32 px-6 flex flex-col items-center justify-center bg-[#F7F5F0] relative overflow-hidden">
+        <HeaderNav />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
@@ -59,6 +63,7 @@ export default function CartPage() {
             </Link>
           )}
         </motion.div>
+        <div className="fixed bottom-0 w-full"><Footer /></div>
       </div>
     );
   }
@@ -68,6 +73,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-40 relative selection:bg-[#E85D26] selection:text-white">
+      <HeaderNav />
       {/* Decorative film grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
@@ -216,6 +222,7 @@ export default function CartPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

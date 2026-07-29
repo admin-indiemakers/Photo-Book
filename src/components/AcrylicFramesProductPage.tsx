@@ -493,7 +493,7 @@ export const AcrylicFramesProductPage = () => {
                   disabled={isAddingToCart}
                   className="flex-1 bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform active:scale-[0.98] flex justify-center items-center disabled:opacity-50"
                 >
-                  <span>Buy Now - ₹{grandTotal.toFixed(2)}</span>
+                  <span>{grandTotal > 0 ? `Buy Now - ₹${grandTotal.toFixed(2)}` : 'Buy Now'}</span>
                 </button>
               </div>
             </motion.div>
