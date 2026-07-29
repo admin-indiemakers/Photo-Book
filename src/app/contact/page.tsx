@@ -62,8 +62,10 @@ export default function ContactPage() {
               <div>
                 <h4 className="font-semibold mb-2 uppercase tracking-wider text-[11px] text-[#888888]">Studio</h4>
                 <p className="text-xl font-[family-name:var(--font-instrument)] text-[#333]">
-                  123 Artisan Way<br />
-                  Brooklyn, NY 11201
+                  The New Indian Express<br />
+                  Express House, East Hill Road<br />
+                  West Hill, Kozhikode<br />
+                  Kerala, 673005
                 </p>
               </div>
               <div>

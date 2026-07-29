@@ -64,27 +64,33 @@ export async function addToCart(userId: string, productId: string, quantity: num
   if (!userId) return { success: false, error: 'Please log in to add items to cart' };
 
   try {
-    // Ensure customer exists
-    let { data: customer } = await supabaseAdmin
+    // Fetch auth user details first to get the email for fallback lookup
+    const { data: authData } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const user = authData?.user;
+    const email = user?.email || `user_${userId}@example.com`;
+    const fullName = user?.user_metadata?.full_name || 'Guest';
+
+    // Find customer by auth_user_id OR email (Google OAuth fallback)
+    let { data: customers } = await supabaseAdmin
       .from('customers')
-      .select('id')
-      .eq('auth_user_id', userId)
-      .maybeSingle();
+      .select('id, auth_user_id')
+      .or(`auth_user_id.eq.${userId},email.eq.${email}`);
+
+    let customer = customers && customers.length > 0 ? customers[0] : null;
 
     if (!customer) {
-      const { data: authData } = await supabaseAdmin.auth.admin.getUserById(userId);
-      const user = authData?.user;
-      const email = user?.email || `user_${userId}@example.com`;
-      const fullName = user?.user_metadata?.full_name || 'Guest';
-
+      // Create new customer if not found by auth_id or email
       const { data: newCustomer, error: custError } = await supabaseAdmin
         .from('customers')
         .insert({ auth_user_id: userId, email: email, full_name: fullName })
-        .select('id')
+        .select('id, auth_user_id')
         .single();
       
       if (custError) throw custError;
       customer = newCustomer;
+    } else if (!customer.auth_user_id) {
+      // Link the new OAuth session to the existing customer profile
+      await supabaseAdmin.from('customers').update({ auth_user_id: userId }).eq('id', customer.id);
     }
 
     const customerId = customer.id;

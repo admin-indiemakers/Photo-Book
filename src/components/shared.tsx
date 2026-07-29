@@ -248,9 +248,9 @@ export function HeaderNav() {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <button className="hover:opacity-70 transition-opacity flex items-center gap-1" suppressHydrationWarning>
+            <Link href="/products" className="hover:opacity-70 transition-opacity flex items-center gap-1" suppressHydrationWarning>
               Collections
-            </button>
+            </Link>
             <AnimatePresence>
               {isHovered && (
                 <motion.div

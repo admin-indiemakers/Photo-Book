@@ -98,7 +98,6 @@ export default function AboutPage() {
           {/* Letterhead */}
           <div className="flex justify-between items-end mb-12 relative z-10 border-b border-[#EAE5D9] pb-8">
             <h1 className="font-[family-name:var(--font-instrument)] italic text-4xl text-[#111]">Offline Living</h1>
-            <span className="font-[family-name:var(--font-caveat)] text-2xl text-[#888] opacity-80">{currentDate}</span>
           </div>
 
           <div className="relative z-10 pt-4">

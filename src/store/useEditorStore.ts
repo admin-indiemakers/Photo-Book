@@ -165,13 +165,29 @@ interface EditorState {
 // Custom IndexedDB storage for Zustand to handle large base64 images
 const idbStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
-    return (await get(name)) || null;
+    if (typeof window === 'undefined') return null;
+    try {
+      return (await get(name)) || null;
+    } catch (e) {
+      console.warn('idb get error', e);
+      return null;
+    }
   },
   setItem: async (name: string, value: string): Promise<void> => {
-    await idbSet(name, value);
+    if (typeof window === 'undefined') return;
+    try {
+      await idbSet(name, value);
+    } catch (e) {
+      console.warn('idb set error', e);
+    }
   },
   removeItem: async (name: string): Promise<void> => {
-    await del(name);
+    if (typeof window === 'undefined') return;
+    try {
+      await del(name);
+    } catch (e) {
+      console.warn('idb del error', e);
+    }
   },
 };
 
@@ -937,7 +953,10 @@ export const useEditorStore = create<EditorState>()(
         pages: state.pages,
         canvasSettings: state.canvasSettings,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.warn('Hydration error:', error);
+        }
         if (state) {
           state.setSaveStatus('saved');
           state.setHydrated();

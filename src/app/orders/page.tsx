@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { getUserOrders } from '../actions/orders';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AlertCircle } from 'lucide-react';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -19,7 +20,7 @@ export default function OrdersPage() {
         setLoading(false);
         return;
       }
-      
+
       const res = await getUserOrders(session.user.id, session.user.email);
 
       if (!res.success) {
@@ -36,7 +37,7 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
@@ -72,7 +73,7 @@ export default function OrdersPage() {
           </h1>
           <p className="text-base sm:text-lg text-[#6b6560] font-light">Track the status of your recent purchases and view your collection.</p>
         </motion.div>
-        
+
         {orders.length === 0 ? (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-24 bg-white/60 rounded-3xl border border-black/5 shadow-sm backdrop-blur-sm">
             <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -88,8 +89,8 @@ export default function OrdersPage() {
           <div className="space-y-6 sm:space-y-8">
             <AnimatePresence>
               {orders.map((order, index) => (
-                <motion.div 
-                  key={order.id} 
+                <motion.div
+                  key={order.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -101,7 +102,7 @@ export default function OrdersPage() {
                         <p className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.15em] text-[#8c857b] mb-1">Order Placed</p>
                         <p className="font-serif text-[#1a1a18] text-base">{new Date(order.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
-                      
+
                       <div className="flex flex-col items-end sm:items-start text-right sm:text-left">
                         <p className="text-[9px] sm:text-[10px] font-sans uppercase tracking-[0.15em] text-[#8c857b] mb-1">Total</p>
                         <p className="font-serif text-[#1a1a18] text-base">₹{order.total}</p>
@@ -113,25 +114,25 @@ export default function OrdersPage() {
                       <p className="font-mono text-[#1a1a18] text-xs">{order.id.substring(0, 8)}</p>
                     </div>
                   </div>
-                  
+
                   <div className="p-4 sm:p-6">
                     <div className="flex justify-between items-center mb-6 sm:mb-8">
                       <h3 className="text-lg sm:text-xl font-serif text-[#1a1a18]">Status</h3>
-                      <span className={`px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-sans tracking-[0.15em] uppercase font-semibold ${
-                        order.status === 'cancelled' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-[#E85D26]/10 text-[#E85D26] border border-[#E85D26]/20'
-                      }`}>
+                      <span className={`px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-sans tracking-[0.15em] uppercase font-semibold ${order.status === 'cancelled' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-[#E85D26]/10 text-[#E85D26] border border-[#E85D26]/20'
+                        }`}>
                         {order.status || 'Processing'}
                       </span>
                     </div>
-                    
+
                     {order.status === 'cancelled' && (
-                      <div className="mb-6 p-4 bg-red-50/50 border border-red-100 rounded-xl">
-                        <p className="text-sm text-red-600">
-                          This order was cancelled by the administrator. If you have any questions, please contact our support team.
+                      <div className="bg-red-50 text-red-600 p-4 rounded-md text-sm mb-6 border border-red-100 flex items-start">
+                        <AlertCircle className="w-5 h-5 mr-3 shrink-0 mt-0.5" />
+                        <p>
+                          Your order has been cancelled, and a full refund has been initiated. The credit will appear on your original payment method within 7 business days. We apologize for any inconvenience.
                         </p>
                       </div>
                     )}
-                    
+
                     {order.order_items && (
                       <div className="space-y-6">
                         {order.order_items.map((item: any, idx: number) => (
@@ -139,9 +140,9 @@ export default function OrdersPage() {
                             <div className="flex gap-4 w-full sm:w-auto">
                               <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#ebe8e3] border border-[#e8e2d9] flex-shrink-0">
                                 {item.customization?.items?.[0]?.url ? (
-                                  <img 
-                                    src={item.customization.items[0].url} 
-                                    alt="Product" 
+                                  <img
+                                    src={item.customization.items[0].url}
+                                    alt="Product"
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                   />
                                 ) : (
@@ -158,7 +159,7 @@ export default function OrdersPage() {
                                 </strong></p>
                               </div>
                             </div>
-                            
+
                             <div className="hidden sm:block flex-1">
                               <p className="font-serif text-xl text-[#1a1a18] mb-1.5 leading-tight">{item.product_name || item.products?.name || 'Custom Product'}</p>
                               <p className="text-sm text-[#8c857b]">Qty: <strong className="text-[#1a1a18] font-medium">
@@ -166,7 +167,7 @@ export default function OrdersPage() {
                                 {(item.product_name || item.products?.name || '').toLowerCase().includes('polaroid') ? (item.quantity === 1 ? ' pack' : ' packs') : ''}
                               </strong></p>
                             </div>
-                            
+
                             <div className="w-full sm:w-auto mt-2 sm:mt-0">
                               <Link href="/" className="inline-flex justify-center w-full sm:w-auto px-5 py-2.5 bg-white border border-[#1a1a18] text-[#1a1a18] text-[10px] uppercase tracking-[0.15em] font-medium rounded-full hover:bg-[#1a1a18] hover:text-white transition-colors duration-300">
                                 Buy it again
