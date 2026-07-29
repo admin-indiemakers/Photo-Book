@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import { getUserNotifications, markNotificationsRead } from "@/app/actions/orders";
 
 // Custom high-end easing
 export const customEase = [0.16, 1, 0.3, 1] as const;
@@ -173,6 +174,10 @@ export function HeaderNav() {
   const [isClient, setIsClient] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -193,12 +198,23 @@ export function HeaderNav() {
     };
     window.addEventListener("scroll", handleScroll);
 
+    const fetchUserNotifications = async (u: User) => {
+      const res = await getUserNotifications(u.id, u.email);
+      if (res.success && res.notifications) {
+        setNotifications(res.notifications);
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) fetchUserNotifications(u);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) fetchUserNotifications(u);
     });
 
     return () => {
@@ -206,6 +222,14 @@ export function HeaderNav() {
       subscription.unsubscribe();
     };
   }, []);
+
+  const handleNotificationsClick = async () => {
+    setShowNotifications(!showNotifications);
+    if (!showNotifications && unreadCount > 0 && user) {
+      await markNotificationsRead(user.id, user.email);
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    }
+  };
 
   const isHomePage = pathname === '/';
   const navClass = scrolled 
@@ -287,6 +311,50 @@ export function HeaderNav() {
             )
           ) : (
             <div className="w-12 h-4" />
+          )}
+          {isClient && user && (
+            <div className="relative">
+              <button 
+                onClick={handleNotificationsClick}
+                className="hover:opacity-70 transition-opacity relative"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white/80"></span>
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-[50px] right-0 mt-2 w-72 bg-white backdrop-blur-md text-[#111111] border border-[#eaeaea] rounded-none shadow-lg overflow-hidden py-2 z-50 font-sans normal-case"
+                  >
+                    <div className="px-4 py-2 border-b border-[#eaeaea] text-xs font-semibold uppercase tracking-wider text-[#888888]">
+                      Notifications
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="px-4 py-4 text-xs text-[#888888] text-center">
+                          No notifications yet.
+                        </div>
+                      ) : (
+                        notifications.map((n, i) => (
+                          <div key={n.id || i} className={`px-4 py-3 border-b border-[#eaeaea] last:border-b-0 ${!n.is_read ? 'bg-[#fafafa]' : ''}`}>
+                            <div className="text-xs font-semibold mb-1 text-[#111111]">{n.title}</div>
+                            <div className="text-[11px] text-[#555555] leading-relaxed">{n.message}</div>
+                            <div className="text-[9px] text-[#888888] mt-1">{new Date(n.created_at).toLocaleDateString()}</div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           )}
           <Link href="/cart" className="hover:opacity-70 transition-opacity">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>

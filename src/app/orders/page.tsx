@@ -20,7 +20,7 @@ export default function OrdersPage() {
         return;
       }
       
-      const res = await getUserOrders(session.user.id);
+      const res = await getUserOrders(session.user.id, session.user.email);
 
       if (!res.success) {
         console.error(res.error);
@@ -117,10 +117,20 @@ export default function OrdersPage() {
                   <div className="p-4 sm:p-6">
                     <div className="flex justify-between items-center mb-6 sm:mb-8">
                       <h3 className="text-lg sm:text-xl font-serif text-[#1a1a18]">Status</h3>
-                      <span className="px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-sans tracking-[0.15em] uppercase font-semibold bg-[#E85D26]/10 text-[#E85D26] border border-[#E85D26]/20">
+                      <span className={`px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-sans tracking-[0.15em] uppercase font-semibold ${
+                        order.status === 'cancelled' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-[#E85D26]/10 text-[#E85D26] border border-[#E85D26]/20'
+                      }`}>
                         {order.status || 'Processing'}
                       </span>
                     </div>
+                    
+                    {order.status === 'cancelled' && (
+                      <div className="mb-6 p-4 bg-red-50/50 border border-red-100 rounded-xl">
+                        <p className="text-sm text-red-600">
+                          This order was cancelled by the administrator. If you have any questions, please contact our support team.
+                        </p>
+                      </div>
+                    )}
                     
                     {order.order_items && (
                       <div className="space-y-6">
@@ -141,19 +151,19 @@ export default function OrdersPage() {
                                 )}
                               </div>
                               <div className="flex-1 sm:hidden flex flex-col justify-center">
-                                <p className="font-serif text-lg text-[#1a1a18] mb-1 leading-tight">{item.products?.name || 'Custom Product'}</p>
+                                <p className="font-serif text-lg text-[#1a1a18] mb-1 leading-tight">{item.product_name || item.products?.name || 'Custom Product'}</p>
                                 <p className="text-xs text-[#8c857b]">Qty: <strong className="text-[#1a1a18] font-medium">
                                   {item.quantity}
-                                  {item.products?.name?.toLowerCase().includes('polaroid') ? (item.quantity === 1 ? ' pack' : ' packs') : ''}
+                                  {(item.product_name || item.products?.name || '').toLowerCase().includes('polaroid') ? (item.quantity === 1 ? ' pack' : ' packs') : ''}
                                 </strong></p>
                               </div>
                             </div>
                             
                             <div className="hidden sm:block flex-1">
-                              <p className="font-serif text-xl text-[#1a1a18] mb-1.5 leading-tight">{item.products?.name || 'Custom Product'}</p>
+                              <p className="font-serif text-xl text-[#1a1a18] mb-1.5 leading-tight">{item.product_name || item.products?.name || 'Custom Product'}</p>
                               <p className="text-sm text-[#8c857b]">Qty: <strong className="text-[#1a1a18] font-medium">
                                 {item.quantity}
-                                {item.products?.name?.toLowerCase().includes('polaroid') ? (item.quantity === 1 ? ' pack' : ' packs') : ''}
+                                {(item.product_name || item.products?.name || '').toLowerCase().includes('polaroid') ? (item.quantity === 1 ? ' pack' : ' packs') : ''}
                               </strong></p>
                             </div>
                             

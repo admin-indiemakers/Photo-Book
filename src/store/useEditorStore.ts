@@ -410,11 +410,11 @@ export const useEditorStore = create<EditorState>()(
             'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80'
           ],
           'portfolio': [
-            'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=600&q=80',
-            'https://images.unsplash.com/photo-1481214110143-ed630356e1bb?w=600&q=80',
-            'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&q=80',
+            'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80',
+            'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=600&q=80',
+            'https://images.unsplash.com/photo-1484417894907-623942c8ee29?w=600&q=80',
             'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=600&q=80',
-            'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80'
+            'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80'
           ],
           'family-time': [
             'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600&q=80',
@@ -423,6 +423,8 @@ export const useEditorStore = create<EditorState>()(
             'https://images.unsplash.com/photo-1529156069898-49953eb1b5ce?w=600&q=80'
           ],
           'milestones': [
+            'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80',
+            'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80',
             'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&q=80',
             'https://images.unsplash.com/photo-1530103862676-de88800bb883?w=600&q=80',
             'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=600&q=80'
@@ -623,8 +625,31 @@ export const useEditorStore = create<EditorState>()(
       setCanvasSize: (width: number, height: number, label: string) =>
         set((state) => {
           get()._pushHistory('Set canvas size');
+          const oldWidth = state.canvasSettings.width || 600;
+          const oldHeight = state.canvasSettings.height || 800;
+          const scaleX = width / oldWidth;
+          const scaleY = height / oldHeight;
+
+          const updatedPages = state.pages.map(page => ({
+            ...page,
+            elements: page.elements.map(el => {
+              const scaledEl: EditorElement = {
+                ...el,
+                x: el.x * scaleX,
+                y: el.y * scaleY,
+                width: el.width * scaleX,
+                height: el.height * scaleY,
+              };
+              if (el.type === 'text' && el.fontSize) {
+                scaledEl.fontSize = el.fontSize * Math.min(scaleX, scaleY);
+              }
+              return scaledEl;
+            })
+          }));
+
           return {
-            canvasSettings: { ...state.canvasSettings, width, height, layoutLabel: label }
+            canvasSettings: { ...state.canvasSettings, width, height, layoutLabel: label },
+            pages: updatedPages
           };
         }),
 
