@@ -51,6 +51,29 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
 
   const { src, x, y, ...restElement } = element;
 
+  let crop = { x: 0, y: 0, width: 0, height: 0 };
+  if (imageObj) {
+    const imgRatio = imageObj.width / imageObj.height;
+    const rectRatio = element.width / element.height;
+    if (imgRatio > rectRatio) {
+      const cropWidth = imageObj.height * rectRatio;
+      crop = {
+        x: (imageObj.width - cropWidth) / 2,
+        y: 0,
+        width: cropWidth,
+        height: imageObj.height
+      };
+    } else {
+      const cropHeight = imageObj.width / rectRatio;
+      crop = {
+        x: 0,
+        y: (imageObj.height - cropHeight) / 2,
+        width: imageObj.width,
+        height: cropHeight
+      };
+    }
+  }
+
   return (
     <Group
       ref={imageRef}
@@ -88,7 +111,6 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
             strokeWidth={2}
             dash={[5, 5]}
           />
-          {/* Simple image icon path scaled to center */}
           <Path
             x={-12}
             y={-12}
@@ -104,6 +126,7 @@ export default function ImageElement({ element, isSelected, onSelect, onChange, 
           width={element.width}
           height={element.height}
           image={imageObj || undefined}
+          crop={imageObj ? crop : undefined}
           cornerRadius={element.cornerRadius || 0}
           stroke={element.stroke || ''}
           strokeWidth={element.strokeWidth || 0}

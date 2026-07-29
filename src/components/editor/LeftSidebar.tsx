@@ -20,10 +20,54 @@ const TEXT_PRESETS = [
 ];
 
 const SHAPE_ITEMS = [
-  { type: 'rectangle', label: 'Rectangle', preview: '▬' },
-  { type: 'circle', label: 'Circle', preview: '●' },
-  { type: 'star', label: 'Star', preview: '★' },
-  { type: 'polygon', label: 'Hexagon', preview: '⬡' },
+  { 
+    type: 'rectangle', label: 'Rectangle', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> 
+  },
+  { 
+    type: 'circle', label: 'Circle', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg> 
+  },
+  { 
+    type: 'arch', label: 'Arch', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4,20 L4,12 A8,8 0 0,1 20,12 L20,20 Z" /></svg> 
+  },
+  { 
+    type: 'diamond', label: 'Diamond', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,12 12,22 2,12"/></svg> 
+  },
+  { 
+    type: 'badge', label: 'Badge', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12,2 L15,6 L20,5 L21,10 L24,14 L20,17 L21,22 L16,20 L12,23 L8,20 L3,22 L4,17 L0,14 L3,10 L2,5 L7,6 Z" /></svg> 
+  },
+  { 
+    type: 'frame', label: 'Polaroid', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd"><path d="M3,3 L21,3 L21,21 L3,21 Z M6,6 L18,6 L18,15 L6,15 Z" /></svg> 
+  },
+  { 
+    type: 'divider', label: 'Divider', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2,11 L10,11 L12,7 L14,11 L22,11 L22,13 L14,13 L12,17 L10,13 L2,13 Z" /></svg> 
+  },
+  { 
+    type: 'blob', label: 'Blob', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12,4 C16,4 20,7 20,12 C20,18 16,20 12,20 C6,20 4,16 4,12 C4,7 7,4 12,4 Z" /></svg> 
+  },
+  { 
+    type: 'brush', label: 'Brush Stroke', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3,12 C7,8 10,14 14,10 C18,6 21,12 21,12 C21,12 18,16 14,14 C10,12 7,18 3,12 Z" /></svg> 
+  },
+  { 
+    type: 'wave', label: 'Wave Ribbon', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2,10 Q6,4 12,10 T22,10 L22,14 Q18,8 12,14 T2,14 Z" /></svg> 
+  },
+  { 
+    type: 'tear', label: 'Torn Edge', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4,4 L20,4 L20,18 L18,16 L16,19 L14,15 L12,20 L10,16 L8,19 L6,15 L4,18 Z" /></svg> 
+  },
+  { 
+    type: 'star', label: 'Star', 
+    preview: <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg> 
+  },
 ];
 
 const SHAPE_COLORS = ['#E85D26', '#fdc930', '#1a1a18', '#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#607D8B'];

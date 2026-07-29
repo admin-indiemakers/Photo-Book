@@ -358,18 +358,183 @@ export const useEditorStore = create<EditorState>()(
         };
       }),
 
-      loadTemplate: (templateId: string) => {
-        // Basic template mock data based on ID
+      loadTemplate: async (templateId: string) => {
+        const state = get();
+        const canvasWidth = state.canvasSettings.width || 600;
+        const canvasHeight = state.canvasSettings.height || 800;
+        const numPages = 12;
+        let pagesConfig = ['cover', 'split-h', 'full', 'grid-4', 'collage-1', 'text-heavy', 'scattered', 'split-v', 'film-strip', 'grid-9', 'collage-2', 'full'];
+        
+        try {
+          const { supabase } = await import('@/lib/supabase');
+          const { data } = await supabase.from('products').select('attributes').eq('name', 'Signature Photo Book').single();
+          if (data?.attributes?.templates) {
+            const tpl = data.attributes.templates.find((t: any) => t.id === templateId);
+            if (tpl?.pagesConfig) {
+              pagesConfig = tpl.pagesConfig;
+            }
+          }
+        } catch(e) {
+          console.error('Failed to load template config', e);
+        }
+        
+        const palettes: Record<string, { primary: string, bg: string, text: string }> = {
+          'wanderlust': { primary: '#E85D26', bg: '#fdfbf7', text: '#2d3748' },
+          'wedding-bliss': { primary: '#e5c1c1', bg: '#ffffff', text: '#333333' },
+          'little-one': { primary: '#a7c7e7', bg: '#f0f8ff', text: '#4a5568' },
+          'family-time': { primary: '#8fbc8f', bg: '#fafafa', text: '#2d3748' },
+          'portfolio': { primary: '#111111', bg: '#eeeeee', text: '#000000' },
+          'default': { primary: '#E85D26', bg: '#FFFFFF', text: '#1a1a18' }
+        };
+        const palette = palettes[templateId] || palettes['default'];
+        const templateImages: Record<string, string[]> = {
+          'wedding-bliss': [
+            'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80',
+            'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80',
+            'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80',
+            'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600&q=80',
+            'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=80'
+          ],
+          'wanderlust': [
+            'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80',
+            'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80',
+            'https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=600&q=80',
+            'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80',
+            'https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=600&q=80'
+          ],
+          'little-one': [
+            'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&q=80',
+            'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&q=80',
+            'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=600&q=80',
+            'https://images.unsplash.com/photo-1484665754804-74b091211472?w=600&q=80',
+            'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=600&q=80'
+          ],
+          'portfolio': [
+            'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=600&q=80',
+            'https://images.unsplash.com/photo-1481214110143-ed630356e1bb?w=600&q=80',
+            'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&q=80',
+            'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=600&q=80',
+            'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80'
+          ],
+          'family-time': [
+            'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600&q=80',
+            'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=600&q=80',
+            'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=600&q=80',
+            'https://images.unsplash.com/photo-1529156069898-49953eb1b5ce?w=600&q=80'
+          ],
+          'milestones': [
+            'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&q=80',
+            'https://images.unsplash.com/photo-1530103862676-de88800bb883?w=600&q=80',
+            'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=600&q=80'
+          ],
+          'year-in-review': [
+            'https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?w=600&q=80',
+            'https://images.unsplash.com/photo-1489533119213-66a5cd877091?w=600&q=80',
+            'https://images.unsplash.com/photo-1494548162494-384bba4ab999?w=600&q=80'
+          ],
+          'recipe-book': [
+            'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=600&q=80',
+            'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=600&q=80',
+            'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&q=80'
+          ],
+          'default': [
+            'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600&q=80'
+          ]
+        };
+        const defaultImages = templateImages[templateId] || templateImages['default'];
         const pages: Page[] = [];
-        const numPages = 10; // example default
-        for (let i = 0; i < numPages; i++) {
+
+        let imageCounter = 0;
+
+        const getLayoutElements = (layoutType: string, i: number, W: number, H: number, p: number = 20) => {
+          const cw = W - 2 * p;
+          const ch = H - 2 * p;
+          const elements: EditorElement[] = [];
+          
+          const getImg = (idSuffix: string, x: number, y: number, w: number, h: number, rot = 0) => {
+            const src = defaultImages[imageCounter % defaultImages.length];
+            imageCounter++;
+            return {
+              id: `el-${i}-${idSuffix}`, type: 'image' as const, src, isPlaceholder: true,
+              x, y, width: w, height: h, rotation: rot, opacity: 1, locked: false
+            };
+          };
+
+          const getText = (idSuffix: string, text: string, fontSize: number, x: number, y: number, w: number, h: number, fontFam = "'DM Sans', sans-serif") => ({
+            id: `el-${i}-${idSuffix}`, type: 'text' as const, text, fontSize, fontFamily: fontFam, fill: palette.text,
+            x, y, width: w, height: h, rotation: 0, opacity: 1, locked: false, textAlign: 'center'
+          });
+
+          if (layoutType === 'cover' || layoutType === 'title-img') {
+            elements.push(getImg('bg', 0, 0, W, H));
+            elements[0].isPlaceholder = false;
+            elements[0].opacity = 0.8;
+            elements.push(getText('title', templateId.toUpperCase().replace('-', ' '), 48, 0, H*0.4, W, 100, "'Instrument Serif', serif"));
+            elements.push(getText('sub', 'A beautiful journey', 18, 0, H*0.5, W, 50));
+            if (elements[1]) elements[1].fill = '#ffffff';
+            if (elements[2]) elements[2].fill = '#ffffff';
+          } else if (layoutType === 'split-h') {
+            elements.push(getImg('top', p, p, cw, (ch-10)/2));
+            elements.push(getImg('bot', p, p+(ch-10)/2+10, cw, (ch-10)/2));
+          } else if (layoutType === 'split-v') {
+            elements.push(getImg('l', p, p, (cw-10)/2, ch));
+            elements.push(getImg('r', p+(cw-10)/2+10, p, (cw-10)/2, ch));
+          } else if (layoutType === 'grid-4') {
+            const sizeX = (cw-10)/2;
+            const sizeY = (ch-10)/2;
+            elements.push(getImg('tl', p, p, sizeX, sizeY));
+            elements.push(getImg('tr', p+sizeX+10, p, sizeX, sizeY));
+            elements.push(getImg('bl', p, p+sizeY+10, sizeX, sizeY));
+            elements.push(getImg('br', p+sizeX+10, p+sizeY+10, sizeX, sizeY));
+          } else if (layoutType === 'collage-1') {
+            elements.push(getImg('t', p, p, cw, ch*0.6));
+            elements.push(getImg('bl', p, p+ch*0.6+10, (cw-10)/2, ch*0.4-10));
+            elements.push(getImg('br', p+(cw-10)/2+10, p+ch*0.6+10, (cw-10)/2, ch*0.4-10));
+          } else if (layoutType === 'text-heavy') {
+            elements.push(getText('title', 'Our Story', 36, p, p, cw, 60, "'Instrument Serif', serif"));
+            elements.push(getImg('img', p, p+70, cw, ch*0.4));
+            elements.push(getText('body1', 'Lorem ipsum dolor sit amet...', 14, p, p+70+ch*0.4+20, (cw-10)/2, ch*0.5));
+            elements.push(getText('body2', 'Consectetur adipiscing elit...', 14, p+(cw-10)/2+10, p+70+ch*0.4+20, (cw-10)/2, ch*0.5));
+          } else if (layoutType === 'scattered') {
+            elements.push(getImg('img1', p+cw*0.05, p+ch*0.05, cw*0.45, ch*0.4, -8));
+            elements.push(getImg('img2', p+cw*0.4, p+ch*0.15, cw*0.5, ch*0.45, 5));
+            elements.push(getImg('img3', p+cw*0.15, p+ch*0.55, cw*0.55, ch*0.35, -3));
+          } else if (layoutType === 'film-strip') {
+            const h = (ch-30)/4;
+            elements.push(getImg('f1', p, p, cw, h));
+            elements.push(getImg('f2', p, p+h+10, cw, h));
+            elements.push(getImg('f3', p, p+(h+10)*2, cw, h));
+            elements.push(getImg('f4', p, p+(h+10)*3, cw, h));
+          } else if (layoutType === 'grid-9') {
+            const sizeX = (cw-20)/3;
+            const sizeY = (ch-20)/3;
+            for(let row=0; row<3; row++) {
+               for(let col=0; col<3; col++) {
+                  elements.push(getImg(`g9-${row}-${col}`, p + col*(sizeX+10), p + row*(sizeY+10), sizeX, sizeY));
+               }
+            }
+          } else if (layoutType === 'collage-2') {
+            elements.push(getImg('l', p, p, cw*0.6, ch));
+            elements.push(getImg('tr', p+cw*0.6+10, p, cw-cw*0.6-10, (ch-10)/2));
+            elements.push(getImg('br', p+cw*0.6+10, p+(ch-10)/2+10, cw-cw*0.6-10, (ch-10)/2));
+          } else if (layoutType === 'full') {
+            elements.push(getImg('full', 0, 0, W, H));
+          } else {
+             elements.push(getImg('def', p, p, cw, ch));
+          }
+
+          return elements;
+        };
+
+        for (let i = 0; i < Math.min(numPages, pagesConfig.length); i++) {
           pages.push({
             id: `page-${i}`,
             name: i === 0 ? 'Cover' : `Page ${i}`,
-            elements: [],
-            background: { type: 'solid', value: i === 0 ? '#E85D26' : '#FFFFFF' }
+            elements: getLayoutElements(pagesConfig[i], i, canvasWidth, canvasHeight),
+            background: { type: 'solid', value: palette.bg }
           });
         }
+        
         set({ pages, currentSpreadIndex: 0, flipDirection: 1, currentPageId: pages[0]?.id || null });
       },
 
