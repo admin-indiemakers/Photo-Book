@@ -32,38 +32,45 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
+      <div className="min-h-screen bg-[#F7F5F0] flex flex-col">
         <HeaderNav />
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
-        />
-        <div className="fixed bottom-0 w-full"><Footer /></div>
+        <div className="flex-1 flex items-center justify-center pt-40 pb-24">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
+          />
+        </div>
+        <Footer />
       </div>
     );
   }
 
   if (error || !cartData) {
     return (
-      <div className="min-h-screen pt-32 px-6 flex flex-col items-center justify-center bg-[#F7F5F0] relative overflow-hidden">
+      <div className="min-h-screen flex flex-col bg-[#F7F5F0] relative overflow-hidden">
         <HeaderNav />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
-          <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a18] mb-4 tracking-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>Your Cart</h1>
-          <p className="text-[#6b6560] mb-8 font-light text-lg">{error || 'Please log in to view your cart.'}</p>
-          {error === 'Please log in to view your cart.' ? (
-            <Link href="/login" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
-              Log In to Continue
-            </Link>
-          ) : (
-            <Link href="/products" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
-              Continue Shopping
-            </Link>
-          )}
-        </motion.div>
-        <div className="fixed bottom-0 w-full"><Footer /></div>
+        <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24 px-6 relative z-10 w-full max-w-4xl mx-auto min-h-[75vh]">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full text-center py-24 px-8 bg-white/60 rounded-3xl border border-black/5 shadow-sm backdrop-blur-sm">
+            <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-black/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a18] mb-4 tracking-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>Your Cart</h1>
+            <p className="text-[#6b6560] mb-10 font-light text-lg max-w-md mx-auto">{error || 'Please log in to view your cart.'}</p>
+            {error === 'Please log in to view your cart.' ? (
+              <Link href="/login" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
+                Log In to Continue
+              </Link>
+            ) : (
+              <Link href="/products" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
+                Continue Shopping
+              </Link>
+            )}
+          </motion.div>
+        </div>
+        <Footer />
       </div>
     );
   }
