@@ -52,18 +52,75 @@ const PRODUCTS = [
 function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   useEffect(() => {
+    const fetchUserNotifications = async (u) => {
+      try {
+        const { getUserNotifications } = await import('@/app/actions/orders');
+        const res = await getUserNotifications(u.id, u.email);
+        if (res.success && res.notifications) {
+          setNotifications(res.notifications);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
+      const u = session?.user || null;
+      setUser(u);
+      if (u) fetchUserNotifications(u);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const u = session?.user || null;
+      setUser(u);
+      if (u) fetchUserNotifications(u);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleNotificationsClick = async () => {
+    setNotificationsOpen(!notificationsOpen);
+    setProfileOpen(false); // Close profile if open
+    if (!notificationsOpen && unreadCount > 0 && user) {
+      try {
+        const { markNotificationsRead } = await import('@/app/actions/orders');
+        await markNotificationsRead(user.id, user.email);
+        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const handleProfileClick = () => {
+    setProfileOpen(!profileOpen);
+    setNotificationsOpen(false); // Close notifications if open
+  };
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      console.error('Google login error:', error.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setProfileOpen(false);
+    window.location.href = "/";
+  };
 
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-ink-charcoal/10 bg-archival-cream/90 backdrop-blur-md transition-all duration-300">
@@ -79,7 +136,7 @@ function Navbar() {
 
         {/* Center Links */}
         <div className="hidden md:flex items-center gap-10">
-          <div 
+          <div
             className="relative group py-2"
             onMouseEnter={() => setDropdownOpen(true)}
             onMouseLeave={() => setDropdownOpen(false)}
@@ -90,7 +147,7 @@ function Navbar() {
                 expand_more
               </span>
             </button>
-            
+
             {/* Dropdown Card */}
             <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-archival-cream/98 backdrop-blur-xl border border-ink-charcoal/10 shadow-2xl rounded-xl p-5 transition-all duration-300 transform ${dropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
               <ul className="space-y-3.5 font-label-caps text-xs tracking-widest uppercase font-semibold">
@@ -109,17 +166,75 @@ function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 relative">
           {user ? (
-            <Link className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-brass-gold hover:text-ink-charcoal transition-colors hidden sm:inline-block" href="/orders">
-              Hi, {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Account'}
-            </Link>
+            <div className="relative">
+              <button
+                onClick={handleProfileClick}
+                className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-brass-gold hover:text-ink-charcoal transition-colors hidden sm:flex items-center gap-1"
+              >
+                Hi, {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Account'}
+              </button>
+
+              {/* Profile Dropdown */}
+              <div className={`absolute top-full right-0 mt-4 w-56 bg-archival-cream/98 backdrop-blur-xl border border-ink-charcoal/10 shadow-2xl rounded-xl p-5 transition-all duration-300 transform z-50 ${profileOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
+                <div className="pb-4 mb-4 border-b border-ink-charcoal/10">
+                  <p className="font-label-caps text-[10px] tracking-widest uppercase text-ink-charcoal/50 mb-1">Signed in as</p>
+                  <p className="font-headline-md text-sm font-medium truncate">{user.user_metadata?.full_name || user.email}</p>
+                </div>
+                <ul className="space-y-3 font-label-caps text-xs tracking-widest uppercase font-semibold">
+                  <li><Link href="/orders" className="block text-ink-charcoal hover:text-brass-gold transition-colors">My Orders</Link></li>
+                  <li><button onClick={handleSignOut} className="block text-red-600 hover:text-red-700 transition-colors uppercase w-full text-left">Sign Out</button></li>
+                </ul>
+              </div>
+            </div>
           ) : (
-            <Link className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors hidden sm:inline-block" href="/login">
-              Profile
-            </Link>
+            <button onClick={handleGoogleLogin} className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors">
+              Sign In
+            </button>
           )}
-          <Link href="/orders" className="material-symbols-outlined text-ink-charcoal hover:text-brass-gold transition-colors flex items-center" title="Orders & Notifications">notifications</Link>
+
+          {user && (
+            <div className="relative">
+              <button
+                onClick={handleNotificationsClick}
+                className="material-symbols-outlined text-ink-charcoal hover:text-brass-gold transition-colors flex items-center relative"
+                title="Notifications"
+              >
+                notifications
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-archival-cream"></span>
+                )}
+              </button>
+
+              {/* Notifications Dropdown */}
+              <div className={`absolute top-full right-0 mt-4 w-72 bg-archival-cream/98 backdrop-blur-xl border border-ink-charcoal/10 shadow-2xl rounded-xl p-0 transition-all duration-300 transform z-50 overflow-hidden ${notificationsOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
+                <div className="p-4 border-b border-ink-charcoal/10 bg-ink-charcoal/5">
+                  <h4 className="font-label-caps text-[10px] font-bold tracking-widest uppercase text-ink-charcoal">Notifications</h4>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center font-body-md text-xs text-ink-charcoal/60">
+                      You're all caught up.
+                    </div>
+                  ) : (
+                    notifications.map((n, i) => (
+                      <div key={n.id || i} className={`p-4 border-b border-ink-charcoal/5 last:border-b-0 hover:bg-white/50 transition-colors ${!n.is_read ? 'bg-white' : ''}`}>
+                        <div className="font-headline-md text-sm font-medium mb-1">{n.title}</div>
+                        <div className="font-body-md text-xs text-ink-charcoal/70 leading-relaxed mb-2">{n.message}</div>
+                        <div className="font-label-caps text-[9px] uppercase tracking-widest text-ink-charcoal/40">{new Date(n.created_at).toLocaleDateString()}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!user && (
+            <Link href="/login" className="material-symbols-outlined text-ink-charcoal hover:text-brass-gold transition-colors flex items-center" title="Notifications">notifications</Link>
+          )}
+
           <Link href="/cart" className="material-symbols-outlined text-ink-charcoal hover:text-brass-gold transition-colors flex items-center" title="Cart">shopping_bag</Link>
         </div>
       </div>
@@ -146,9 +261,9 @@ function Hero() {
             <Link href="/templates" className="btn-premium inline-block bg-ink-charcoal text-archival-cream px-8 py-4 font-label-caps text-xs tracking-widest uppercase rounded">
               Start Studio Customizer
             </Link>
-            <a href="#collections" className="nav-link font-label-caps text-xs tracking-widest font-bold px-3 py-3 text-ink-charcoal/75 hover:text-ink-charcoal">
-              Explore Archive ↓
-            </a>
+            <Link href="/products" className="inline-block border border-ink-charcoal/30 text-ink-charcoal hover:bg-ink-charcoal hover:text-archival-cream px-8 py-4 font-label-caps text-xs tracking-widest uppercase rounded transition-colors">
+              Explore Archive
+            </Link>
           </div>
         </div>
 
@@ -160,13 +275,13 @@ function Hero() {
               <img
                 alt="Signature Photo Book detail"
                 className="w-full h-full object-cover grayscale-[15%] brightness-[98%] transition-transform duration-700 hover:scale-105"
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/hero.png'; }}
-                src="/images/hero.png"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/hero_premium.png'; }}
+                src="/images/hero_premium.png"
               />
               <div className="absolute bottom-8 left-8 bg-archival-cream/95 backdrop-blur-md p-6 border border-brass-gold/40 max-w-xs rounded-lg shadow-lg">
-                <span className="font-label-caps text-[10px] text-brass-gold font-bold tracking-widest block mb-1">ARCHIVAL NO. 01</span>
-                <h4 className="font-headline-md text-xl font-medium mb-1">Signature Layflat Edition</h4>
-                <p className="text-xs text-ink-charcoal/60">310gsm German Etching Paper • Japanese Bookcloth</p>
+                <span className="font-label-caps text-[10px] text-brass-gold font-bold tracking-widest block mb-1">FEATURED ARCHIVE</span>
+                <h4 className="font-headline-md text-xl font-medium mb-1">The Timeless Memory Book</h4>
+                <p className="text-xs text-ink-charcoal/60">Seamless Layflat Binding • Heirloom Quality Materials</p>
               </div>
             </div>
           </div>
@@ -188,7 +303,7 @@ function Marquee() {
   ];
 
   return (
-    <div className="bg-ink-charcoal py-6 overflow-hidden border-y border-ink-charcoal/10 my-12">
+    <div className="bg-ink-charcoal py-6 overflow-hidden border-y border-ink-charcoal/10">
       <div className="marquee-track">
         {[1, 2].map((groupKey) => (
           <div key={groupKey} className="flex gap-12 font-label-caps text-xs tracking-widest text-archival-cream px-6 font-bold uppercase">
@@ -219,21 +334,22 @@ function CuratedFormats() {
           .eq('is_active', true);
 
         if (data && data.length > 0) {
-          const mapped = data.map((item) => {
+          const featuredData = data.filter(item => item.attributes?.is_featured);
+          const mapped = featuredData.map((item) => {
             const cat = item.category === 'photo_book' ? 'books' :
-                        item.category === 'photo_frame' ? 'frames' :
-                        item.category === 'polaroid' ? 'prints' :
-                        item.category === 'acrylic_frame' ? 'frames' :
-                        item.category === 'photo_canvas' ? 'frames' : 'prints';
+              item.category === 'photo_frame' ? 'frames' :
+                item.category === 'polaroid' ? 'prints' :
+                  item.category === 'acrylic_frame' ? 'frames' :
+                    item.category === 'photo_canvas' ? 'frames' : 'prints';
             const route = item.category === 'photo_book' ? '/templates' :
-                          item.category === 'photo_frame' ? '/frame' :
-                          item.category === 'polaroid' ? '/polaroid' :
-                          item.category === 'fridge_magnet' ? '/fridge-magnet' :
-                          item.category === 'acrylic_frame' ? '/acrylic-frames' :
-                          item.category === 'photo_canvas' ? '/canvas-frames' : '/products';
+              item.category === 'photo_frame' ? '/frame' :
+                item.category === 'polaroid' ? '/polaroid' :
+                  item.category === 'fridge_magnet' ? '/fridge-magnet' :
+                    item.category === 'acrylic_frame' ? '/acrylic-frames' :
+                      item.category === 'photo_canvas' ? '/canvas-frames' : '/products';
             const fallbackImg = item.category === 'photo_book' ? '/images/books.png' :
-                               item.category === 'photo_frame' ? '/images/frames.png' :
-                               item.category === 'polaroid' ? '/images/keepsakes.png' : '/images/craft1.png';
+              item.category === 'photo_frame' ? '/images/frames.png' :
+                item.category === 'polaroid' ? '/images/keepsakes.png' : '/images/craft1.png';
             return {
               id: item.id || item.name,
               category: cat,
@@ -249,7 +365,7 @@ function CuratedFormats() {
               href: route
             };
           });
-          setProducts(mapped);
+          setProducts(mapped.slice(0, 6));
         }
       } catch (err) {
         console.error('Error fetching products from Supabase:', err);
@@ -263,39 +379,27 @@ function CuratedFormats() {
     : products.filter(p => p.category === activeCategory);
 
   return (
-    <section className="py-16 md:py-section-gap px-6 md:px-margin-desktop bg-white/40 backdrop-blur-sm" id="collections">
+    <section className="pt-16 pb-8 md:pt-24 md:pb-12 px-6 md:px-margin-desktop bg-white/40 backdrop-blur-sm" id="collections">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
         <div>
           <span className="font-label-caps text-xs text-brass-gold font-bold tracking-widest mb-2 block">COLLECTIONS</span>
-          <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight">Curated Formats.</h2>
         </div>
-        
-        {/* Interactive Filter Tabs */}
-        <div className="flex flex-wrap gap-2.5 mt-6 md:mt-0 bg-archival-cream/80 p-1.5 rounded-full border border-ink-charcoal/10">
-          {[
-            { id: 'all', label: 'All Formats' },
-            { id: 'books', label: 'Photo Books' },
-            { id: 'frames', label: 'Solid Frames' },
-            { id: 'prints', label: 'Polaroid Prints' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveCategory(tab.id)}
-              className={`filter-tab px-4 py-2 font-label-caps text-xs font-bold tracking-widest rounded-full transition-all ${
-                activeCategory === tab.id
-                  ? 'bg-ink-charcoal text-archival-cream'
-                  : 'text-ink-charcoal/75 hover:text-ink-charcoal'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+
+        {/* Link to All Collections */}
+        <div className="mt-6 md:mt-0">
+          <Link
+            href="/products"
+            className="group flex items-center gap-2 font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal hover:text-brass-gold transition-colors"
+          >
+            All Collections
+            <span className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+          </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" id="products-grid">
         {filteredProducts.map(product => (
-          <div key={product.id} className="product-card group">
+          <div key={product.id} className="product-card group flex flex-col h-full">
             <div className="card-minimal bg-archival-cream p-5 mb-6 rounded-lg border border-ink-charcoal/10 shadow-md overflow-hidden">
               <div className="aspect-[4/5] overflow-hidden bg-surface-container relative rounded-md">
                 <img
@@ -304,20 +408,17 @@ function CuratedFormats() {
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = product.image; }}
                   src={product.image}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-charcoal/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
-                  <span className="text-archival-cream font-label-caps text-xs font-bold tracking-wider flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">{product.icon || 'photo_library'}</span> {product.feature}
-                  </span>
+                <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm z-10">
+                  <span className={`font-label-caps text-[10px] font-bold tracking-widest ${product.badgeColor || 'text-brass-gold'}`}>{product.badge}</span>
                 </div>
+
               </div>
             </div>
             <div className="flex justify-between items-center mb-2">
-              <span className={`font-label-caps text-xs font-bold tracking-widest ${product.badgeColor || 'text-brass-gold'}`}>{product.badge}</span>
               <span className="font-label-caps text-xs font-bold text-ink-charcoal/70 tracking-wider">{product.price}</span>
             </div>
-            <h3 className="font-headline-md text-xl md:text-2xl font-medium mb-2 leading-tight">{product.title}</h3>
-            <p className="font-body-md text-sm md:text-base text-ink-charcoal/75 mb-5 leading-relaxed">{product.description}</p>
-            <Link href={product.href || '/templates'} className="nav-link font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal inline-flex items-center gap-2 group/btn">
+            <h3 className="font-headline-md text-xl md:text-2xl font-medium mb-4 leading-tight">{product.title}</h3>
+            <Link href={product.href || '/templates'} className="nav-link font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal inline-flex items-center gap-2 group/btn mb-2 mt-auto">
               {product.cta} <span className="material-symbols-outlined text-[16px] transition-transform group-hover/btn:translate-x-2">arrow_forward</span>
             </Link>
           </div>
@@ -330,7 +431,7 @@ function CuratedFormats() {
 // 5. Standard of Excellence Section
 function StandardOfExcellence() {
   return (
-    <section className="py-16 md:py-section-gap px-6 md:px-margin-desktop bg-archival-cream/50 overflow-hidden" id="studio">
+    <section className="pt-8 pb-16 md:pt-12 md:pb-24 px-6 md:px-margin-desktop bg-archival-cream/50 overflow-hidden" id="studio">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
         <div className="lg:col-span-4 pr-0 lg:pr-12">
           <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight mb-8">Standard of Excellence.</h2>
@@ -344,44 +445,44 @@ function StandardOfExcellence() {
               { title: 'Woven Cotton Canvas', desc: 'Rich, textured fine-art canvas stretched tightly over premium wooden bars.', href: '/canvas-frames' }
             ].map((item, idx) => (
               <li key={idx} className="border-b border-ink-charcoal/10 pb-6 group">
-                <Link href={item.href} className="block">
+                <div className="block">
                   <h4 className="font-label-caps text-xs font-bold tracking-widest uppercase text-brass-gold mb-3 transition-all group-hover:translate-x-2 flex items-center gap-2">
-                    <span>{item.title}</span> <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    <span>{item.title}</span>
                   </h4>
                   <p className="font-body-md text-sm md:text-base text-ink-charcoal/70 leading-relaxed">{item.desc}</p>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
         </div>
-        
+
         <div className="lg:col-span-8">
-          <div className="grid grid-cols-2 gap-4 min-h-[480px] max-h-[600px] w-full">
-            <div className="flex flex-col gap-4 mt-12">
-              <div className="w-full h-1/2 rounded-lg overflow-hidden shadow-lg">
+          <div className="grid grid-cols-2 gap-4 w-full">
+            <div className="flex flex-col gap-4 md:pt-12">
+              <div className="w-full aspect-square rounded-lg overflow-hidden shadow-lg relative">
                 <img
-                  alt="Close up of wood frame texture"
-                  className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/frames.png'; }}
-                  src="/images/frames.png"
+                  alt="Premium Photo Frame"
+                  className="w-full h-full absolute inset-0 object-cover transition-all duration-700 hover:scale-105"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/wide_photo_frame.png'; }}
+                  src="/images/wide_photo_frame.png"
                 />
               </div>
-              <div className="w-full h-1/2 rounded-lg overflow-hidden shadow-lg">
+              <div className="w-full aspect-square rounded-lg overflow-hidden shadow-lg relative">
                 <img
-                  alt="Handcrafted assembly detail"
-                  className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/craft1.png'; }}
-                  src="/images/craft1.png"
+                  alt="Premium Photo Book"
+                  className="w-full h-full absolute inset-0 object-cover transition-all duration-700 hover:scale-105"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/wide_photo_book.png'; }}
+                  src="/images/wide_photo_book.png"
                 />
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
                 <img
-                  alt="Premium paper texture detail"
+                  alt="Premium Canvas Art"
                   className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/craft2.png'; }}
-                  src="/images/craft2.png"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/premium_canvas_art.png'; }}
+                  src="/images/premium_canvas_art.png"
                 />
               </div>
             </div>
@@ -395,24 +496,24 @@ function StandardOfExcellence() {
 // 6. Inspiration Gallery Grid
 function InspirationGrid() {
   const galleries = [
-    { title: 'THE STACK', img: '/images/books.png', alt: 'Minimalist interior with photo book' },
-    { title: 'INTERIORS', img: '/images/frames.png', alt: 'Photo frame detail' },
-    { title: 'GALLERY', img: '/images/craft2.png', alt: 'Archival book spine' },
-    { title: 'KEEPSAKES', img: '/images/keepsakes.png', alt: 'Corner art arrangement' }
+    { title: 'PHOTO BOOK', img: '/images/books.png', alt: 'Minimalist interior with photo book' },
+    { title: 'POLAROID', img: '/images/premium_color_frame.png', alt: 'Colorful photo frame detail' },
+    { title: 'PHOTO FRAME', img: '/images/craft2.png', alt: 'Archival book spine' },
+    { title: 'POLAROID FRIDGE MAGNET', img: '/images/keepsakes.png', alt: 'Corner art arrangement' }
   ];
 
   return (
     <section className="py-16 md:py-section-gap px-6 md:px-margin-desktop bg-transparent">
       <div className="text-center max-w-2xl mx-auto mb-16">
-        <span className="font-label-caps text-xs text-brass-gold font-bold tracking-widest mb-4 block">STAY INSPIRED</span>
-        <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight">Archives of the Modern Home.</h2>
+        <span className="font-label-caps text-xs text-brass-gold font-bold tracking-widest mb-4 block">CURATED MOMENTS</span>
+        <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight">A Vibrant Legacy in Print.</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {galleries.map((item, idx) => (
           <div key={idx} className="aspect-[3/4] bg-surface-container relative group overflow-hidden rounded-lg">
             <img
               alt={item.alt}
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = item.img; }}
               src={item.img}
             />
@@ -443,14 +544,22 @@ function Footer() {
       <div className="flex flex-col items-center pt-16 md:pt-section-gap pb-gutter px-6 md:px-margin-desktop w-full max-w-7xl mx-auto">
         <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
           <div className="md:col-span-5">
-            <h2 className="font-headline-md text-headline-md text-ink-charcoal mb-6">OFFLINE</h2>
+            <Link href="/" className="inline-block mb-6 group text-ink-charcoal">
+              <span className="font-headline-md italic text-3xl font-normal tracking-tight group-hover:text-brass-gold transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Offline <span className="text-sm non-italic font-sans uppercase tracking-widest text-brass-gold align-top relative -top-1.5">Living ®</span>
+              </span>
+            </Link>
             <p className="font-body-md text-sm md:text-base text-ink-charcoal/70 max-w-sm mb-8 leading-relaxed">
               Elevating your digital memories into tactile, museum-quality physical artifacts. Designed for the modern home, built for eternity.
             </p>
             <div className="flex gap-6">
-              <a className="material-symbols-outlined text-ink-charcoal/50 hover:text-brass-gold transition-colors" href="#">public</a>
-              <a className="material-symbols-outlined text-ink-charcoal/50 hover:text-brass-gold transition-colors" href="#">camera_alt</a>
-              <a className="material-symbols-outlined text-ink-charcoal/50 hover:text-brass-gold transition-colors" href="mailto:support@offlineliving.com">mail</a>
+              <a href="https://instagram.com" className="text-ink-charcoal/50 hover:text-brass-gold transition-colors" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
             </div>
           </div>
           <div className="md:col-span-2">
@@ -460,6 +569,8 @@ function Footer() {
               <li><Link className="nav-link" href="/frame">Photo Frames</Link></li>
               <li><Link className="nav-link" href="/polaroid">Polaroids</Link></li>
               <li><Link className="nav-link" href="/acrylic-frames">Acrylic Frames</Link></li>
+              <li><Link className="nav-link" href="/fridge-magnet">Polaroid Fridge Magnet</Link></li>
+              <li><Link className="nav-link" href="/canvas-frames">Canvas Frames</Link></li>
             </ul>
           </div>
           <div className="md:col-span-2">
@@ -467,7 +578,6 @@ function Footer() {
             <ul className="space-y-4 font-body-md text-sm text-ink-charcoal/70">
               <li><Link className="nav-link" href="/about">About Us</Link></li>
               <li><Link className="nav-link" href="/contact">Contact Us</Link></li>
-              <li><Link className="nav-link" href="/about-us">Philosophy</Link></li>
             </ul>
           </div>
           <div className="md:col-span-3">
@@ -486,7 +596,7 @@ function Footer() {
             </form>
           </div>
         </div>
-        
+
         <div className="w-full pt-10 border-t border-ink-charcoal/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <span className="font-label-caps text-xs text-ink-charcoal/50 font-medium">© 2026 OFFLINE LIVING. ARCHIVAL QUALITY GUARANTEED.</span>
           <div className="flex gap-8">
@@ -502,7 +612,7 @@ function Footer() {
 // Main App Component
 export function LandingPage() {
   return (
-    <div className="bg-archival-cream text-ink-charcoal font-body-md antialiased relative overflow-x-hidden min-h-screen">
+    <div className="bg-archival-cream text-ink-charcoal font-body-md antialiased relative overflow-x-clip min-h-screen">
       {/* Grain Overlay */}
       <div className="grain-overlay" />
       <Navbar />

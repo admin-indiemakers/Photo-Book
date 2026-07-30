@@ -295,7 +295,10 @@ export function HeaderNav() {
                     My Orders
                   </Link>
                   <button 
-                    onClick={() => supabase.auth.signOut()}
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      window.location.href = "/";
+                    }}
                     className="w-full text-left py-2 hover:text-red-600 transition-colors uppercase tracking-[0.14em] text-xs font-bold text-red-500"
                     suppressHydrationWarning
                   >
@@ -304,9 +307,9 @@ export function HeaderNav() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="hover:text-[#C5A059] transition-colors hidden sm:inline-block">
-                Profile
-              </Link>
+              <button onClick={handleGoogleLogin} className="hover:text-[#C5A059] transition-colors">
+                Sign In
+              </button>
             )
           ) : (
             <div className="w-12 h-4" />
