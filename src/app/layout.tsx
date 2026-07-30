@@ -48,7 +48,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${playfair.variable} ${caveat.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${playfair.variable} ${caveat.variable} antialiased`}
     >
       <head>
         {/* Google Fonts & Material Symbols */}
@@ -70,12 +70,11 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
+      <body className="flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
         <Suspense fallback={null}>
           <GA4Analytics />
         </Suspense>
         <TooltipProvider>
-          <Breadcrumbs />
           {children}
         </TooltipProvider>
 
