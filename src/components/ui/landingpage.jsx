@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
-// Product Data
+// Product Data using project local assets
 const PRODUCTS = [
   {
     id: 'book-01',
@@ -12,7 +12,7 @@ const PRODUCTS = [
     price: 'FROM $120',
     title: 'Signature Photo Book',
     description: 'Custom archival-quality books with seamless layflat binding.',
-    image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80',
+    image: '/images/books.png',
     feature: 'Archival Edition',
     icon: 'menu_book',
     cta: 'Customize in Studio',
@@ -26,7 +26,7 @@ const PRODUCTS = [
     price: 'FROM $85',
     title: 'Solid Wood Frame',
     description: 'Sustainably harvested timber with museum anti-reflective glass.',
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
+    image: '/images/frames.png',
     feature: 'Custom Matting',
     icon: 'aspect_ratio',
     cta: 'Customize Frame',
@@ -40,7 +40,7 @@ const PRODUCTS = [
     price: 'FROM $45',
     title: 'Polaroid Keepsakes',
     description: 'Tactile archival analog prints packaged in bespoke linen box.',
-    image: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
+    image: '/images/keepsakes.png',
     feature: 'Set of 24 Prints',
     icon: 'photo_library',
     cta: 'Print Memories',
@@ -104,8 +104,8 @@ function Navbar() {
             </div>
           </div>
 
-          <a className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors" href="#studio">About</a>
-          <a className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors" href="#footer">Contact</a>
+          <Link className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors" href="/about">About</Link>
+          <Link className="nav-link font-label-caps text-xs tracking-[0.14em] uppercase font-bold text-ink-charcoal/80 hover:text-brass-gold transition-colors" href="/contact">Contact</Link>
         </div>
 
         {/* Right Actions */}
@@ -160,8 +160,8 @@ function Hero() {
               <img
                 alt="Signature Photo Book detail"
                 className="w-full h-full object-cover grayscale-[15%] brightness-[98%] transition-transform duration-700 hover:scale-105"
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1200&q=80'; }}
-                src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1200&q=80"
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/hero.png'; }}
+                src="/images/hero.png"
               />
               <div className="absolute bottom-8 left-8 bg-archival-cream/95 backdrop-blur-md p-6 border border-brass-gold/40 max-w-xs rounded-lg shadow-lg">
                 <span className="font-label-caps text-[10px] text-brass-gold font-bold tracking-widest block mb-1">ARCHIVAL NO. 01</span>
@@ -231,6 +231,9 @@ function CuratedFormats() {
                           item.category === 'fridge_magnet' ? '/fridge-magnet' :
                           item.category === 'acrylic_frame' ? '/acrylic-frames' :
                           item.category === 'photo_canvas' ? '/canvas-frames' : '/products';
+            const fallbackImg = item.category === 'photo_book' ? '/images/books.png' :
+                               item.category === 'photo_frame' ? '/images/frames.png' :
+                               item.category === 'polaroid' ? '/images/keepsakes.png' : '/images/craft1.png';
             return {
               id: item.id || item.name,
               category: cat,
@@ -239,7 +242,7 @@ function CuratedFormats() {
               price: item.price ? `FROM $${item.price}` : (item.attributes?.price_text || 'CUSTOM'),
               title: item.name,
               description: item.description || 'Custom archival-quality memory keepsake.',
-              image: item.images?.[0] || 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80',
+              image: item.images?.[0] || fallbackImg,
               feature: item.attributes?.feature || 'Archival Edition',
               icon: item.category === 'photo_book' ? 'menu_book' : item.category === 'photo_frame' ? 'aspect_ratio' : 'photo_library',
               cta: 'Customize Now',
@@ -359,16 +362,16 @@ function StandardOfExcellence() {
                 <img
                   alt="Close up of wood frame texture"
                   className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80'; }}
-                  src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/frames.png'; }}
+                  src="/images/frames.png"
                 />
               </div>
               <div className="w-full h-1/2 rounded-lg overflow-hidden shadow-lg">
                 <img
                   alt="Handcrafted assembly detail"
                   className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80'; }}
-                  src="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/craft1.png'; }}
+                  src="/images/craft1.png"
                 />
               </div>
             </div>
@@ -377,8 +380,8 @@ function StandardOfExcellence() {
                 <img
                   alt="Premium paper texture detail"
                   className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80'; }}
-                  src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80"
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/craft2.png'; }}
+                  src="/images/craft2.png"
                 />
               </div>
             </div>
@@ -392,10 +395,10 @@ function StandardOfExcellence() {
 // 6. Inspiration Gallery Grid
 function InspirationGrid() {
   const galleries = [
-    { title: 'THE STACK', img: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80', alt: 'Minimalist interior with photo book' },
-    { title: 'INTERIORS', img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80', alt: 'Photo frame detail' },
-    { title: 'GALLERY', img: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80', alt: 'Archival book spine' },
-    { title: 'KEEPSAKES', img: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80', alt: 'Corner art arrangement' }
+    { title: 'THE STACK', img: '/images/books.png', alt: 'Minimalist interior with photo book' },
+    { title: 'INTERIORS', img: '/images/frames.png', alt: 'Photo frame detail' },
+    { title: 'GALLERY', img: '/images/craft2.png', alt: 'Archival book spine' },
+    { title: 'KEEPSAKES', img: '/images/keepsakes.png', alt: 'Corner art arrangement' }
   ];
 
   return (
@@ -462,9 +465,9 @@ function Footer() {
           <div className="md:col-span-2">
             <h4 className="font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal mb-6">Company</h4>
             <ul className="space-y-4 font-body-md text-sm text-ink-charcoal/70">
+              <li><Link className="nav-link" href="/about">About Us</Link></li>
+              <li><Link className="nav-link" href="/contact">Contact Us</Link></li>
               <li><Link className="nav-link" href="/about-us">Philosophy</Link></li>
-              <li><a className="nav-link" href="#studio">Process</a></li>
-              <li><Link className="nav-link" href="/about-us">Sustainability</Link></li>
             </ul>
           </div>
           <div className="md:col-span-3">
