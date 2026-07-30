@@ -518,19 +518,9 @@ function QuoteSection() {
   );
 }
 
+import LandingPage from "@/components/ui/landingpage";
+
 export default function GalleryLandingPage() {
-  return (
-    <main className="bg-white min-h-screen text-[#111111] font-sans selection:bg-[#EAEAEA] selection:text-[#111]">
-      <HeaderNav />
-      <HeroSection />
-      <ProductCollections />
-      <FlagshipProductSection />
-      <CylindricalGallery />
-      <ParallaxDivider />
-      <Craftsmanship />
-      <InfiniteMarquee text="MUSEUM GRADE ARCHIVAL PAPER ✦ PRINTED IN STUDIO ✦ TACTILE PRECISION ✦ OFFLINE LIVING" />
-      <QuoteSection />
-      <Footer />
-    </main>
-  );
+  return <LandingPage />;
 }
+
