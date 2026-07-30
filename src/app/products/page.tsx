@@ -86,58 +86,81 @@ export default function AllProductsPage() {
   }, []);
 
   return (
-    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-32 md:pt-40">
+    <main className="bg-archival-cream text-ink-charcoal font-body-md antialiased min-h-screen pt-32 md:pt-40">
       <HeaderNav />
 
-      <section className="pb-6 md:pb-24 px-4 md:px-6 bg-white min-h-0 md:min-h-[80vh]">
+      <section className="pb-16 md:pb-24 px-6 md:px-margin-desktop min-h-[80vh]">
         <div className="max-w-7xl mx-auto relative">
-
 
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: customEase }}
-            className="mb-16 md:mb-24 text-center"
+            className="mb-16 md:mb-20 text-center"
           >
-            <h1 className="font-[family-name:var(--font-instrument)] italic text-5xl md:text-[80px] text-[#111] mb-6 leading-none">Our Collections</h1>
-            <p className="text-[#555] font-light text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+            <span className="font-label-caps text-xs text-brass-gold font-bold mb-4 block tracking-widest uppercase">
+              COLLECTIONS
+            </span>
+            <h1 className="font-headline-lg text-4xl sm:text-5xl lg:text-[60px] text-ink-charcoal mb-6 leading-tight">Curated Formats.</h1>
+            <p className="font-body-lg text-base md:text-lg text-ink-charcoal/75 max-w-xl mx-auto leading-relaxed">
               Explore our full range of premium, archival-quality physical artifacts designed to turn your digital memories into lasting heirlooms.
             </p>
           </motion.div>
 
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="w-8 h-8 border-4 border-gray-200 border-t-[#f26523] rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-ink-charcoal/20 border-t-brass-gold rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
               {products.map((item, i) => {
                 const img = item.images && item.images.length > 0 ? item.images[0] : "/images/hero.png";
                 const badge = getBadgeFromName(item.name);
                 const href = getHrefFromCategory(item.category);
 
                 return (
-                  <Link href={href} key={item.id} className="block">
+                  <Link href={href} key={item.id} className="block group">
                     <motion.div
-                      initial={{ opacity: 0, y: 50 }}
+                      initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
-                      className="group cursor-pointer perspective-[1000px]"
+                      className="product-card"
                     >
-                      <div className="relative h-[150px] sm:h-[180px] md:h-[500px] w-full bg-[#FAFAFA] border border-[#EAEAEA] mb-3 md:mb-6 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02] overflow-hidden">
-                        <img src={img} alt={item.name} className="absolute inset-0 w-full h-full object-cover grayscale-[15%] transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-[#EAE5D9] mix-blend-multiply opacity-10"></div>
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
-
-                        {badge && (
-                          <div className="absolute top-2 left-2 md:top-4 md:left-4 px-1.5 py-0.5 md:px-3 md:py-1 bg-white text-[#111] text-[6px] md:text-[9px] uppercase tracking-widest font-semibold rounded-full border border-[#EAEAEA] shadow-sm">
-                            {badge}
+                      <div className="card-minimal bg-archival-cream p-5 mb-6 rounded-lg border border-ink-charcoal/10 shadow-md overflow-hidden">
+                        <div className="aspect-[4/5] overflow-hidden bg-surface-container relative rounded-md">
+                          <img 
+                            src={img} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/books.png"; }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-ink-charcoal/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                            <span className="text-archival-cream font-label-caps text-xs font-bold tracking-wider flex items-center gap-2">
+                              <span className="material-symbols-outlined text-sm">photo_library</span> Archival Edition
+                            </span>
                           </div>
-                        )}
+
+                          {badge && (
+                            <div className="absolute top-3 left-3 px-3 py-1 bg-archival-cream/90 backdrop-blur-md text-brass-gold font-label-caps text-[10px] uppercase tracking-widest font-bold rounded-full border border-brass-gold/30 shadow-sm">
+                              {badge}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <h3 className="font-[family-name:var(--font-instrument)] text-[15px] leading-[1.1] md:text-3xl text-[#111] mb-1 md:mb-2 line-clamp-2 md:line-clamp-none">{item.name}</h3>
-                      <p className="text-[#555] font-light text-[9px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-none">{item.description}</p>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-label-caps text-xs font-bold text-brass-gold tracking-widest">
+                          {badge || 'COLLECTION'}
+                        </span>
+                        <span className="font-label-caps text-xs font-bold text-ink-charcoal/70 tracking-wider">
+                          {item.price ? `FROM $${item.price}` : 'CUSTOM'}
+                        </span>
+                      </div>
+                      <h3 className="font-headline-md text-xl md:text-2xl font-medium text-ink-charcoal mb-2 leading-tight">{item.name}</h3>
+                      <p className="font-body-md text-sm md:text-base text-ink-charcoal/75 mb-5 leading-relaxed line-clamp-2">{item.description}</p>
+                      <span className="nav-link font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal inline-flex items-center gap-2 group/btn">
+                        Customize Formats <span className="material-symbols-outlined text-[16px] transition-transform group-hover/btn:translate-x-2">arrow_forward</span>
+                      </span>
                     </motion.div>
                   </Link>
                 );

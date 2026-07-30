@@ -3,6 +3,9 @@
 @import "shadcn/tailwind.css";
 
 @theme {
+  --font-sans: "DM Sans", var(--font-dm-sans), -apple-system, sans-serif;
+  --font-serif: "Playfair Display", var(--font-playfair), Georgia, serif;
+
   --color-archival-cream: #FDFCF8;
   --color-ink-charcoal: #1A1A1A;
   --color-brass-gold: #C5A059;
@@ -15,14 +18,18 @@
   --spacing-margin-desktop: 64px;
   --spacing-section-gap: 120px;
 
-  --font-body-md: "DM Sans", sans-serif;
-  --font-headline-md: "Playfair Display", serif;
-  --font-headline-lg: "Playfair Display", serif;
-  --font-label-caps: "DM Sans", sans-serif;
-  --font-display-hero: "Playfair Display", serif;
+  --font-body-md: "DM Sans", var(--font-dm-sans), sans-serif;
+  --font-headline-md: "Playfair Display", var(--font-playfair), serif;
+  --font-headline-lg: "Playfair Display", var(--font-playfair), serif;
+  --font-label-caps: "DM Sans", var(--font-dm-sans), sans-serif;
+  --font-display-hero: "Playfair Display", var(--font-playfair), serif;
 }
 
 :root {
+  --font-instrument: "Playfair Display", var(--font-playfair), serif;
+  --font-dm-serif: "Playfair Display", var(--font-playfair), serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+
   --background: #FAF6EE;
   --foreground: #1a1a18;
   --card: #FFFFFF;
@@ -125,13 +132,19 @@
   }
 
   body {
+    font-family: var(--font-sans);
     background-color: var(--background);
     color: var(--foreground);
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-serif {
+    font-family: var(--font-serif);
   }
 }
 
 /* Force Cursor Re-enable */
 body, html { cursor: auto !important; }
 a, button, [role='button'], input, select, textarea { cursor: pointer !important; }
+
 
 

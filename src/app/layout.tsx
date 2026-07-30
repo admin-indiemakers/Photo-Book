@@ -18,30 +18,22 @@ export const metadata: Metadata = {
   },
 };
 
-import { DM_Sans, DM_Serif_Display, Caveat, Instrument_Serif } from 'next/font/google';
+import { DM_Sans, Playfair_Display, Caveat } from 'next/font/google';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
 });
 
-const dmSerif = DM_Serif_Display({
+const playfair = Playfair_Display({
   subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-dm-serif',
+  variable: '--font-playfair',
   style: ['normal', 'italic'],
 });
 
 const caveat = Caveat({
   subsets: ['latin'],
   variable: '--font-caveat',
-});
-
-const instrument = Instrument_Serif({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-instrument',
-  style: ['normal', 'italic'],
 });
 
 import React, { Suspense } from "react";
@@ -56,7 +48,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${dmSerif.variable} ${caveat.variable} ${instrument.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${playfair.variable} ${caveat.variable} h-full antialiased`}
     >
       <head>
         {/* Google Fonts & Material Symbols */}

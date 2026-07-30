@@ -97,7 +97,9 @@ export default function AboutPage() {
 
           {/* Letterhead */}
           <div className="flex justify-between items-end mb-12 relative z-10 border-b border-[#EAE5D9] pb-8">
-            <h1 className="font-[family-name:var(--font-instrument)] italic text-4xl text-[#111]">Offline Living</h1>
+            <h1 className="font-headline-md italic text-3xl md:text-4xl text-ink-charcoal" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Offline <span className="text-xs non-italic font-sans uppercase tracking-widest text-brass-gold align-top relative -top-1">Living ®</span>
+            </h1>
           </div>
 
           <div className="relative z-10 pt-4">
@@ -106,30 +108,29 @@ export default function AboutPage() {
               Dear friend,
             </p>
 
-            {/* Body - Line height must match the 40px background lines perfectly */}
-            <div className="font-[family-name:var(--font-instrument)] text-[22px] md:text-[24px] leading-[40px] text-[#333330]">
+            {/* Body - Line height matches the 40px background lines */}
+            <div className="font-headline-md text-[20px] md:text-[22px] leading-[40px] text-ink-charcoal/90" style={{ fontFamily: "'Playfair Display', serif" }}>
               <p className="indent-12 mb-[40px]">
                 We live in an era of endless scrolling. We take thousands of photos, store them in the cloud, and rarely look at them again. They become pixels buried beneath more pixels, quietly forgotten in the noise of the digital age.
               </p>
               <p className="indent-12 mb-[40px]">
-                We started <span className="italic">Offline Living</span> because we missed the weight of a photograph. We missed the tactile joy of turning a thick, textured page, the faint smell of fresh ink, and the quiet, undeniable intimacy of holding a memory in your hands.
+                We started <span className="italic text-brass-gold">Offline Living</span> because we missed the weight of a photograph. We missed the tactile joy of turning a thick, textured page, the faint smell of fresh ink, and the quiet, undeniable intimacy of holding a memory in your hands.
               </p>
               <p className="indent-12 mb-[40px]">
                 Our mission is simple: to help you strip away the noise. We curate, craft, and bind your fleeting digital moments into museum-grade, physical artifacts—books that you can place proudly on your coffee table and pass down through generations.
               </p>
-              <p className="text-center italic mt-[80px] text-[#111]">
+              <p className="text-center italic mt-[80px] text-ink-charcoal font-medium">
                 It’s time to bring your story into the real world.
               </p>
             </div>
 
             {/* Sign-off */}
             <div className="pt-24 flex flex-col items-end text-right">
-              <p className="font-[family-name:var(--font-caveat)] text-3xl md:text-4xl text-[#555] mb-6">
+              <p className="font-[family-name:var(--font-caveat)] text-3xl md:text-4xl text-ink-charcoal/70 mb-6">
                 Warmly,
               </p>
               <div className="relative group">
                 <img src="/images/logoo1.png" alt="Offline Living Logo Signature" className="h-48 md:h-56 object-contain opacity-70 mix-blend-multiply grayscale group-hover:grayscale-0 transition-all duration-700 transform -rotate-3" />
-                {/* Subtle ink smudge effect on stamp */}
                 <img src="/images/logoo1.png" alt="" className="h-48 md:h-56 object-contain opacity-20 mix-blend-multiply grayscale absolute top-[2px] left-[2px] blur-[2px] pointer-events-none transform -rotate-3" />
               </div>
             </div>
