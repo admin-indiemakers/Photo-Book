@@ -21,6 +21,18 @@ export async function uploadImageAction(formData: FormData) {
       });
       
     if (error) {
+      const rawKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+      const isMissingOrPlaceholder = !rawKey || rawKey.includes('PASTE_YOUR') || !rawKey.startsWith('eyJ');
+      
+      if (error.message.includes('row-level security policy') || error.message.includes('Compact JWS') || isMissingOrPlaceholder) {
+        if (isMissingOrPlaceholder) {
+          console.error('SUPABASE_SERVICE_ROLE_KEY is missing or contains placeholder text in .env.local.');
+          return { 
+            success: false, 
+            error: 'Please replace PASTE_YOUR_SUPABASE_SERVICE_ROLE_KEY_HERE in .env.local with your real Supabase service_role key (starts with eyJ...).' 
+          };
+        }
+      }
       return { success: false, error: error.message };
     }
     

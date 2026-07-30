@@ -176,7 +176,7 @@ export const PolaroidProductPage = () => {
       return false;
     }
 
-    trackAddToCart({ id: 'polaroid-prints', name: 'Polaroid Prints', price: grandTotal, quantity: polaroidItems.length || 1, category: 'Polaroids' });
+    trackAddToCart({ id: 'polaroid-prints', name: 'Polaroid Prints', price: grandTotal, quantity: 1, category: 'Polaroids' });
     return true;
   };
 

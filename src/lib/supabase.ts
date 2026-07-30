@@ -9,5 +9,9 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const rawServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const isRealServiceKey = rawServiceKey.trim().length > 0 && !rawServiceKey.includes('PASTE_YOUR') && rawServiceKey.startsWith('eyJ');
+const supabaseServiceKey = isRealServiceKey ? rawServiceKey.trim() : '';
+
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseKey);
+

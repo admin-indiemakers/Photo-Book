@@ -1,17 +1,37 @@
-// Google Analytics 4 (GA4) E-Commerce Event Helper
+// Google Analytics 4 (GA4) E-Commerce & Pageview Helper
 
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    dataLayer?: any[];
   }
 }
 
 export const GA_TRACKING_ID = 'G-5FNBNK1V8P';
 
-// Generic helper to safely send gtag events
+// Generic helper to safely send gtag events with dataLayer queue fallback
 export const trackGaEvent = (eventName: string, params?: Record<string, any>) => {
+  if (typeof window !== 'undefined') {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', eventName, params);
+    } else {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: eventName, ...params });
+    }
+  }
+};
+
+// 0. Pageview tracking for SPA navigation
+export const trackPageView = (url: string) => {
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-    window.gtag('event', eventName, params);
+    window.gtag('config', GA_TRACKING_ID, {
+      page_path: url,
+    });
+  } else {
+    trackGaEvent('page_view', {
+      page_path: url,
+      page_location: typeof window !== 'undefined' ? window.location.href : url,
+    });
   }
 };
 
@@ -96,3 +116,4 @@ export const trackPurchase = (
     })),
   });
 };
+
