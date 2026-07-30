@@ -1,11 +1,12 @@
 'use client';
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import magnet1 from '../assets/polariod fridge magnet 5.png';
 import magnet2 from '../assets/polariod fridge magnet 2.jpg';
 import magnet3 from '../assets/polariod fridge magnet 4.jpg';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../utils/cropImage';
+import { trackViewItem, trackAddToCart } from '@/lib/gtag';
 
 const SIZES = [
   { id: '2.5x3', label: '2.5 x 3 inches', dimensions: '2.5 x 3 inches', price: 189, ratio: 'aspect-[2.5/3]' },
@@ -33,6 +34,10 @@ type MagnetItem = {
 };
 
 export const FridgeMagnetProductPage = () => {
+  useEffect(() => {
+    trackViewItem({ id: 'fridge-magnets', name: 'Fridge Magnets', price: 189, category: 'Fridge Magnets' });
+  }, []);
+
   const [magnetItems, setMagnetItems] = useState<MagnetItem[]>([]);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
@@ -185,6 +190,11 @@ export const FridgeMagnetProductPage = () => {
     try {
       const success = await addItemsToDatabaseCart();
       if (success) {
+        const totalVal = magnetItems.reduce((sum, item) => {
+          const cfg = SIZES.find(s => s.id === item.sizeId);
+          return sum + (cfg ? cfg.price : 0) * item.quantity;
+        }, 0);
+        trackAddToCart({ id: 'fridge-magnets', name: 'Fridge Magnets', price: totalVal, quantity: 1, category: 'Fridge Magnets' });
         window.location.href = '/cart';
       }
     } catch (error) {
@@ -206,6 +216,11 @@ export const FridgeMagnetProductPage = () => {
     try {
       const success = await addItemsToDatabaseCart(true);
       if (success) {
+        const totalVal = magnetItems.reduce((sum, item) => {
+          const cfg = SIZES.find(s => s.id === item.sizeId);
+          return sum + (cfg ? cfg.price : 0) * item.quantity;
+        }, 0);
+        trackAddToCart({ id: 'fridge-magnets', name: 'Fridge Magnets', price: totalVal, quantity: 1, category: 'Fridge Magnets' });
         window.location.href = '/checkout'; // Redirect to checkout flow
       }
     } catch (error) {

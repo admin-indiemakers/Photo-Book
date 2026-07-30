@@ -6,6 +6,7 @@ import { getCart } from '../actions/cart';
 import { supabase } from '@/lib/supabase';
 import { HeaderNav, Footer } from '@/components/shared';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackViewCart } from '@/lib/gtag';
 
 export default function CartPage() {
   const [cartData, setCartData] = useState<any>(null);
@@ -20,8 +21,16 @@ export default function CartPage() {
         return;
       }
       getCart(session.user.id).then((res) => {
-        if (res.success) {
-          setCartData(res.cart || { cart_items: [] });
+        if (res.success && res.cart) {
+          setCartData(res.cart);
+          const cartItems = (res.cart.cart_items || []).map((i: any) => ({
+            id: i.product_id || i.id,
+            name: i.products?.name || 'Product',
+            price: Number(i.price) || 0,
+            quantity: Number(i.quantity) || 1,
+          }));
+          const totalVal = cartItems.reduce((acc: number, curr: any) => acc + curr.price * curr.quantity, 0);
+          trackViewCart(cartItems, totalVal);
         } else {
           setError(res.error || 'Failed to load cart');
         }

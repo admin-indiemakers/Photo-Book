@@ -44,6 +44,9 @@ const instrument = Instrument_Serif({
   style: ['normal', 'italic'],
 });
 
+import React, { Suspense } from "react";
+import GA4Analytics from "@/components/GA4Analytics";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,6 +75,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans text-theme-black bg-theme-ivory" suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <GA4Analytics />
+        </Suspense>
         <TooltipProvider>
           <Breadcrumbs />
           {children}

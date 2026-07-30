@@ -6,6 +6,7 @@ import canvas2 from '../assets/Canvas Frame2.jpg';
 import canvas3 from '../assets/Canvas Frame3.jpg';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/utils/cropImage';
+import { trackViewItem, trackAddToCart } from '@/lib/gtag';
 
 const SIZES = [
   { id: '3x3', label: '3x3', dimensions: '3inch X 3inch', price: 90.00, ratio: 'aspect-square' },
@@ -27,6 +28,10 @@ type FrameItem = {
 };
 
 export const CanvasFramesProductPage = () => {
+  useEffect(() => {
+    trackViewItem({ id: 'canvas-frames', name: 'Canvas Frames', price: 90, category: 'Canvas Frames' });
+  }, []);
+
   // Multi-item builder state
   const [frameItems, setFrameItems] = useState<FrameItem[]>([]);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
@@ -177,6 +182,11 @@ export const CanvasFramesProductPage = () => {
     try {
       const success = await addItemsToDatabaseCart();
       if (success) {
+        const totalVal = frameItems.reduce((sum, item) => {
+          const cfg = SIZES.find(s => s.id === item.sizeId);
+          return sum + (cfg ? cfg.price : 0) * item.quantity;
+        }, 0);
+        trackAddToCart({ id: 'canvas-frames', name: 'Canvas Frames', price: totalVal, quantity: 1, category: 'Canvas Frames' });
         window.location.href = '/cart';
       }
     } catch (error) {
@@ -198,6 +208,11 @@ export const CanvasFramesProductPage = () => {
     try {
       const success = await addItemsToDatabaseCart(true);
       if (success) {
+        const totalVal = frameItems.reduce((sum, item) => {
+          const cfg = SIZES.find(s => s.id === item.sizeId);
+          return sum + (cfg ? cfg.price : 0) * item.quantity;
+        }, 0);
+        trackAddToCart({ id: 'canvas-frames', name: 'Canvas Frames', price: totalVal, quantity: 1, category: 'Canvas Frames' });
         window.location.href = '/checkout'; // Redirect to checkout flow
       }
     } catch (error) {

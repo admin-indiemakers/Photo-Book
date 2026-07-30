@@ -6,6 +6,7 @@ import { getCart, checkoutCart } from '../actions/cart';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
+import { trackBeginCheckout, trackPurchase } from '@/lib/gtag';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -38,6 +39,14 @@ export default function CheckoutPage() {
       getCart(session.user.id).then((res) => {
         if (res.success && res.cart) {
           setCartData(res.cart);
+          const checkoutItems = (res.cart.cart_items || []).map((i: any) => ({
+            id: i.product_id || i.id,
+            name: i.products?.name || 'Product',
+            price: Number(i.price) || 0,
+            quantity: Number(i.quantity) || 1,
+          }));
+          const totalVal = checkoutItems.reduce((acc: number, curr: any) => acc + curr.price * curr.quantity, 0);
+          trackBeginCheckout(checkoutItems, totalVal);
         } else {
           setError(res.error || 'Cart not found');
         }
@@ -74,8 +83,17 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
 
+    const checkoutItems = (cartData?.cart_items || []).map((i: any) => ({
+      id: i.product_id || i.id,
+      name: i.products?.name || 'Product',
+      price: Number(i.price) || 0,
+      quantity: Number(i.quantity) || 1,
+    }));
+    const totalVal = checkoutItems.reduce((acc: number, curr: any) => acc + curr.price * curr.quantity, 0);
+
     const res = await checkoutCart(userId as string, formData);
     if (res.success) {
+      trackPurchase(res.orderId || `ORD_${Date.now()}`, checkoutItems, totalVal);
       window.location.href = '/orders';
     } else {
       setError(res.error || 'Checkout failed');
