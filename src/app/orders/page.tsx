@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { getUserOrders } from '../actions/orders';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
+import { HeaderNav, Footer } from '@/components/shared';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -36,37 +37,42 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
+      <main className="min-h-screen bg-archival-cream flex items-center justify-center pt-40 pb-24">
+        <HeaderNav />
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
         />
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen pt-32 px-6 flex flex-col items-center justify-center bg-[#F7F5F0] relative overflow-hidden">
+      <main className="min-h-screen pt-32 px-6 flex flex-col items-center justify-between bg-archival-cream relative overflow-hidden">
+        <HeaderNav />
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md my-auto pt-20">
           <h1 className="text-4xl md:text-5xl font-serif text-[#1a1a18] mb-4 tracking-tight" style={{ fontFamily: "'DM Serif Display', serif" }}>Your Orders</h1>
           <p className="text-[#6b6560] mb-8 font-light text-lg">{error}</p>
           <Link href="/login" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
             Log In to Continue
           </Link>
         </motion.div>
-      </div>
+        <Footer />
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-40 relative selection:bg-[#E85D26] selection:text-white">
+    <main className="min-h-screen bg-archival-cream font-sans pb-24 text-black pt-32 md:pt-40 relative selection:bg-[#E85D26] selection:text-white flex flex-col justify-between">
+      <HeaderNav />
+
       {/* Decorative film grain */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-16 pt-2 relative z-10">
+      <div className="max-w-5xl w-full mx-auto px-4 sm:px-8 lg:px-16 pt-2 pb-16 relative z-10">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight mb-2 text-[#1a1a18]" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Order History
@@ -184,6 +190,8 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
-    </div>
+
+      <Footer />
+    </main>
   );
 }
