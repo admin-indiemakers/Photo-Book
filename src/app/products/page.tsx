@@ -112,7 +112,7 @@ export default function AllProductsPage() {
               <div className="w-8 h-8 border-4 border-ink-charcoal/20 border-t-brass-gold rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            <div className="grid grid-cols-3 gap-2 md:gap-10">
               {products.map((item, i) => {
                 const img = item.images && item.images.length > 0 ? item.images[0] : "/images/hero.png";
                 const badge = getBadgeFromName(item.name);
@@ -126,7 +126,7 @@ export default function AllProductsPage() {
                       transition={{ duration: 0.8, delay: i * 0.1, ease: customEase }}
                       className="product-card"
                     >
-                      <div className="card-minimal bg-archival-cream p-5 mb-6 rounded-lg border border-ink-charcoal/10 shadow-md overflow-hidden">
+                      <div className="card-minimal bg-archival-cream p-2 md:p-5 mb-2 md:mb-6 rounded-lg border border-ink-charcoal/10 shadow-md overflow-hidden">
                         <div className="aspect-[4/5] overflow-hidden bg-surface-container relative rounded-md">
                           <img 
                             src={img} 
@@ -134,32 +134,32 @@ export default function AllProductsPage() {
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/books.png"; }}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-ink-charcoal/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
+                          <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-ink-charcoal/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity items-end p-5">
                             <span className="text-archival-cream font-label-caps text-xs font-bold tracking-wider flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm">photo_library</span> Archival Edition
                             </span>
                           </div>
 
                           {badge && (
-                            <div className="absolute top-3 left-3 px-3 py-1 bg-archival-cream/90 backdrop-blur-md text-brass-gold font-label-caps text-[10px] uppercase tracking-widest font-bold rounded-full border border-brass-gold/30 shadow-sm">
+                            <div className="absolute top-1 left-1 md:top-3 md:left-3 px-1.5 md:px-3 py-0.5 md:py-1 bg-archival-cream/90 backdrop-blur-md text-brass-gold font-label-caps text-[6px] md:text-[10px] uppercase tracking-widest font-bold rounded-full border border-brass-gold/30 shadow-sm">
                               {badge}
                             </div>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-label-caps text-xs font-bold text-brass-gold tracking-widest">
+                      <div className="flex justify-between items-center mb-1 md:mb-2">
+                        <span className="font-label-caps text-[8px] md:text-xs font-bold text-brass-gold tracking-widest">
                           {badge || 'COLLECTION'}
                         </span>
-                        <span className="font-label-caps text-xs font-bold text-ink-charcoal/70 tracking-wider">
+                        <span className="font-label-caps text-[8px] md:text-xs font-bold text-ink-charcoal/70 tracking-wider">
                           {item.price ? `FROM $${item.price}` : 'CUSTOM'}
                         </span>
                       </div>
-                      <h3 className="font-headline-md text-xl md:text-2xl font-medium text-ink-charcoal mb-2 leading-tight">{item.name}</h3>
-                      <p className="font-body-md text-sm md:text-base text-ink-charcoal/75 mb-5 leading-relaxed line-clamp-2">{item.description}</p>
-                      <span className="nav-link font-label-caps text-xs font-bold tracking-widest uppercase text-ink-charcoal inline-flex items-center gap-2 group/btn">
-                        Customize Formats <span className="material-symbols-outlined text-[16px] transition-transform group-hover/btn:translate-x-2">arrow_forward</span>
+                      <h3 className="font-headline-md text-[10px] sm:text-xs md:text-xl md:text-2xl font-medium text-ink-charcoal mb-1 md:mb-2 leading-tight">{item.name}</h3>
+                      <p className="hidden md:block font-body-md text-sm md:text-base text-ink-charcoal/75 mb-5 leading-relaxed line-clamp-2">{item.description}</p>
+                      <span className="hidden md:inline-flex nav-link font-label-caps text-[6px] md:text-xs font-bold tracking-widest uppercase text-ink-charcoal items-center gap-1 md:gap-2 group/btn">
+                        Customize Formats <span className="material-symbols-outlined text-[10px] md:text-[16px] transition-transform group-hover/btn:translate-x-2">arrow_forward</span>
                       </span>
                     </motion.div>
                   </Link>
