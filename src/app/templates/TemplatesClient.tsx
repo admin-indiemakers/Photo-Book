@@ -31,10 +31,10 @@ export default function TemplatesClient() {
     : templates.filter(t => t.category === activeCat);
 
   return (
-    <main className="bg-white min-h-screen text-black font-sans selection:bg-[#f26523] selection:text-white pt-40">
+    <main className="bg-archival-cream text-ink-charcoal font-sans selection:bg-[#f26523] selection:text-white pt-32 md:pt-40">
       <HeaderNav />
 
-      <section className="pt-2 pb-8 md:pt-4 md:pb-24 px-4 md:px-6 bg-white min-h-screen">
+      <section className="pt-2 pb-8 md:pt-4 md:pb-24 px-4 md:px-6 min-h-screen">
         <div className="max-w-7xl mx-auto">
 
           {/* Header */}
@@ -44,8 +44,8 @@ export default function TemplatesClient() {
             transition={{ duration: 0.8, ease: customEase }}
             className="text-center mb-10 md:mb-20"
           >
-            <h1 className="text-4xl md:text-7xl font-serif text-black mb-4 md:mb-6 leading-tight">Photobook Templates</h1>
-            <p className="text-sm md:text-lg text-gray-500 font-light max-w-2xl mx-auto px-4 md:px-0 leading-relaxed">
+            <h1 className="text-4xl md:text-7xl font-serif text-ink-charcoal mb-4 md:mb-6 leading-tight">Photobook Templates</h1>
+            <p className="text-sm md:text-lg text-ink-charcoal/70 font-light max-w-2xl mx-auto px-4 md:px-0 leading-relaxed">
               Choose a starting point for your story. All of our layout templates are fully customizable in our studio editor, designed for premium archival-quality printing.
             </p>
           </motion.div>
@@ -63,7 +63,7 @@ export default function TemplatesClient() {
                 onClick={() => setActiveCat(cat)}
                 className={`px-4 py-1.5 md:px-8 md:py-3 rounded-full text-xs md:text-sm font-medium tracking-wide transition-all duration-300 ${activeCat === cat
                   ? 'bg-black text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:border-black hover:text-black'
+                  : 'bg-archival-cream text-ink-charcoal/70 border border-ink-charcoal/15 hover:border-black hover:text-black'
                   }`}
               >
                 {cat}
@@ -84,7 +84,7 @@ export default function TemplatesClient() {
                   transition={{ duration: 0.5, ease: customEase }}
                   className="group relative cursor-pointer flex flex-col"
                 >
-                  <div className="overflow-hidden rounded-xl md:rounded-2xl mb-2 md:mb-6 bg-gray-50 aspect-[3/4] relative perspective-[1000px]">
+                  <div className="overflow-hidden rounded-xl md:rounded-2xl mb-2 md:mb-6 bg-surface-container aspect-[3/4] relative perspective-[1000px] shadow-sm border border-ink-charcoal/10">
                     <img
                       src={tpl.image}
                       alt={`${tpl.name} template preview`}
@@ -103,15 +103,15 @@ export default function TemplatesClient() {
                   </div>
 
                   <div className="flex flex-col md:flex-row md:justify-between items-start mb-1 md:mb-2 gap-1 md:gap-0">
-                    <h3 className="font-serif text-[12px] md:text-2xl text-black leading-tight line-clamp-1">{tpl.name}</h3>
-                    <span className="hidden md:inline-block text-[10px] font-semibold uppercase tracking-widest px-2 py-1 bg-gray-100 text-gray-500 rounded-sm">
+                    <h3 className="font-serif text-[12px] md:text-2xl text-ink-charcoal leading-tight line-clamp-1">{tpl.name}</h3>
+                    <span className="hidden md:inline-block text-[10px] font-semibold uppercase tracking-widest px-2 py-1 bg-ink-charcoal/5 text-ink-charcoal/60 rounded-sm">
                       {tpl.category}
                     </span>
                   </div>
 
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-gray-500 font-light mt-auto text-[9px] md:text-base gap-0.5 md:gap-0">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-ink-charcoal/60 font-light mt-auto text-[9px] md:text-base gap-0.5 md:gap-0">
                     <span className="hidden md:inline">{tpl.pages} Pages</span>
-                    <span className="text-black font-medium text-[10px] md:text-base">From ₹{tpl.price}</span>
+                    <span className="text-ink-charcoal font-medium text-[10px] md:text-base">From ₹{tpl.price}</span>
                   </div>
                 </motion.div>
               ))}
