@@ -31,11 +31,20 @@ jobs:
       # 5. Pull production environment details from Vercel
       - name: Pull Vercel Environment Information
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_rKlwszE5UXezTad8DTeNVyRD
+          VERCEL_PROJECT_ID: prj_oHtuLn5t7KncvDGKFVukkeEyb2qm
 
       # 6. Build the application artifacts locally using Vercel CLI
       - name: Build Project Artifacts
         run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_rKlwszE5UXezTad8DTeNVyRD
+          VERCEL_PROJECT_ID: prj_oHtuLn5t7KncvDGKFVukkeEyb2qm
 
       # 7. Deploy the pre-built application directly to Vercel production
       - name: Deploy to Vercel
         run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_rKlwszE5UXezTad8DTeNVyRD
+          VERCEL_PROJECT_ID: prj_oHtuLn5t7KncvDGKFVukkeEyb2qm
