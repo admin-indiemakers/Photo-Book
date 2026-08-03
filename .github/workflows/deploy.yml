@@ -31,11 +31,6 @@ jobs:
       - name: Run Tests
         run: npm run test --if-present
 
-      # 5. Deploy to Vercel (Production) using the robust Vercel Action
+      # 5. Deploy to Vercel (Production) using Vercel CLI
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: team_rKlwszE5UXezTad8DTeNVyRD
-          vercel-project-id: prj_oHtuLn5t7KncvDGKFVukkeEyb2qm
-          vercel-args: '--prod --yes'
+        run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
