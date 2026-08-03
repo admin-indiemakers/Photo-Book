@@ -24,7 +24,7 @@ const BG_PRESETS = [
   '#FFF3E0', '#E8F5E9', '#E3F2FD', '#FCE4EC',
 ];
 
-// ============ PAGE BACKGROUND PANEL ============
+// ============ PAGE BACKGROUND PANEL =============
 function PageBackgroundPanel() {
   const { pages, currentPageId, updatePageBackground } = useEditorStore();
   const currentPage = pages.find(p => p.id === currentPageId);
