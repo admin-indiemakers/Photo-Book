@@ -230,6 +230,29 @@ export function HeaderNav() {
     ? "bg-[#FDFCF8]/90 backdrop-blur-md border-b border-[#1A1A1A]/10 text-[#1A1A1A]" 
     : "bg-transparent text-[#1A1A1A] border-b border-transparent";
 
+  const [activeCategories, setActiveCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchActiveCategories() {
+      const { data } = await supabase.from('products').select('category').eq('is_active', true);
+      if (data) {
+        setActiveCategories(data.map(d => d.category));
+      }
+    }
+    fetchActiveCategories();
+  }, []);
+
+  const navLinks = [
+    { cat: 'photo_book', label: 'Photo Book', href: '/templates' },
+    { cat: 'photo_frame', label: 'Photo Frame', href: '/frame' },
+    { cat: 'polaroid', label: 'Polaroid', href: '/polaroid' },
+    { cat: 'fridge_magnet', label: 'Polaroid Fridge Magnet', href: '/fridge-magnet' },
+    { cat: 'acrylic_frame', label: 'Acrylic Frames', href: '/acrylic-frames' },
+    { cat: 'photo_canvas', label: 'Canvas Frames', href: '/canvas-frames' }
+  ];
+
+  const visibleLinks = navLinks.filter(link => activeCategories.includes(link.cat));
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${navClass}`} suppressHydrationWarning>
       <div className="max-w-7xl mx-auto px-8 md:px-16 py-4 flex items-center justify-between">
@@ -260,12 +283,11 @@ export function HeaderNav() {
                   className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-[#FDFCF8]/98 backdrop-blur-xl border border-[#1A1A1A]/10 shadow-2xl rounded-xl p-5 z-50"
                 >
                   <ul className="space-y-3.5 font-label-caps text-xs tracking-widest uppercase font-semibold">
-                    <li><Link href="/templates" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Photo Book</Link></li>
-                    <li><Link href="/frame" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Photo Frame</Link></li>
-                    <li><Link href="/polaroid" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Polaroid</Link></li>
-                    <li><Link href="/fridge-magnet" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Polaroid Fridge Magnet</Link></li>
-                    <li><Link href="/acrylic-frames" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Acrylic Frames</Link></li>
-                    <li><Link href="/canvas-frames" className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">Canvas Frames</Link></li>
+                    {visibleLinks.map(link => (
+                      <li key={link.cat}>
+                        <Link href={link.href} className="block text-[#1A1A1A]/80 hover:text-[#C5A059] hover:translate-x-1 transition-all">{link.label}</Link>
+                      </li>
+                    ))}
                   </ul>
                 </motion.div>
               )}
