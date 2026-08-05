@@ -123,6 +123,29 @@ function Navbar() {
     window.location.href = "/";
   };
 
+  const [activeCategories, setActiveCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchActiveCategories() {
+      const { data } = await supabase.from('products').select('category').eq('is_active', true);
+      if (data) {
+        setActiveCategories(data.map(d => d.category));
+      }
+    }
+    fetchActiveCategories();
+  }, []);
+
+  const navLinks = [
+    { cat: 'photo_book', label: 'Photo Book', href: '/templates' },
+    { cat: 'photo_frame', label: 'Photo Frame', href: '/frame' },
+    { cat: 'polaroid', label: 'Polaroid', href: '/polaroid' },
+    { cat: 'fridge_magnet', label: 'Polaroid Fridge Magnet', href: '/fridge-magnet' },
+    { cat: 'acrylic_frame', label: 'Acrylic Frames', href: '/acrylic-frames' },
+    { cat: 'photo_canvas', label: 'Canvas Frames', href: '/canvas-frames' }
+  ];
+
+  const visibleLinks = navLinks.filter(link => activeCategories.includes(link.cat));
+
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-ink-charcoal/10 bg-archival-cream/90 backdrop-blur-md transition-all duration-300">
       <div className="flex justify-between items-center px-4 md:px-8 lg:px-margin-desktop py-4 w-full max-w-full mx-auto">
@@ -152,12 +175,11 @@ function Navbar() {
             {/* Dropdown Card */}
             <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-archival-cream/98 backdrop-blur-xl border border-ink-charcoal/10 shadow-2xl rounded-xl p-5 transition-all duration-300 transform ${dropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
               <ul className="space-y-3.5 font-label-caps text-xs tracking-widest uppercase font-semibold">
-                <li><Link href="/templates" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Photo Book</Link></li>
-                <li><Link href="/frame" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Photo Frame</Link></li>
-                <li><Link href="/polaroid" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Polaroid</Link></li>
-                <li><Link href="/fridge-magnet" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Polaroid Fridge Magnet</Link></li>
-                <li><Link href="/acrylic-frames" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Acrylic Frames</Link></li>
-                <li><Link href="/canvas-frames" className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">Canvas Frames</Link></li>
+                {visibleLinks.map(link => (
+                  <li key={link.cat}>
+                    <Link href={link.href} className="block text-ink-charcoal/80 hover:text-brass-gold hover:translate-x-1 transition-all">{link.label}</Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -336,9 +358,10 @@ function Marquee() {
 }
 
 // 4. Curated Formats Product Grid
-function CuratedFormats() {
+function CuratedFormats({ settings }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [products, setProducts] = useState(PRODUCTS);
+  const [isTemplateFallback, setIsTemplateFallback] = useState(false);
 
   useEffect(() => {
     async function loadProducts() {
@@ -349,8 +372,56 @@ function CuratedFormats() {
           .eq('is_active', true);
 
         if (data && data.length > 0) {
+          // Check if ONLY photo_book is active
+          const activeCats = [...new Set(data.map(p => p.category))];
+          if (activeCats.length === 1 && activeCats[0] === 'photo_book') {
+            // Load templates instead from product attributes
+            let displayTemplates = [];
+            
+            // Extract all templates from active products
+            data.forEach(p => {
+              if (p.attributes?.templates && Array.isArray(p.attributes.templates)) {
+                // If the user has explicitly featured some templates using the new button we added
+                const featured = p.attributes.templates.filter(t => t.is_featured);
+                displayTemplates = [...displayTemplates, ...featured];
+              }
+            });
+
+            // If no templates are explicitly featured, just grab the first 3 available templates
+            if (displayTemplates.length === 0) {
+               data.forEach(p => {
+                 if (p.attributes?.templates && Array.isArray(p.attributes.templates)) {
+                   displayTemplates = [...displayTemplates, ...p.attributes.templates];
+                 }
+               });
+            }
+            
+            displayTemplates = displayTemplates.slice(0, 3);
+
+            const mapped = displayTemplates.map(t => ({
+              id: t.id,
+              category: 'templates',
+              badge: 'TEMPLATE',
+              badgeColor: 'text-brass-gold',
+              price: 'CUSTOMIZE',
+              title: t.name,
+              description: `A beautiful ${t.category} template.`,
+              image: t.image,
+              feature: 'Layout Template',
+              icon: 'dashboard',
+              cta: 'Select Template',
+              href: `/editor?template=${t.id}`
+            }));
+            setProducts(mapped);
+            setIsTemplateFallback(true);
+            return;
+          }
+
+          setIsTemplateFallback(false);
+
           const featuredData = data.filter(item => item.attributes?.is_featured);
-          const mapped = featuredData.map((item) => {
+          const dataToMap = featuredData.length > 0 ? featuredData : data;
+          const mapped = dataToMap.map((item) => {
             const cat = item.category === 'photo_book' ? 'books' :
               item.category === 'photo_frame' ? 'frames' :
                 item.category === 'polaroid' ? 'prints' :
@@ -403,16 +474,18 @@ function CuratedFormats() {
     <section className="pt-16 pb-8 md:pt-24 md:pb-12 px-6 md:px-margin-desktop bg-white/40 backdrop-blur-sm" id="collections">
       <div className="flex flex-row justify-between items-center mb-6 md:mb-12">
         <div>
-          <span className="font-label-caps text-[10px] md:text-xs text-brass-gold font-bold tracking-widest m-0 block">COLLECTIONS</span>
+          <span className="font-label-caps text-[10px] md:text-xs text-brass-gold font-bold tracking-widest m-0 block">
+            {isTemplateFallback ? 'TEMPLATES' : 'COLLECTIONS'}
+          </span>
         </div>
 
         {/* Link to All Collections */}
         <div>
           <Link
-            href="/products"
+            href={isTemplateFallback ? "/templates" : "/products"}
             className="group flex items-center gap-1 md:gap-2 font-label-caps text-[10px] md:text-xs font-bold tracking-widest uppercase text-ink-charcoal hover:text-brass-gold transition-colors"
           >
-            All Collections
+            {isTemplateFallback ? 'All Templates' : 'All Collections'}
             <span className="material-symbols-outlined text-[14px] md:text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
           </Link>
         </div>
@@ -451,27 +524,33 @@ function CuratedFormats() {
 }
 
 // 5. Standard of Excellence Section
-function StandardOfExcellence() {
+function StandardOfExcellence({ settings }) {
+  const soe = settings?.standardOfExcellence;
+  const title = soe?.title || 'Standard of Excellence.';
+  const description = soe?.description || 'Elevate your space with our premium wall art collection. From solid wood frames to museum-grade acrylics, we craft pieces that demand attention.';
+  const defaultFeatures = [
+    { title: 'Solid Wood Frames', description: 'Handcrafted from sustainably sourced timber, providing a timeless border for your memories.', image: '/images/wide_photo_frame.png' },
+    { title: 'Optic Clear Acrylic', description: 'Anti-reflective museum glass offering vivid contrast, pure clarity, and UV protection.', image: '/images/wide_photo_book.png' },
+    { title: 'Woven Cotton Canvas', description: 'Rich, textured fine-art canvas stretched tightly over premium wooden bars.', image: '/images/premium_canvas_art.png' }
+  ];
+  const features = soe?.features?.length > 0 ? soe.features : defaultFeatures;
+
   return (
     <section className="pt-8 pb-16 md:pt-12 md:pb-24 px-6 md:px-margin-desktop bg-archival-cream/50 overflow-hidden" id="studio">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
         <div className="lg:col-span-4 pr-0 lg:pr-12">
-          <h2 className="font-headline-lg text-2xl md:text-4xl lg:text-[40px] leading-tight mb-4 md:mb-8">Standard of Excellence.</h2>
+          <h2 className="font-headline-lg text-2xl md:text-4xl lg:text-[40px] leading-tight mb-4 md:mb-8">{title}</h2>
           <p className="font-body-lg text-sm md:text-lg text-ink-charcoal/75 mb-8 md:mb-12">
-            Elevate your space with our premium wall art collection. From solid wood frames to museum-grade acrylics, we craft pieces that demand attention.
+            {description}
           </p>
           <ul className="space-y-6 md:space-y-10">
-            {[
-              { title: 'Solid Wood Frames', desc: 'Handcrafted from sustainably sourced timber, providing a timeless border for your memories.', href: '/frame' },
-              { title: 'Optic Clear Acrylic', desc: 'Anti-reflective museum glass offering vivid contrast, pure clarity, and UV protection.', href: '/acrylic-frames' },
-              { title: 'Woven Cotton Canvas', desc: 'Rich, textured fine-art canvas stretched tightly over premium wooden bars.', href: '/canvas-frames' }
-            ].map((item, idx) => (
+            {features.map((item, idx) => (
               <li key={idx} className="border-b border-ink-charcoal/10 pb-4 md:pb-6 group">
                 <div className="block">
                   <h4 className="font-label-caps text-[10px] md:text-xs font-bold tracking-widest uppercase text-brass-gold mb-2 md:mb-3 transition-all group-hover:translate-x-2 flex items-center gap-2">
                     <span>{item.title}</span>
                   </h4>
-                  <p className="font-body-md text-xs md:text-base text-ink-charcoal/70 leading-relaxed">{item.desc}</p>
+                  <p className="font-body-md text-xs md:text-base text-ink-charcoal/70 leading-relaxed">{item.description}</p>
                 </div>
               </li>
             ))}
@@ -483,28 +562,28 @@ function StandardOfExcellence() {
             <div className="flex flex-col gap-4 md:pt-12">
               <div className="w-full aspect-square rounded-lg overflow-hidden shadow-lg relative">
                 <img
-                  alt="Premium Photo Frame"
+                  alt={features[0]?.title}
                   className="w-full h-full absolute inset-0 object-cover transition-all duration-700 hover:scale-105"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/wide_photo_frame.png'; }}
-                  src="/images/wide_photo_frame.png"
+                  src={features[0]?.image || '/images/wide_photo_frame.png'}
                 />
               </div>
               <div className="w-full aspect-square rounded-lg overflow-hidden shadow-lg relative">
                 <img
-                  alt="Premium Photo Book"
+                  alt={features[1]?.title}
                   className="w-full h-full absolute inset-0 object-cover transition-all duration-700 hover:scale-105"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/wide_photo_book.png'; }}
-                  src="/images/wide_photo_book.png"
+                  src={features[1]?.image || '/images/wide_photo_book.png'}
                 />
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
                 <img
-                  alt="Premium Canvas Art"
+                  alt={features[2]?.title}
                   className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/premium_canvas_art.png'; }}
-                  src="/images/premium_canvas_art.png"
+                  src={features[2]?.image || '/images/premium_canvas_art.png'}
                 />
               </div>
             </div>
@@ -516,19 +595,29 @@ function StandardOfExcellence() {
 }
 
 // 6. Inspiration Gallery Grid
-function InspirationGrid() {
-  const galleries = [
+function InspirationGrid({ settings }) {
+  const cm = settings?.curatedMoments;
+  const title = cm?.title || 'CURATED MOMENTS';
+  const subtitle = cm?.subtitle || 'A Vibrant Legacy in Print.';
+
+  const defaultGalleries = [
     { title: 'PHOTO BOOK', img: '/images/photobook11.jpg', alt: 'Minimalist interior with photo book' },
     { title: 'PHOTO FRAME', img: '/images/premium_color_frame.png', alt: 'Colorful photo frame detail' },
     { title: 'POLAROID', img: '/images/polaroid2.jpg', alt: 'Archival book spine' },
     { title: 'POLAROID FRIDGE MAGNET', img: '/images/polariod fridge magnet 4.jpg', alt: 'Corner art arrangement' }
   ];
 
+  let galleries = cm?.items || [];
+  // Ensure we have exactly 4 valid items to avoid broken layouts
+  if (galleries.length < 4 || !galleries[0]?.img) {
+    galleries = defaultGalleries;
+  }
+
   return (
     <section className="pb-16 md:pb-24 pt-4 md:pt-8 px-6 md:px-margin-desktop bg-transparent">
       <div className="text-center max-w-2xl mx-auto mb-16">
-        <span className="font-label-caps text-xs text-brass-gold font-bold tracking-widest mb-4 block">CURATED MOMENTS</span>
-        <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight">A Vibrant Legacy in Print.</h2>
+        <span className="font-label-caps text-xs text-brass-gold font-bold tracking-widest mb-4 block">{title}</span>
+        <h2 className="font-headline-lg text-3xl md:text-4xl lg:text-[40px] leading-tight">{subtitle}</h2>
       </div>
       <div className="grid grid-cols-4 gap-2 md:gap-6">
         {galleries.map((item, idx) => (
@@ -633,6 +722,24 @@ function Footer() {
 
 // Main App Component
 export function LandingPage() {
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/settings`);
+        if (res.ok) {
+          const data = await res.json();
+          // Support both legacy JSON format (nested in landingPage) and new SQL format (flat)
+          setSettings(data.landingPage || data);
+        }
+      } catch (err) {
+        console.error("Failed to load settings", err);
+      }
+    }
+    loadSettings();
+  }, []);
+
   return (
     <div className="bg-archival-cream text-ink-charcoal font-body-md antialiased relative overflow-x-clip min-h-screen">
       {/* Grain Overlay */}
@@ -641,9 +748,9 @@ export function LandingPage() {
       <main className="pt-24 relative" id="main-content">
         <Hero />
         <Marquee />
-        <CuratedFormats />
-        <StandardOfExcellence />
-        <InspirationGrid />
+        <CuratedFormats settings={settings} />
+        <StandardOfExcellence settings={settings} />
+        <InspirationGrid settings={settings} />
       </main>
       <Footer />
     </div>
