@@ -1,103 +1,178 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
-
-export const metadata = {
-  title: "Community Stories & Reviews | Offline Living",
-  description: "Read real reviews from our creators and explore a gallery of beautiful, customer-designed photobooks.",
-};
+import { motion } from 'framer-motion';
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter,
+  TornPaperEdgeTop,
+  TornPaperEdgeBottom
+} from '@/components/ui/landingpage';
 
 export default function StoriesPage() {
   const reviews = [
-    { name: "Sarah T.", date: "Jan 12, 2026", rating: 5, text: "The best way to keep memories alive. The layflat pages are incredibly thick and the print quality is stunning." },
-    { name: "James L.", date: "Nov 28, 2025", rating: 5, text: "Beautiful quality and so easy to create. I made my wedding album in a weekend and it looks like it cost triple what I paid." },
-    { name: "Priya K.", date: "Oct 05, 2025", rating: 5, text: "A gift that means everything. I made a 'year in review' book for my parents and they were in tears. The packaging was also a lovely touch." },
-    { name: "Elena R.", date: "Sep 14, 2025", rating: 4, text: "Great quality book! The editor was a bit slow on my older laptop, but the final product is flawless. Definitely ordering again." },
-    { name: "Marcus W.", date: "Aug 02, 2025", rating: 5, text: "I'm a professional photographer and this is the only consumer platform I trust for my personal family photos. Highly recommended." }
+    {
+      name: "Sarah & Liam",
+      location: "Bangalore",
+      date: "Jan 2026",
+      rating: 5,
+      title: "Our Wedding Album is Pure Magic",
+      text: "The layflat pages are unbelievably thick and the color vibrancy is beyond what we imagined. Holding our wedding day in our hands feels so much more emotional than scrolling an iPad.",
+      img: "/images/photobook11.jpg",
+      product: "12x12 Layflat Hardcover"
+    },
+    {
+      name: "Priya & Rohan",
+      location: "Mumbai",
+      date: "Dec 2025",
+      rating: 5,
+      title: "A 'Year in Review' for the Grandparents",
+      text: "I made a mini photobook with our daughter's first year memories for my parents. They were both in happy tears. The paper texture feels like a true heritage book.",
+      img: "/images/polaroid2.jpg",
+      product: "8x8 Classic Hardcover"
+    },
+    {
+      name: "Marcus W.",
+      location: "Goa",
+      date: "Nov 2025",
+      rating: 5,
+      title: "Professional Grade Quality",
+      text: "As a professional photographer, I am deeply picky about color gamut and paper weight. Offline Living is the only consumer studio I trust with my family memories.",
+      img: "/images/polaroid8.jpg",
+      product: "Retro Polaroid Set"
+    },
+    {
+      name: "Ananya S.",
+      location: "Delhi",
+      date: "Oct 2025",
+      rating: 5,
+      title: "Fridge Magnets That Bring Daily Smiles",
+      text: "The polaroid fridge magnets turned our boring refrigerator into a tiny memory gallery. Everyone who visits stops to look at them!",
+      img: "/images/craft1.png",
+      product: "Polaroid Fridge Magnets"
+    }
   ];
 
   return (
-    <div className="min-h-screen bg-theme-ivory pt-40 pb-20">
-      <div className="container max-w-6xl mx-auto px-4">
-        
-        <div className="text-center mb-16">
-          
-          <h1 className="text-5xl font-serif text-theme-black mb-4">Stories from our community</h1>
-          <p className="text-lg text-theme-black/70 max-w-2xl mx-auto">
-            Every book has a story. Here are ones we love from our verified creators.
-          </p>
-        </div>
+    <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen">
+      <div className="grain-overlay" />
 
-        {/* Gallery */}
-        <div className="mb-24">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="col-span-2 row-span-2">
-              <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600&h=600&fit=crop" alt="Family together" loading="lazy" className="w-full h-full object-cover rounded-xl" data-placeholder="true" />
-            </div>
-            <div>
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop" alt="Portrait" loading="lazy" className="w-full h-full object-cover rounded-xl" data-placeholder="true" />
-            </div>
-            <div>
-              <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&h=300&fit=crop" alt="Photographer" loading="lazy" className="w-full h-full object-cover rounded-xl" data-placeholder="true" />
-            </div>
-            <div>
-              <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=300&h=300&fit=crop" alt="Nature" loading="lazy" className="w-full h-full object-cover rounded-xl" data-placeholder="true" />
-            </div>
-            <div>
-              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop" alt="Friends gathering" loading="lazy" className="w-full h-full object-cover rounded-xl" data-placeholder="true" />
+      {/* Floating Scrapbook Navbar */}
+      <ScrapbookNavbar />
+
+      <main className="pt-28 pb-20">
+
+        {/* 1. Header Intro */}
+        <section className="pt-8 pb-12 px-6 md:px-12 text-center relative">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <h1
+              className="text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Real Stories & Love Notes
+            </h1>
+
+            <p className="font-glory text-xl md:text-2xl text-[#3A342D]/85 font-bold leading-relaxed max-w-xl mx-auto">
+              Every print holds a precious memory. Here are heartwarming stories from our community. ♡
+            </p>
+
+            <div className="pt-2 flex items-center justify-center gap-2 font-glory text-base text-[#C27871] font-bold">
+              <span className="text-amber-500">★★★★★</span>
+              <span>4.9 / 5.0 rating from 2,500+ happy creators</span>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Reviews Section */}
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between border-b border-theme-black/10 pb-6 mb-8">
-            <h2 className="text-3xl font-serif text-theme-black">Customer Reviews</h2>
-            <div className="flex items-center gap-4">
-               <div className="text-xl font-bold">4.9 / 5.0</div>
-               <div className="flex text-theme-black">
-                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-               </div>
-               <span className="text-theme-black/50 text-sm">(2,500+ reviews)</span>
-            </div>
-          </div>
+        {/* 2. Customer Stories Scrapbook Grid */}
+        <section className="px-4 sm:px-6 md:px-12 max-w-6xl mx-auto space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {reviews.map((rev, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="bg-[#FAF6EE] p-6 sm:p-8 rounded-2xl border border-[#DDD5C5] shadow-lg relative flex flex-col justify-between"
+              >
+                {/* Washi Tape on top */}
+                <div className={`washi-tape -top-2.5 ${i % 2 === 0 ? 'left-6 rotate-[-2deg]' : 'right-6 rotate-[2deg]'}`} />
 
-          <div className="space-y-8">
-            {reviews.map((review, idx) => (
-              <div key={idx} className="bg-white p-6 rounded-xl shadow-sm border border-theme-black/5">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-theme-black">{review.name}</span>
-                      <span className="text-xs text-theme-black/50 bg-theme-black/5 px-2 py-0.5 rounded flex items-center gap-1">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M20 6L9 17l-5-5"/></svg>
-                        Verified Buyer
+                <div>
+                  {/* Polaroid Preview + Reviewer Header */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="polaroid-frame w-20 flex-shrink-0 shadow-md bg-white p-1 pb-3">
+                      <img src={rev.img} alt={rev.name} className="w-full aspect-square object-cover rounded-xs" />
+                    </div>
+
+                    <div>
+                      <h4
+                        className="text-lg text-[#3A342D]"
+                        style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                      >
+                        {rev.name}
+                      </h4>
+                      <p className="font-glory text-xs text-[#C27871] font-bold">
+                        {rev.location} • {rev.date}
+                      </p>
+                      <span className="bg-[#DCE4D7] px-2 py-0.5 rounded-full text-[9px] font-mono text-[#3A342D] font-bold inline-block mt-1">
+                        {rev.product}
                       </span>
                     </div>
-                    <div className="text-sm text-theme-black/50">{review.date}</div>
                   </div>
-                  <div className="flex text-theme-black">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} viewBox="0 0 24 24" className={`w-4 h-4 ${i < review.rating ? 'text-theme-black' : 'text-theme-black/20'}`} fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    ))}
+
+                  <h3
+                    className="text-xl text-[#3A342D] mb-2"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    {rev.title}
+                  </h3>
+
+                  <p className="font-glory text-base sm:text-lg text-[#3A342D]/90 leading-relaxed font-bold">
+                    "{rev.text}"
+                  </p>
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-[#DDD5C5] flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-amber-500 text-xs">
+                    <span>★★★★★</span>
+                    <span className="font-glory text-[#3A342D]/70 font-bold ml-1">Verified Memory</span>
                   </div>
                 </div>
-                <p className="text-theme-black/80">{review.text}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
+        </section>
 
-          <div className="mt-12 text-center">
-            <button className="border border-theme-black text-theme-black px-8 py-3 rounded hover:bg-theme-black hover:text-white transition-colors">
-              Load More Reviews
-            </button>
+        {/* 3. Community Tagging Banner */}
+        <section className="mt-20 py-16 px-6 md:px-12 bg-gingham text-center relative overflow-hidden">
+          <TornPaperEdgeTop fill="#F8F3EA" className="-top-6 absolute left-0" />
+
+          <div className="max-w-2xl mx-auto space-y-6 relative z-10">
+            <h3
+              className="text-2xl sm:text-4xl text-[#3A342D]"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Tag Us In Your Memories
+            </h3>
+            <p className="font-glory text-xl text-[#3A342D]/85 font-bold">
+              Share your unboxing on Instagram or TikTok with <strong className="text-[#C27871]">@offlineliving.co</strong> for a chance to be featured in our print journal and win a free print pack! ♡
+            </p>
+            <Link
+              href="/templates"
+              className="inline-block px-8 py-4 bg-[#C27871] text-white rounded-full font-protest text-xs tracking-wider uppercase hover:bg-[#3A342D] transition-all shadow-lg"
+            >
+              Make Something Real
+            </Link>
           </div>
-        </div>
 
-      </div>
+          <TornPaperEdgeBottom fill="#F8F3EA" className="-bottom-6 absolute left-0" />
+        </section>
+
+      </main>
+
+      {/* Scrapbook Footer */}
+      <ScrapbookFooter />
     </div>
   );
 }

@@ -1,58 +1,99 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
-
-export const metadata = {
-  title: "Returns Policy | Offline Living",
-  description: "Learn about the Offline Living satisfaction guarantee and return policy.",
-};
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter,
+  AuthenticWaxSeal
+} from '@/components/ui/landingpage';
 
 export default function ReturnsPage() {
   return (
-    <div className="min-h-screen bg-theme-ivory pt-40 pb-20">
-      <div className="container max-w-3xl mx-auto px-4">
-        
-        
-        <h1 className="text-5xl font-serif text-theme-black mb-8">Returns & Guarantees</h1>
-        
-        <div className="prose prose-lg prose-theme max-w-none text-theme-black/80 space-y-6">
-          <p className="text-xl leading-relaxed font-medium">
-            We want you to love your Offline Living photobook. Because every product is custom-made based on your unique design, we cannot accept returns for buyer's remorse or user errors. However, we stand 100% behind our manufacturing quality.
-          </p>
+    <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen">
+      <div className="grain-overlay" />
 
-          <h2 className="text-3xl font-serif text-theme-black mt-12 mb-4">Our Quality Guarantee</h2>
-          <p>
-            If your book arrives damaged, has a manufacturing defect, or if there is a printing issue on our end, please let us know within <strong>14 days of delivery</strong>. We will happily reprint and replace the affected item completely free of charge.
-          </p>
-          
-          <h3 className="text-xl font-medium mt-8 mb-2">What qualifies for a free replacement?</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Damaged in transit (bent corners, water damage, crushed spine)</li>
-            <li>Manufacturing defects (loose pages, misaligned binding)</li>
-            <li>Printing errors caused by our systems (smudged ink, incorrect coloration not present in the original file)</li>
-          </ul>
+      {/* Floating Scrapbook Navbar */}
+      <ScrapbookNavbar />
 
-          <h3 className="text-xl font-medium mt-8 mb-2">What does NOT qualify for a free replacement?</h3>
-          <ul className="list-disc pl-5 space-y-2 text-theme-black/70">
-            <li>Typos, misspellings, or grammatical errors in the text you provided</li>
-            <li>Poor image quality due to low-resolution original uploads</li>
-            <li>Images that are cut off because they were placed outside the "safe zone" in the editor</li>
-            <li>Changing your mind about a cover material or template choice after placing the order</li>
-          </ul>
+      <main className="pt-28 pb-20">
 
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-theme-black/10 my-10">
-            <h2 className="text-2xl font-serif text-theme-black mb-4 mt-0">How to request a replacement</h2>
-            <ol className="list-decimal pl-5 space-y-3">
-              <li>Take 2-3 clear photos showing the damage or defect.</li>
-              <li>Email the photos to <strong>offlinelivingsupport@gmail.com</strong> along with your order number.</li>
-              <li>Our team will review your case within 1-2 business days.</li>
-              <li>Once approved, a replacement order will be fast-tracked into production.</li>
-            </ol>
-            <div className="mt-6">
-              <Link href="/contact" className="inline-block bg-theme-black text-white px-6 py-2 rounded hover:bg-black transition-colors">Contact Support</Link>
+        {/* 1. Header Section */}
+        <section className="pt-8 pb-10 px-6 md:px-12 text-center relative">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <h1
+              className="text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Returns & Quality Guarantee
+            </h1>
+
+            <p className="font-glory text-xl md:text-2xl text-[#3A342D]/85 font-bold leading-relaxed max-w-xl mx-auto">
+              Our 100% Love It Or Free Reprint Promise. ♡
+            </p>
+          </div>
+        </section>
+
+        {/* 2. Content Card */}
+        <section className="px-4 sm:px-6 md:px-12 max-w-3xl mx-auto">
+          <div className="bg-[#FAF6EE] p-8 sm:p-12 rounded-3xl border border-[#DDD5C5] shadow-xl relative space-y-8">
+            <div className="washi-tape -top-3 left-1/2 -translate-x-1/2 rotate-[-2deg]" />
+
+            <div>
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                Our 100% Quality Promise
+              </h2>
+              <p className="font-glory text-xl text-[#3A342D]/90 leading-relaxed font-bold">
+                We want you to hold your photobook and smile every single time. Because each item is uniquely custom-printed with your personal photos, we cannot accept general returns for change of mind. However, <strong className="text-[#C27871]">we stand 100% behind our manufacturing quality</strong>.
+              </p>
+            </div>
+
+            <div className="border-t border-[#DDD5C5] pt-6">
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                What Qualifies for a Free Reprint?
+              </h2>
+              <ul className="space-y-3 font-glory text-lg text-[#3A342D] font-bold">
+                <li>• Damage during transit (bent corners, crushed box, water damage)</li>
+                <li>• Manufacturing defects (loose pages, misaligned binding)</li>
+                <li>• Printing errors not present in your digital preview file</li>
+              </ul>
+            </div>
+
+            <div className="border-t border-[#DDD5C5] pt-6">
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                How to Request a Replacement
+              </h2>
+              <p className="font-glory text-lg text-[#3A342D]/90 leading-relaxed font-bold mb-6">
+                Simply take 2-3 photos of the defect and email them with your order number to <strong className="text-[#C27871]">offlinelivingsupport@gmail.com</strong>. Our team will fast-track a free reprint into production within 24 hours!
+              </p>
+
+              <Link
+                href="/contact"
+                className="inline-block px-8 py-3.5 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-all shadow-md"
+              >
+                Contact Support Team
+              </Link>
+            </div>
+
+            <div className="pt-4 border-t border-[#DDD5C5] flex justify-center">
+              <AuthenticWaxSeal className="w-24 h-24" />
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+
+      </main>
+
+      {/* Scrapbook Footer */}
+      <ScrapbookFooter />
     </div>
   );
 }

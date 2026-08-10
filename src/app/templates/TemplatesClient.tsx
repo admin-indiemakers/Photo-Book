@@ -3,7 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeaderNav, Footer, customEase, MagneticButton } from '@/components/shared';
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter
+} from '@/components/ui/landingpage';
 
 import wanderlustImg from '@/assets/Wanderlust.jpg';
 import yearInReviewImg from '@/assets/Year in Review.jpg';
@@ -11,17 +14,24 @@ import milestonesImg from '@/assets/Milestones.jpg';
 import familyRecipesImg from '@/assets/Family Recipes.jpg';
 
 const templates = [
-  { id: 'wanderlust', name: 'Wanderlust', category: 'Travel', pages: 12, price: 39, image: wanderlustImg.src },
-  { id: 'wedding-bliss', name: 'Wedding Bliss', category: 'Wedding', pages: 40, price: 89, image: '/images/tpl_wedding.png' },
-  { id: 'little-one', name: 'Little One', category: 'Family', pages: 24, price: 49, image: '/images/tpl_baby.png' },
-  { id: 'family-time', name: 'Family Time', category: 'Family', pages: 36, price: 69, image: '/images/tpl_family.png' },
-  { id: 'milestones', name: 'Milestones', category: 'Occasions', pages: 28, price: 59, image: milestonesImg.src },
-  { id: 'year-in-review', name: 'Year in Review', category: 'Occasions', pages: 50, price: 99, image: yearInReviewImg.src },
-  { id: 'portfolio', name: 'Creative Portfolio', category: 'Portfolio', pages: 20, price: 45, image: '/images/tpl_portfolio.png' },
-  { id: 'recipe-book', name: 'Family Recipes', category: 'Family', pages: 30, price: 55, image: familyRecipesImg.src }
+  { id: 'wanderlust', name: 'Wanderlust Travel Journal', category: 'Travel', pages: 12, price: 1499, image: wanderlustImg.src, badge: 'Travel' },
+  { id: 'wedding-bliss', name: 'Wedding Bliss Layflat', category: 'Wedding', pages: 12, price: 3999, image: '/images/tpl_wedding.png', badge: 'Wedding' },
+  { id: 'little-one', name: 'Little One Baby Book', category: 'Family', pages: 12, price: 1799, image: '/images/tpl_baby.png', badge: 'Baby Milestones' },
+  { id: 'family-time', name: 'Family Memories Album', category: 'Family', pages: 12, price: 2199, image: '/images/tpl_family.png', badge: 'Family Album' },
+  { id: 'milestones', name: 'Golden Milestones', category: 'Occasions', pages: 12, price: 2499, image: milestonesImg.src, badge: 'Anniversary' },
+  { id: 'year-in-review', name: 'Year in Review Journal', category: 'Occasions', pages: 12, price: 2999, image: yearInReviewImg.src, badge: 'Annual Journal' },
+  { id: 'portfolio', name: 'Creative Photography Portfolio', category: 'Portfolio', pages: 12, price: 1999, image: '/images/tpl_portfolio.png', badge: 'Portfolio' },
+  { id: 'recipe-book', name: 'Family Recipe Keepsake', category: 'Family', pages: 12, price: 2299, image: familyRecipesImg.src, badge: 'Family Recipes' }
 ];
 
-const categories = ['All', 'Travel', 'Wedding', 'Family', 'Occasions', 'Portfolio'];
+const categories = [
+  { id: 'All', label: 'All Layouts' },
+  { id: 'Travel', label: 'Travel' },
+  { id: 'Wedding', label: 'Wedding' },
+  { id: 'Family', label: 'Family' },
+  { id: 'Occasions', label: 'Occasions' },
+  { id: 'Portfolio', label: 'Portfolio' }
+];
 
 export default function TemplatesClient() {
   const [activeCat, setActiveCat] = useState('All');
@@ -31,97 +41,108 @@ export default function TemplatesClient() {
     : templates.filter(t => t.category === activeCat);
 
   return (
-    <main className="bg-archival-cream text-ink-charcoal font-sans selection:bg-[#f26523] selection:text-white pt-32 md:pt-40">
-      <HeaderNav />
+    <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen">
+      <div className="grain-overlay" />
 
-      <section className="pt-2 pb-8 md:pt-4 md:pb-24 px-4 md:px-6 min-h-screen">
-        <div className="max-w-7xl mx-auto">
+      {/* Floating Scrapbook Navbar */}
+      <ScrapbookNavbar />
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: customEase }}
-            className="text-center mb-10 md:mb-20"
-          >
-            <h1 className="text-4xl md:text-7xl font-serif text-ink-charcoal mb-4 md:mb-6 leading-tight">Photobook Templates</h1>
-            <p className="text-sm md:text-lg text-ink-charcoal/70 font-light max-w-2xl mx-auto px-4 md:px-0 leading-relaxed">
-              Choose a starting point for your story. All of our layout templates are fully customizable in our studio editor, designed for premium archival-quality printing.
+      <main className="pt-28 pb-20">
+
+        {/* 1. Header Section */}
+        <section className="pt-8 pb-8 px-6 md:px-12 text-center relative">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <h1
+              className="text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Photobook Layouts
+            </h1>
+
+            <p className="font-glory text-xl md:text-2xl text-[#3A342D]/85 font-bold leading-relaxed max-w-xl mx-auto">
+              Choose a starting point for your memories. All layouts are fully customizable in our studio editor. ♡
             </p>
-          </motion.div>
+          </div>
 
-          {/* Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: customEase }}
-            className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-16"
-          >
-            {categories.map((cat) => (
+          {/* Category Filter Badges */}
+          <div className="flex flex-wrap justify-center gap-2 pt-6 max-w-4xl mx-auto">
+            {categories.map(cat => (
               <button
-                key={cat}
-                onClick={() => setActiveCat(cat)}
-                className={`px-4 py-1.5 md:px-8 md:py-3 rounded-full text-xs md:text-sm font-medium tracking-wide transition-all duration-300 ${activeCat === cat
-                  ? 'bg-black text-white shadow-lg scale-105'
-                  : 'bg-archival-cream text-ink-charcoal/70 border border-ink-charcoal/15 hover:border-black hover:text-black'
-                  }`}
+                key={cat.id}
+                onClick={() => setActiveCat(cat.id)}
+                className={`px-5 py-2 rounded-full font-protest text-xs transition-all ${
+                  activeCat === cat.id
+                    ? 'bg-[#C27871] text-white shadow-md scale-105'
+                    : 'bg-[#FAF6EE] text-[#3A342D]/80 border border-[#DDD5C5] hover:bg-[#F8EBE6] hover:text-[#C27871]'
+                }`}
               >
-                {cat}
+                {cat.label}
               </button>
             ))}
-          </motion.div>
+          </div>
+        </section>
 
-          {/* Grid */}
-          <motion.div layout className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-10">
+        {/* 2. Grid of Templates */}
+        <section className="px-4 sm:px-6 md:px-12 max-w-6xl mx-auto pt-6">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence>
               {filteredTemplates.map((tpl, idx) => (
                 <motion.div
                   layout
                   key={tpl.id}
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ duration: 0.5, ease: customEase }}
-                  className="group relative cursor-pointer flex flex-col"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-[#FAF6EE] p-5 rounded-2xl border border-[#DDD5C5] shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 relative flex flex-col justify-between group"
                 >
-                  <div className="overflow-hidden rounded-xl md:rounded-2xl mb-2 md:mb-6 bg-surface-container aspect-[3/4] relative perspective-[1000px] shadow-sm border border-ink-charcoal/10">
-                    <img
-                      src={tpl.image}
-                      alt={`${tpl.name} template preview`}
-                      className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
+                  {/* Washi Tape */}
+                  <div className={`washi-tape -top-2.5 left-1/2 -translate-x-1/2 ${idx % 2 === 0 ? 'rotate-[-2deg]' : 'rotate-[2deg]'}`} />
 
-                    {/* Hover Overlay Action */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 bg-black/20 backdrop-blur-sm">
-                      <Link href={`/editor?template=${tpl.id}`}>
-                        <MagneticButton className="border-white text-white bg-black/50 hover:border-[#f26523] px-6 py-3">
-                          Select Layout
-                        </MagneticButton>
-                      </Link>
+                  <div>
+                    {/* Cover Preview Image */}
+                    <div className="aspect-[3/4] rounded-xl overflow-hidden bg-[#F4EFE5] border border-[#DDD5C5] relative mb-3">
+                      <img
+                        src={tpl.image}
+                        alt={tpl.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/books.png"; }}
+                      />
+                      <div className="absolute top-2 left-2 bg-[#FAF6EE]/90 px-2.5 py-0.5 rounded-full text-[9px] font-mono text-[#3A342D] font-bold border border-[#DDD5C5]">
+                        {tpl.badge}
+                      </div>
+                    </div>
+
+                    <h3
+                      className="text-lg text-[#3A342D] group-hover:text-[#C27871] transition-colors mb-1 line-clamp-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      {tpl.name}
+                    </h3>
+
+                    <div className="flex items-center justify-between font-glory text-sm text-[#3A342D]/75 font-bold mb-3">
+                      <span>{tpl.pages} Pages Included</span>
+                      <span className="text-[#C27871] font-bold">From ₹{tpl.price}</span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col md:flex-row md:justify-between items-start mb-1 md:mb-2 gap-1 md:gap-0">
-                    <h3 className="font-serif text-[12px] md:text-2xl text-ink-charcoal leading-tight line-clamp-1">{tpl.name}</h3>
-                    <span className="hidden md:inline-block text-[10px] font-semibold uppercase tracking-widest px-2 py-1 bg-ink-charcoal/5 text-ink-charcoal/60 rounded-sm">
-                      {tpl.category}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-ink-charcoal/60 font-light mt-auto text-[9px] md:text-base gap-0.5 md:gap-0">
-                    <span className="hidden md:inline">{tpl.pages} Pages</span>
-                    <span className="text-ink-charcoal font-medium text-[10px] md:text-base">From ₹{tpl.price}</span>
-                  </div>
+                  {/* Action Link to Editor */}
+                  <Link
+                    href={`/editor?template=${tpl.id}`}
+                    className="w-full py-2.5 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-colors shadow-sm text-center block"
+                  >
+                    Select & Customize
+                  </Link>
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
+        </section>
 
-        </div>
-      </section>
+      </main>
 
-      <Footer />
-    </main>
+      {/* Scrapbook Footer */}
+      <ScrapbookFooter />
+    </div>
   );
 }

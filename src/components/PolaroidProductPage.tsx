@@ -320,7 +320,7 @@ export const PolaroidProductPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-24 relative selection:bg-[#E85D26] selection:text-white">
+    <div className="min-h-screen bg-[#F8F3EA] font-sans pb-24 text-[#3A342D] pt-24 relative selection:bg-[#C27871] selection:text-white">
       {/* Decorative film grain */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
@@ -335,8 +335,8 @@ export const PolaroidProductPage = () => {
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-7xl font-serif tracking-tight mb-2 md:mb-4 text-[#1a1a18]"
-              style={{ fontFamily: "'DM Serif Display', serif" }}
+              className="text-4xl md:text-6xl tracking-tight mb-2 md:mb-3 text-[#3A342D]"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
             >
               Custom Polaroids
             </motion.h1>
@@ -344,9 +344,9 @@ export const PolaroidProductPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-lg text-[#6b6560] font-light max-w-md leading-relaxed"
+              className="font-glory text-xl text-[#3A342D]/85 font-bold max-w-md leading-relaxed"
             >
-              Turn your digital memories into tangible, hand-finished instant prints. Configure size, quantity, and captions for each photo individually.
+              Turn your camera roll into tangible instant prints. Add custom handwritten captions and choose your favorite sizes! ♡
             </motion.p>
           </div>
 
@@ -357,14 +357,15 @@ export const PolaroidProductPage = () => {
               transition={{ delay: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 mt-6"
             >
-              <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">
+              <div className="bg-[#FAF6EE] p-4 rounded-xl border border-[#DDD5C5] shadow-sm sm:col-span-2">
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#C27871] mb-2 flex items-center gap-2 font-bold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                   Available Sizes
                 </div>
-                <div className="text-sm font-medium text-[#1a1a18]">Mini & Square</div>
-                <div className="text-xs text-[#6b6560] mt-1">2 different sizes to choose from</div>
+                <div className="text-sm font-medium text-[#3A342D]" style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}>Mini & Square</div>
+                <div className="font-glory text-sm text-[#3A342D]/70 font-bold mt-1">2 different sizes to choose from ♡</div>
               </div>
+
 
               <div className="bg-white/60 p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition-shadow sm:col-span-2">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-2 flex items-center gap-2 font-bold">

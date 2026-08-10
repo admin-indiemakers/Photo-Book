@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { getCart, checkoutCart } from '../actions/cart';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter,
+  AuthenticWaxSeal
+} from '@/components/ui/landingpage';
 import { motion } from 'framer-motion';
 import { trackBeginCheckout, trackPurchase } from '@/lib/gtag';
 
@@ -31,7 +36,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session?.user) {
-        setError('Not authenticated');
+        setError('Please log in to complete your checkout.');
         setLoading(false);
         return;
       }
@@ -74,7 +79,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Validate Indian phone number (10 digits, starts with 6-9)
+    // Validate Indian phone number
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!phoneRegex.test(formData.phone)) {
       setError("Please enter a valid 10-digit phone number.");
@@ -103,12 +108,13 @@ export default function CheckoutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F5F0] flex items-center justify-center pt-40 pb-24">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-10 h-10 border-2 border-black/10 border-t-[#E85D26] rounded-full"
-        />
+      <div className="min-h-screen bg-[#F8F3EA] text-[#3A342D] flex flex-col" suppressHydrationWarning>
+        <ScrapbookNavbar />
+        <div className="flex-1 flex flex-col items-center justify-center pt-40 pb-24 space-y-4" suppressHydrationWarning>
+          <div className="w-10 h-10 border-4 border-[#DDD5C5] border-t-[#C27871] rounded-full animate-spin" />
+          <p className="font-glory text-xl text-[#C27871] font-bold">Preparing your order receipt... ♡</p>
+        </div>
+        <ScrapbookFooter />
       </div>
     );
   }
@@ -118,195 +124,359 @@ export default function CheckoutPage() {
 
   if (items.length === 0 || error) {
     return (
-      <div className="min-h-screen pt-32 px-6 flex flex-col items-center justify-center bg-[#F7F5F0] relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="z-10 text-center max-w-md">
-          <div className="w-20 h-20 bg-black/5 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-black/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-          </div>
-          <h2 className="text-3xl font-serif text-[#1a1a18] mb-4">Your cart is empty</h2>
-          <p className="text-[#6b6560] mb-8">{error || 'Please add items to your cart to proceed with checkout.'}</p>
-          <Link href="/cart" className="inline-block bg-[#1a1a18] text-white px-10 py-4 rounded-xl hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 font-mono text-sm uppercase tracking-widest">
-            Return to Cart
-          </Link>
-        </motion.div>
+      <div className="min-h-screen flex flex-col bg-[#F8F3EA] text-[#3A342D] relative" suppressHydrationWarning>
+        <div className="grain-overlay" />
+        <ScrapbookNavbar />
+
+        <div className="flex-1 flex flex-col items-center justify-center pt-36 pb-24 px-6 relative z-10 w-full max-w-xl mx-auto" suppressHydrationWarning>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full text-center py-16 px-8 bg-[#FAF6EE] rounded-3xl border border-[#DDD5C5] shadow-xl relative"
+            suppressHydrationWarning
+          >
+            <div className="washi-tape -top-3 left-1/2 -translate-x-1/2 rotate-[-2deg]" />
+            <h2
+              className="text-3xl text-[#3A342D] mb-3"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              No items to checkout
+            </h2>
+            <p className="font-glory text-xl text-[#3A342D]/80 mb-8 font-bold">
+              {error || 'Your keepsake bag is currently empty. ♡'}
+            </p>
+            <Link
+              href="/cart"
+              className="inline-block px-8 py-4 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-all shadow-md"
+            >
+              Return to Bag
+            </Link>
+          </motion.div>
+        </div>
+
+        <ScrapbookFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] font-sans pb-24 text-black pt-40 relative selection:bg-[#E85D26] selection:text-white">
-      {/* Decorative film grain */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+    <div className="min-h-screen bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative" suppressHydrationWarning>
+      <div className="grain-overlay" />
+      <ScrapbookNavbar />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-12 lg:px-20 pt-4 lg:pt-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <Link href="/cart" className="inline-flex items-center text-[#6b6560] hover:text-[#E85D26] mb-6 transition-colors text-sm font-medium group">
-            <svg className="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Return to Cart
+      <main className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 pt-32 pb-24 relative z-10">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+          <Link
+            href="/cart"
+            className="font-glory text-lg text-[#C27871] font-bold hover:underline mb-2 inline-block"
+          >
+            Return to Keepsake Bag
           </Link>
-          <h1 className="text-4xl md:text-5xl font-serif tracking-tight text-[#1a1a18]" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            Secure Checkout
+          <h1
+            className="text-3xl md:text-5xl text-[#3A342D]"
+            style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+          >
+            Secure Memory Checkout
           </h1>
+          <p className="font-glory text-xl text-[#3A342D]/85 font-bold mt-1">
+            Where your digital moments begin their journey into the real world. ♡
+          </p>
         </motion.div>
 
-        <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8 lg:gap-16">
-          {/* Checkout Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Delivery Form */}
           <div className="lg:col-span-7">
             <motion.div
-              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-              className="bg-white/80 backdrop-blur rounded-3xl p-5 sm:p-10 shadow-sm border border-black/5"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-[#FAF6EE] p-6 sm:p-10 rounded-2xl border border-[#DDD5C5] shadow-xl relative"
             >
-              <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-6 flex items-center gap-2 font-bold">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                Delivery Information
+              <div className="washi-tape -top-3 left-8 rotate-[-2deg]" />
+
+              <div className="border-b border-[#DDD5C5] pb-3 mb-6">
+                <h3
+                  className="text-2xl text-[#3A342D]"
+                  style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                >
+                  Delivery Address
+                </h3>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
-                  <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100 flex items-start gap-3">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>{error}</span>
+                  <div className="bg-red-50 text-red-600 p-3.5 rounded-xl text-sm font-glory font-bold border border-red-200">
+                    {error}
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Full Name *</label>
-                    <input required minLength={2} type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="John Doe" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      Full Name *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      name="full_name"
+                      value={formData.full_name}
+                      onChange={handleChange}
+                      placeholder="e.g. Maya Sharma"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Email *</label>
-                    <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="john@example.com" />
+
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      Email Address *
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="maya@example.com"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Phone Number *</label>
+                <div>
+                  <label
+                    className="block text-xs text-[#3A342D] mb-1"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    Phone Number (10 Digits) *
+                  </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-[#6b6560] font-medium">+91</div>
-                    <input required maxLength={10} pattern="[6-9][0-9]{9}" title="Please enter a valid 10-digit phone number" type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full pl-12 pr-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="9876543210" />
+                    <span className="absolute left-4 top-3.5 font-glory text-lg text-[#3A342D]/60 font-bold">+91</span>
+                    <input
+                      required
+                      maxLength={10}
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="9876543210"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl pl-14 pr-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Address Line 1 *</label>
-                  <input required type="text" name="address_line1" value={formData.address_line1} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="House/Flat No., Building Name" />
+                <div>
+                  <label
+                    className="block text-xs text-[#3A342D] mb-1"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    Address Line 1 *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    name="address_line1"
+                    value={formData.address_line1}
+                    onChange={handleChange}
+                    placeholder="Flat/House No., Apartment or Building Name"
+                    className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                  />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Address Line 2 (Optional)</label>
-                  <input type="text" name="address_line2" value={formData.address_line2} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="Street, Landmark, Area" />
+                <div>
+                  <label
+                    className="block text-xs text-[#3A342D] mb-1"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    Address Line 2 (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="address_line2"
+                    value={formData.address_line2}
+                    onChange={handleChange}
+                    placeholder="Street, Landmark, Area"
+                    className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">City *</label>
-                    <input required type="text" name="city" value={formData.city} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="Mumbai" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      City *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      placeholder="e.g. Bangalore"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">State *</label>
-                    <input required type="text" name="state" value={formData.state} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="Maharashtra" />
+
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      State *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      placeholder="e.g. Karnataka"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Postal Code *</label>
-                    <input required type="text" name="postal_code" value={formData.postal_code} onChange={handleChange} className="w-full px-4 py-3.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E85D26]/20 focus:border-[#E85D26] transition-all" placeholder="400001" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      PIN / Postal Code *
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      name="postal_code"
+                      value={formData.postal_code}
+                      onChange={handleChange}
+                      placeholder="560001"
+                      className="w-full bg-[#F4EFE5] border border-[#DDD5C5] rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D] focus:outline-none focus:border-[#C27871] transition-all"
+                    />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-mono uppercase tracking-widest text-[#6b6560]">Country</label>
-                    <input disabled type="text" name="country" value={formData.country} className="w-full px-4 py-3.5 bg-gray-50 border border-transparent rounded-xl text-[#a09890] cursor-not-allowed font-medium" />
+
+                  <div>
+                    <label
+                      className="block text-xs text-[#3A342D] mb-1"
+                      style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                    >
+                      Country
+                    </label>
+                    <input
+                      disabled
+                      type="text"
+                      name="country"
+                      value={formData.country}
+                      className="w-full bg-[#EAE5D9] border border-transparent rounded-xl px-4 py-3 font-glory text-lg text-[#3A342D]/60 cursor-not-allowed font-bold"
+                    />
                   </div>
                 </div>
 
-                <div className="sticky bottom-4 z-50 lg:static lg:bottom-auto mt-8">
+                <div className="pt-4">
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-[#1a1a18] text-white py-4 rounded-xl font-mono text-sm uppercase tracking-widest hover:bg-[#E85D26] hover:shadow-xl hover:shadow-[#E85D26]/20 transition-all duration-300 transform lg:hover:-translate-y-1 disabled:opacity-50 disabled:transform-none disabled:hover:shadow-none flex justify-center items-center gap-2 shadow-[0_0_40px_rgba(0,0,0,0.15)] lg:shadow-none"
+                    className="w-full py-4 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-all shadow-lg flex items-center justify-center gap-2"
                   >
-                    {submitting ? (
-                      <>
-                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full" />
-                        Processing...
-                      </>
-                    ) : (
-                      `Pay ₹${total.toFixed(2)}`
-                    )}
+                    {submitting ? 'Placing your order...' : `Complete Order • ₹${total.toFixed(2)}`}
                   </button>
                 </div>
               </form>
             </motion.div>
           </div>
 
-          {/* Order Summary */}
+          {/* Right Column: Order Details Receipt Card */}
           <div className="lg:col-span-5">
             <motion.div
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-              className="bg-white p-5 sm:p-8 rounded-3xl shadow-xl shadow-black/5 border border-black/5 lg:sticky lg:top-32"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-[#FAF6EE] p-6 sm:p-8 rounded-2xl border-2 border-dashed border-[#C27871]/40 shadow-xl relative space-y-4"
             >
-              <div className="text-[10px] font-mono uppercase tracking-widest text-[#E85D26] mb-6 flex items-center gap-2 font-bold">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                Order Details
+              <div className="washi-tape -top-3 right-6 rotate-[3deg]" />
+
+              <div className="border-b border-[#DDD5C5] pb-3 flex items-center justify-between">
+                <h3
+                  className="text-2xl text-[#3A342D]"
+                  style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                >
+                  Order Summary
+                </h3>
+                <span className="font-glory text-xs text-[#C27871] font-bold">
+                  {items.length} keepsake{items.length > 1 ? 's' : ''}
+                </span>
               </div>
 
-              <div className="space-y-4 mb-8 lg:max-h-[400px] lg:overflow-y-auto pr-2 custom-scrollbar">
+              <div className="divide-y divide-[#DDD5C5] max-h-72 overflow-y-auto pr-1">
                 {items.map((item: any) => (
-                  <div key={item.id} className="flex gap-4 p-3 hover:bg-black/5 rounded-xl transition-colors">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-black/5 flex-shrink-0 border border-black/10">
+                  <div key={item.id} className="py-3 flex gap-3 items-center">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#F4EFE5] border border-[#DDD5C5] flex-shrink-0">
                       {item.custom_options?.items?.[0]?.url || item.products?.images?.[0] ? (
                         <img
                           src={item.custom_options?.items?.[0]?.url || item.products?.images?.[0]}
-                          alt={item.products?.name || 'Product'}
+                          alt={item.products?.name}
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] text-black/40 bg-[#f4f4f4]">
-                          No Image
+                        <div className="w-full h-full flex items-center justify-center font-glory text-[10px] text-[#3A342D]/40">
+                          Keepsake
                         </div>
                       )}
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-center">
-                      <p className="font-serif text-lg text-[#1a1a18] leading-tight mb-1">{item.products?.name || 'Product'}</p>
-                      <p className="text-sm text-[#6b6560]">Qty: {item.quantity}</p>
-                      {item.custom_options && Object.keys(item.custom_options).map(key => {
-                        if (key === 'items' || key === 'pdfData') return null;
-                        return (
-                          <p key={key} className="text-xs text-[#6b6560] capitalize mt-0.5"><span className="font-medium text-[#1a1a18]">{key}:</span> {item.custom_options[key]}</p>
-                        );
-                      })}
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-base text-[#3A342D] truncate"
+                        style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                      >
+                        {item.products?.name || 'Photobook'}
+                      </p>
+                      <p className="font-glory text-xs text-[#3A342D]/70 font-bold">
+                        Qty: {item.quantity}
+                      </p>
                     </div>
 
-                    <div className="flex items-center">
-                      <p className="font-medium text-[#E85D26]">₹{(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
+                    <span className="font-glory text-lg text-[#C27871] font-bold">
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-3 pt-6 border-t border-black/10">
-                <div className="flex justify-between text-sm text-[#6b6560]">
+              <div className="pt-4 border-t border-[#DDD5C5] space-y-2 font-glory text-base text-[#3A342D] font-bold">
+                <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-medium text-[#1a1a18]">₹{total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm text-[#6b6560]">
+                <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span className="font-medium text-[#E85D26] text-xs bg-[#E85D26]/10 px-2 py-0.5 rounded-full">Free Delivery</span>
+                  <span className="text-emerald-700">FREE DELIVERY</span>
                 </div>
-                <div className="flex justify-between items-end pt-4 border-t border-black/5 mt-2">
-                  <span className="text-lg font-medium text-[#1a1a18]">Total</span>
-                  <span className="text-3xl font-serif text-[#1a1a18]">₹{total.toFixed(2)}</span>
+                <div className="flex justify-between items-baseline pt-2 border-t border-[#DDD5C5]">
+                  <span className="text-xl">Grand Total</span>
+                  <span
+                    className="text-3xl text-[#C27871]"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    ₹{total.toFixed(2)}
+                  </span>
                 </div>
+              </div>
+
+              <div className="pt-4 flex justify-center">
+                <AuthenticWaxSeal className="w-20 h-20" />
               </div>
             </motion.div>
           </div>
         </div>
-      </div>
+      </main>
+
+      <ScrapbookFooter />
     </div>
   );
 }

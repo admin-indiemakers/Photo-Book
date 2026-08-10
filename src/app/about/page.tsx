@@ -1,145 +1,229 @@
 "use client";
 
-import { Footer, HeaderNav } from "@/components/shared";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter,
+  TornPaperEdgeTop,
+  TornPaperEdgeBottom,
+  AuthenticWaxSeal,
+  PaperClipIcon,
+  AnimatedDrawnLine,
+  DRAWN_PATHS
+} from '@/components/ui/landingpage';
 
 export default function AboutPage() {
-  const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const [isUnpacking, setIsUnpacking] = useState(true);
-  const [flapOpen, setFlapOpen] = useState(false);
-  const [letterUp, setLetterUp] = useState(false);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setFlapOpen(true), 600);
-    const t2 = setTimeout(() => setLetterUp(true), 1600);
-    const t3 = setTimeout(() => setIsUnpacking(false), 2700);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
+  const values = [
+    {
+      title: 'Pure Craftsmanship',
+      desc: '100% archival cotton paper, pigment inks, and heritage layflat binding meant to last lifetimes, not just seasons.',
+      color: 'bg-[#F8EBE6]'
+    },
+    {
+      title: 'Made for Real Life',
+      desc: 'Physical keepsakes you can hold, gift, and place on your coffee table for real human moments away from screens.',
+      color: 'bg-[#DCE4D7]/50'
+    },
+    {
+      title: 'Sustainably Kind',
+      desc: 'FSC-certified papers, plastic-free packaging, and thoughtful small-batch production made with immense care.',
+      color: 'bg-[#FAF6EE]'
+    }
+  ];
 
   return (
-    <main className="bg-[#F5F2EB] min-h-screen text-[#111111] font-sans selection:bg-[#E85D26] selection:text-white">
+    <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen">
+      <div className="grain-overlay" />
       
-      <AnimatePresence>
-        {isUnpacking && (
-          <motion.div 
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#F5F2EB]"
-          >
-            <div className="relative w-[400px] h-[260px]">
-              {/* Back of Envelope */}
-              <div className="absolute inset-0 bg-[#D3CDBE] shadow-2xl rounded-sm"></div>
+      {/* Floating Scrapbook Navbar */}
+      <ScrapbookNavbar />
 
-              {/* Miniature Letter Inside Envelope */}
-              <motion.div 
-                initial={{ y: 0, scale: 0.95 }}
-                animate={{ y: letterUp ? -250 : 0, scale: letterUp ? 1.6 : 0.95, opacity: letterUp ? 0 : 1 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-x-2 top-2 bottom-2 bg-[#FCFBF8] rounded-sm shadow-md flex flex-col items-center pt-8 border border-[#EAE5D9]"
-              >
-                <img src="/images/logoo1.png" alt="" className="h-6 opacity-60 grayscale mix-blend-multiply" />
-                <div className="mt-8 w-3/4 h-[2px] bg-[#EAE5D9]"></div>
-                <div className="mt-3 w-3/4 h-[2px] bg-[#EAE5D9]"></div>
-                <div className="mt-3 w-1/2 h-[2px] bg-[#EAE5D9]"></div>
-              </motion.div>
+      <main className="pt-28 pb-16">
 
-              {/* Front Flaps */}
-              <div className="absolute inset-0 z-10 drop-shadow-md pointer-events-none">
-                <svg viewBox="0 0 400 260" className="w-full h-full">
-                  <polygon points="0,260 200,150 400,260" fill="#EAE5D9" />
-                  <polygon points="0,0 200,150 0,260" fill="#E3DFD5" />
-                  <polygon points="400,0 200,150 400,260" fill="#E3DFD5" />
-                </svg>
-              </div>
-
-              {/* Top Flap */}
-              <motion.div 
-                initial={{ rotateX: 0 }}
-                animate={{ rotateX: flapOpen ? 180 : 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                style={{ transformOrigin: "top" }}
-                className="absolute top-0 inset-x-0 z-20 drop-shadow-md pointer-events-none"
-              >
-                <svg viewBox="0 0 400 160" className="w-full h-[160px]">
-                  <polygon points="0,0 400,0 200,150" fill="#EAE5D9" />
-                </svg>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <HeaderNav />
-      
-      {/* The Desk / Background */}
-      <section className="pt-40 pb-32 px-4 sm:px-6 md:px-12 flex justify-center min-h-screen items-center relative overflow-hidden">
-        
-        {/* Subtle desk texture */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}></div>
-
-        {/* The Letter */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: isUnpacking ? 0 : 1, y: isUnpacking ? 30 : 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="max-w-[700px] w-full bg-[#FCFBF8] p-12 md:p-20 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_20px_60px_rgba(0,0,0,0.08),0_40px_100px_rgba(0,0,0,0.06)] border border-[#EAE5D9] relative mx-auto my-12 transform -rotate-[1deg] hover:rotate-0 transition-transform duration-1000 ease-[0.16,1,0.3,1] z-10 before:content-[''] before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/rice-paper.png')] before:opacity-30 before:pointer-events-none"
-        >
-          
-          {/* Lined Paper Lines */}
-          <div 
-            className="absolute inset-0 pointer-events-none top-[180px] bottom-[120px]" 
-            style={{ 
-              backgroundImage: 'repeating-linear-gradient(transparent, transparent 39px, #E8E2D9 39px, #E8E2D9 40px)',
-              backgroundSize: '100% 40px' 
-            }} 
+        {/* 1. Header Intro Section */}
+        <section className="pt-8 pb-12 px-6 md:px-12 text-center relative overflow-hidden">
+          {/* Animated Line That Draws a Heart Symbol in the Background */}
+          <AnimatedDrawnLine
+            d={DRAWN_PATHS.heartLoop}
+            viewBox={DRAWN_PATHS.heartLoopViewBox}
+            stroke="#C27871"
+            strokeWidth={2.2}
+            strokeOpacity={0.28}
+            className="top-2 left-1/2 -translate-x-1/2 w-full max-w-4xl h-36 -z-0"
+            duration={2.6}
+            delay={0.1}
           />
 
-          {/* Letterhead */}
-          <div className="flex justify-between items-end mb-12 relative z-10 border-b border-[#EAE5D9] pb-8">
-            <h1 className="font-headline-md italic text-3xl md:text-4xl text-ink-charcoal" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Offline <span className="text-xs non-italic font-sans uppercase tracking-widest text-brass-gold align-top relative -top-1">Living ®</span>
+          <div className="max-w-3xl mx-auto space-y-4 relative z-10">
+            <h1
+              className="text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Our Little Story
             </h1>
-          </div>
 
-          <div className="relative z-10 pt-4">
-            {/* Salutation */}
-            <p className="font-[family-name:var(--font-caveat)] text-4xl md:text-5xl text-[#2A2A28] mb-[28px] -rotate-1 h-[40px] flex items-end">
-              Dear friend,
+            <p className="font-glory text-xl md:text-2xl text-[#3A342D]/85 font-bold leading-relaxed max-w-xl mx-auto">
+              We started Offline Living because we noticed the moments that mattered most were getting trapped inside cold glass screens. ♡
             </p>
+          </div>
+        </section>
 
-            {/* Body - Line height matches the 40px background lines */}
-            <div className="font-headline-md text-[20px] md:text-[22px] leading-[40px] text-ink-charcoal/90" style={{ fontFamily: "'Playfair Display', serif" }}>
-              <p className="indent-12 mb-[40px]">
-                We live in an era of endless scrolling. We take thousands of photos, store them in the cloud, and rarely look at them again. They become pixels buried beneath more pixels, quietly forgotten in the noise of the digital age.
-              </p>
-              <p className="indent-12 mb-[40px]">
-                We started <span className="italic text-brass-gold">Offline Living</span> because we missed the weight of a photograph. We missed the tactile joy of turning a thick, textured page, the faint smell of fresh ink, and the quiet, undeniable intimacy of holding a memory in your hands.
-              </p>
-              <p className="indent-12 mb-[40px]">
-                Our mission is simple: to help you strip away the noise. We curate, craft, and bind your fleeting digital moments into museum-grade, physical artifacts—books that you can place proudly on your coffee table and pass down through generations.
-              </p>
-              <p className="text-center italic mt-[80px] text-ink-charcoal font-medium">
-                It’s time to bring your story into the real world.
+        {/* 2. The Founders' Note / Scrapbook Letter Section */}
+        <section className="px-4 sm:px-6 md:px-12 max-w-4xl mx-auto mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-[#FAF6EE] p-8 sm:p-12 rounded-3xl border border-[#DDD5C5] shadow-2xl relative"
+          >
+            {/* Washi Tape at Top */}
+            <div className="washi-tape -top-3 left-12 rotate-[-2deg]" />
+            <div className="washi-tape -top-3 right-12 rotate-[3deg]" />
+
+            {/* Paper Clip with polaroid on right on desktop */}
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              
+              {/* Left Letter Content */}
+              <div className="flex-1 space-y-6">
+                <div className="border-b border-[#DDD5C5] pb-4">
+                  <span className="font-mono text-xs font-bold text-[#C27871] uppercase tracking-widest block mb-1">
+                    STUDIO JOURNAL • ENTRY NO. 01
+                  </span>
+                  <h2
+                    className="text-2xl sm:text-3xl text-[#3A342D]"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    Why We Keep It Offline
+                  </h2>
+                </div>
+
+                <div className="space-y-4 font-glory text-lg sm:text-xl text-[#3A342D]/90 leading-relaxed font-bold">
+                  <p>
+                    Every day, we take hundreds of photos. We snap sunset walks, shared desserts, family laughs, and golden afternoon light. But they often end up buried under receipts, screenshots, and an infinite camera roll.
+                  </p>
+                  <p>
+                    We built Offline Living to bring those memories back into the real, physical world. There is an irreplaceable magic in turning thick matte paper pages, feeling the linen texture under your fingers, and gathering around a coffee table with people you love.
+                  </p>
+                  <p>
+                    Every photobook, polaroid pack, and frame we produce is printed using archival pigment inks and hand-inspected with deep care. Because your memories aren't just data points — they are your life's story.
+                  </p>
+                </div>
+
+                {/* Handwritten Sign-off */}
+                <div className="pt-4 border-t border-[#DDD5C5] flex items-center justify-between">
+                  <div>
+                    <p className="font-glory text-2xl text-[#C27871]">With love & gratitude,</p>
+                    <p className="font-protest text-base text-[#3A342D]">The Offline Living Studio Team</p>
+                  </div>
+                  <AuthenticWaxSeal className="w-24 h-24" />
+                </div>
+              </div>
+
+              {/* Right Side Pinned Polaroid */}
+              <div className="w-full md:w-56 flex-shrink-0 flex flex-col items-center">
+                <div className="relative transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="absolute -top-4 left-6 z-20">
+                    <PaperClipIcon className="w-6 h-10 text-slate-600" />
+                  </div>
+                  <div className="polaroid-frame w-48 shadow-xl">
+                    <img
+                      src="/images/craft1.png"
+                      alt="Offline Living Studio"
+                      className="w-full aspect-square object-cover"
+                    />
+                    <p className="font-glory text-sm text-[#3A342D] mt-2 text-center font-bold">
+                      studio days ♡
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+        </section>
+
+        {/* 3. Core Values Grid */}
+        <section className="relative py-16 px-6 md:px-12 bg-gingham text-[#3A342D] overflow-hidden my-8">
+          <TornPaperEdgeTop fill="#F8F3EA" className="-top-8 absolute left-0" />
+          
+          {/* Animated Connecting Wave with Heart End */}
+          <AnimatedDrawnLine
+            d={DRAWN_PATHS.connectingHeartEnd}
+            viewBox={DRAWN_PATHS.connectingHeartEndViewBox}
+            stroke="#C27871"
+            strokeWidth={2.5}
+            strokeOpacity={0.28}
+            className="top-10 left-0 w-full h-36 -z-0"
+            duration={2.8}
+            delay={0.2}
+          />
+
+          <div className="max-w-6xl mx-auto relative z-10 space-y-12">
+            <div className="text-center space-y-2">
+              <h2
+                className="text-3xl md:text-5xl text-[#3A342D] tracking-tight"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                What We Stand For
+              </h2>
+              <p className="font-glory text-xl text-[#3A342D]/85 font-bold">
+                The three simple promises in everything we craft. ♡
               </p>
             </div>
 
-            {/* Sign-off */}
-            <div className="pt-24 flex flex-col items-end text-right">
-              <p className="font-[family-name:var(--font-caveat)] text-3xl md:text-4xl text-ink-charcoal/70 mb-6">
-                Warmly,
-              </p>
-              <div className="relative group">
-                <img src="/images/logoo1.png" alt="Offline Living Logo Signature" className="h-48 md:h-56 object-contain opacity-70 mix-blend-multiply grayscale group-hover:grayscale-0 transition-all duration-700 transform -rotate-3" />
-                <img src="/images/logoo1.png" alt="" className="h-48 md:h-56 object-contain opacity-20 mix-blend-multiply grayscale absolute top-[2px] left-[2px] blur-[2px] pointer-events-none transform -rotate-3" />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {values.map((v, i) => (
+                <div
+                  key={i}
+                  className={`p-8 rounded-3xl border border-[#DDD5C5] shadow-lg flex flex-col justify-between relative group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${v.color}`}
+                >
+                  <div className="washi-tape -top-3 left-1/2 -translate-x-1/2 rotate-[-2deg]" />
+                  <h3
+                    className="text-2xl text-[#3A342D] mb-2"
+                    style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+                  >
+                    {v.title}
+                  </h3>
+                  <p className="font-glory text-lg text-[#3A342D]/80 leading-relaxed font-bold">
+                    {v.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-          
-        </motion.div>
-      </section>
 
-      <Footer />
-    </main>
+          <TornPaperEdgeBottom fill="#F8F3EA" className="-bottom-8 absolute left-0" />
+        </section>
+
+        {/* 4. Ready to Create Call-to-Action */}
+        <section className="pt-12 pb-8 px-6 text-center">
+          <div className="max-w-xl mx-auto space-y-6">
+            <h2
+              className="text-3xl md:text-4xl text-[#3A342D]"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Make Your First Keepsake Today
+            </h2>
+            <p className="font-glory text-xl text-[#3A342D]/85 font-bold">
+              Turn your camera roll into archival art in just a few clicks. ♡
+            </p>
+            <div>
+              <Link
+                href="/products"
+                className="inline-block px-8 py-4 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-all shadow-md"
+              >
+                Browse Formats
+              </Link>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      {/* Scrapbook Footer */}
+      <ScrapbookFooter />
+    </div>
   );
 }

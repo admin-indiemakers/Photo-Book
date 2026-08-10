@@ -60,7 +60,41 @@ export async function clearActiveCart(userId: string) {
   }
 }
 
+export async function removeFromCart(userId: string, itemId: string) {
+
+  if (!userId) return { success: false, error: 'Not authenticated' };
+
+  try {
+    const customerId = await getCustomerId(userId);
+    if (!customerId) return { success: false, error: 'Customer profile not found' };
+
+    const { data: cart } = await supabaseAdmin
+      .from('carts')
+      .select('id')
+      .eq('customer_id', customerId)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (!cart) return { success: false, error: 'Active cart not found' };
+
+    const { error } = await supabaseAdmin
+      .from('cart_items')
+      .delete()
+      .eq('id', itemId)
+      .eq('cart_id', cart.id);
+
+    if (error) throw error;
+
+    await supabaseAdmin.from('carts').update({ updated_at: new Date().toISOString() }).eq('id', cart.id);
+    revalidatePath('/cart');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
 export async function addToCart(userId: string, productId: string, quantity: number, customOptions: any, price: number) {
+
   if (!userId) return { success: false, error: 'Please log in to add items to cart' };
 
   try {

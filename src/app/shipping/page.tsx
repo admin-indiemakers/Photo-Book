@@ -1,70 +1,97 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
-
-export const metadata = {
-  title: "Shipping Information | Offline Living",
-  description: "Learn about our shipping rates, timelines, and international delivery options.",
-};
+import {
+  ScrapbookNavbar,
+  ScrapbookFooter,
+  AuthenticWaxSeal
+} from '@/components/ui/landingpage';
 
 export default function ShippingPage() {
   return (
-    <div className="min-h-screen bg-theme-ivory pt-40 pb-20">
-      <div className="container max-w-3xl mx-auto px-4">
-        
-        
-        <h1 className="text-5xl font-serif text-theme-black mb-12">Shipping Information</h1>
-        
-        <div className="prose prose-lg prose-theme max-w-none text-theme-black/80 space-y-8">
-          <p>
-            Every Offline Living photobook is custom printed and bound to order. Please note that the total delivery time includes both our production time (printing and binding) and the transit time from our facility to your door.
-          </p>
+    <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen">
+      <div className="grain-overlay" />
 
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-theme-black/10 my-8">
-            <h2 className="text-2xl font-serif text-theme-black mb-4 mt-0">Production Time</h2>
-            <p className="mb-0">
-              <strong>Standard Production:</strong> 3-5 business days<br/>
-              During peak holiday seasons (November-December), please allow up to 7 business days for production.
+      {/* Floating Scrapbook Navbar */}
+      <ScrapbookNavbar />
+
+      <main className="pt-28 pb-20">
+
+        {/* 1. Header Section */}
+        <section className="pt-8 pb-10 px-6 md:px-12 text-center relative">
+          <div className="max-w-3xl mx-auto space-y-3">
+            <h1
+              className="text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+            >
+              Shipping & Delivery
+            </h1>
+
+            <p className="font-glory text-xl md:text-2xl text-[#3A342D]/85 font-bold leading-relaxed max-w-xl mx-auto">
+              How we carefully package and deliver your physical memory keepsakes. ♡
             </p>
           </div>
+        </section>
 
-          <h2 className="text-3xl font-serif text-theme-black mt-12 mb-6">Domestic Shipping (US)</h2>
-          <table className="w-full text-left border-collapse border border-theme-black/10 bg-white rounded-lg overflow-hidden">
-            <thead className="bg-theme-black/5">
-              <tr>
-                <th className="p-4 border-b border-theme-black/10 font-medium">Method</th>
-                <th className="p-4 border-b border-theme-black/10 font-medium">Transit Time</th>
-                <th className="p-4 border-b border-theme-black/10 font-medium">Cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="p-4 border-b border-theme-black/10">Standard</td>
-                <td className="p-4 border-b border-theme-black/10">4-6 business days</td>
-                <td className="p-4 border-b border-theme-black/10">$7.99</td>
-              </tr>
-              <tr>
-                <td className="p-4 border-b border-theme-black/10">Expedited</td>
-                <td className="p-4 border-b border-theme-black/10">2-3 business days</td>
-                <td className="p-4 border-b border-theme-black/10">$14.99</td>
-              </tr>
-              <tr>
-                <td className="p-4 border-b border-theme-black/10">Overnight</td>
-                <td className="p-4 border-b border-theme-black/10">1 business day</td>
-                <td className="p-4 border-b border-theme-black/10">$29.99</td>
-              </tr>
-            </tbody>
-          </table>
-          <p className="text-sm text-theme-black/60 mt-2">* Free Standard Shipping on all orders over $150.</p>
+        {/* 2. Policy Card */}
+        <section className="px-4 sm:px-6 md:px-12 max-w-3xl mx-auto">
+          <div className="bg-[#FAF6EE] p-8 sm:p-12 rounded-3xl border border-[#DDD5C5] shadow-xl relative space-y-8">
+            <div className="washi-tape -top-3 left-1/2 -translate-x-1/2 rotate-[-2deg]" />
 
-          <h2 className="text-3xl font-serif text-theme-black mt-12 mb-6">International Shipping</h2>
-          <p>
-            We currently ship to Canada, the United Kingdom, and Australia. International standard shipping typically takes 7-14 business days. Rates are calculated dynamically at checkout based on your exact location and the weight of your order.
-          </p>
-          <p className="text-sm">
-            <em>Note: International customers are responsible for any applicable customs duties or import taxes levied by their local authorities.</em>
-          </p>
-        </div>
-      </div>
+            <div>
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                Studio Crafting & Production Timeline
+              </h2>
+              <p className="font-glory text-xl text-[#3A342D]/90 leading-relaxed font-bold">
+                Because every photobook and print set is individually tailored and hand-bound, our studio printing process takes <strong className="text-[#C27871]">3 to 5 business days</strong>. Every single page is hand-inspected under high-CRI studio lighting to ensure color fidelity and flawless binding.
+              </p>
+            </div>
+
+            <div className="border-t border-[#DDD5C5] pt-6">
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                Domestic Shipping (All India)
+              </h2>
+              <div className="bg-[#F4EFE5] p-5 rounded-2xl border border-[#DDD5C5] space-y-3 font-glory text-lg text-[#3A342D] font-bold">
+                <div className="flex justify-between items-center">
+                  <span>Standard Doorstep Delivery (3-5 days)</span>
+                  <span className="text-[#C27871]">₹99 (FREE over ₹999)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Express Air Delivery (1-2 days)</span>
+                  <span className="text-[#C27871]">₹199</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-[#DDD5C5] pt-6">
+              <h2
+                className="text-2xl text-[#3A342D] mb-3"
+                style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+              >
+                Plastic-Free Eco Packaging
+              </h2>
+              <p className="font-glory text-xl text-[#3A342D]/90 leading-relaxed font-bold">
+                Every print order is lovingly wrapped in tissue paper and secured with recycled cardboard corner protectors inside a sturdy keepsake box, keeping your memories safe without harming our planet.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-[#DDD5C5] flex justify-center">
+              <AuthenticWaxSeal className="w-24 h-24" />
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      {/* Scrapbook Footer */}
+      <ScrapbookFooter />
     </div>
   );
 }
