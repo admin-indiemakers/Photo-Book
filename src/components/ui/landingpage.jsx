@@ -620,7 +620,7 @@ function ScrapbookIntroSection() {
           <span className="text-[#C27871]">Has Stories.</span>
         </h2>
 
-        <p className="font-sans text-xs sm:text-sm md:text-base text-[#3A342D]/80 max-w-lg mx-auto font-light leading-relaxed">
+        <p className="font-glory text-base sm:text-xl md:text-2xl text-[#3A342D]/90 max-w-lg mx-auto font-bold leading-relaxed">
           Some moments are too good to disappear into a thousand other photos. ♡
         </p>
 
@@ -628,12 +628,12 @@ function ScrapbookIntroSection() {
         <div className="pt-4 grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 max-w-3xl mx-auto">
           {steps.map((s) => (
             <div key={s.num} className="bg-[#FAF6EE] p-3 sm:p-4 border border-[#DDD5C5] shadow-md rounded-xl flex flex-col items-center justify-between relative group hover:border-[#C27871] transition-all">
-              <span className="font-mono text-[9px] sm:text-[10px] font-bold text-[#C27871] uppercase tracking-widest">{s.num}</span>
+              <span className="font-readable text-[9px] sm:text-[10px] font-bold text-[#C27871] uppercase tracking-widest">{s.num}</span>
               <div className="w-12 h-12 sm:w-14 sm:h-14 my-1.5 sm:my-2 bg-[#F8EBE6] rounded-full flex items-center justify-center text-[#C27871] group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-lg sm:text-xl">{s.icon}</span>
               </div>
-              <h4 className="font-bagel text-xs sm:text-sm text-[#3A342D]">{s.title}</h4>
-              <span className="font-handwriting text-[10px] sm:text-xs text-[#C27871]">{s.desc}</span>
+              <h4 className="font-protest text-xs sm:text-sm text-[#3A342D] tracking-wide">{s.title}</h4>
+              <span className="font-readable text-[11px] sm:text-xs font-semibold text-[#C27871]">{s.desc}</span>
             </div>
           ))}
         </div>
@@ -713,48 +713,35 @@ function WhatShouldWePrint() {
 
       <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 relative z-10">
 
-        {/* Section Header */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 text-center lg:text-left">
-          <div className="space-y-1 w-full lg:w-auto text-center lg:text-left">
-            <h2
-              className="text-3xl sm:text-4xl md:text-6xl text-[#3A342D] tracking-tight"
-              style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
-            >
-              What Should We Print?
-            </h2>
-            <p className="font-glory text-base sm:text-xl text-[#3A342D]/80 font-bold">
-              Choose your physical keepsake format. ♡
-            </p>
-          </div>
+        {/* Section Header - Centered */}
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <h2
+            className="text-3xl sm:text-4xl md:text-6xl text-[#3A342D] tracking-tight"
+            style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
+          >
+            What Should We Print?
+          </h2>
+          <p className="font-glory text-base sm:text-xl text-[#3A342D]/80 font-bold">
+            Choose your physical keepsake format. ♡
+          </p>
 
-          <div className="flex items-center gap-3">
-            {/* Direct Header Button to Collections Page */}
-            <Link
-              href="/products"
-              className="hidden lg:inline-flex items-center gap-1.5 px-6 py-2.5 bg-[#FAF6EE] border-2 border-[#DDD5C5] text-[#3A342D] hover:border-[#C27871] hover:text-[#C27871] rounded-full font-protest text-xs uppercase tracking-wider transition-all shadow-xs"
+          {/* Left / Right Carousel Navigation Buttons (Mobile / Tablet Only) */}
+          <div className="flex lg:hidden items-center justify-center gap-2 pt-2">
+            <button
+              onClick={() => scroll('left')}
+              className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
+              aria-label="Scroll left"
             >
-              <span>View All Collections</span>
-              <span className="material-symbols-outlined text-base">arrow_forward</span>
-            </Link>
-
-            {/* Left / Right Carousel Navigation Buttons (Mobile / Tablet Only) */}
-            <div className="flex lg:hidden items-center justify-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
-                aria-label="Scroll left"
-              >
-                <span className="material-symbols-outlined text-xl">chevron_left</span>
-              </button>
-              <span className="font-glory text-sm text-[#C27871] font-bold">swipe formats ♡</span>
-              <button
-                onClick={() => scroll('right')}
-                className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
-                aria-label="Scroll right"
-              >
-                <span className="material-symbols-outlined text-xl">chevron_right</span>
-              </button>
-            </div>
+              <span className="material-symbols-outlined text-xl">chevron_left</span>
+            </button>
+            <span className="font-glory text-sm text-[#C27871] font-bold">swipe formats ♡</span>
+            <button
+              onClick={() => scroll('right')}
+              className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
+              aria-label="Scroll right"
+            >
+              <span className="material-symbols-outlined text-xl">chevron_right</span>
+            </button>
           </div>
         </div>
 
@@ -772,7 +759,7 @@ function WhatShouldWePrint() {
 
               {/* Badge Tag */}
               <div className="mb-3">
-                <span className="bg-white/80 border border-[#DDD5C5] px-3 py-1 rounded-full text-[10px] font-mono font-bold text-[#C27871] uppercase tracking-wider shadow-2xs">
+                <span className="bg-white/80 border border-[#DDD5C5] px-3 py-1 rounded-full text-[10px] font-readable font-bold text-[#C27871] uppercase tracking-wider shadow-2xs">
                   {p.badge}
                 </span>
               </div>
@@ -810,17 +797,6 @@ function WhatShouldWePrint() {
           ))}
         </div>
 
-        {/* Explore All Collections Button below grid */}
-        <div className="text-center pt-2 sm:pt-4">
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#3A342D] text-[#F8F3EA] rounded-full font-protest text-xs sm:text-sm uppercase tracking-wider hover:bg-[#C27871] hover:text-white transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-          >
-            <span>Explore All Collections</span>
-            <span className="material-symbols-outlined text-base">arrow_forward</span>
-          </Link>
-        </div>
-
       </div>
     </section>
   );
@@ -842,7 +818,7 @@ function OurLittleFavoritesGingham() {
       id: 'wanderlust',
       title: 'Wanderlust Travel Journal',
       category: 'Travel & Trips',
-      price: '₹1,499',
+      price: 'From ₹1,499',
       pages: 12,
       rating: 5,
       reviews: 184,
@@ -853,7 +829,7 @@ function OurLittleFavoritesGingham() {
       id: 'wedding-bliss',
       title: 'Wedding Bliss Layflat',
       category: 'Weddings & Love',
-      price: '₹3,999',
+      price: 'From ₹3,999',
       pages: 12,
       rating: 5,
       reviews: 240,
@@ -864,7 +840,7 @@ function OurLittleFavoritesGingham() {
       id: 'little-one',
       title: 'Little One Baby Book',
       category: 'Baby & Milestones',
-      price: '₹1,799',
+      price: 'From ₹1,799',
       pages: 12,
       rating: 5,
       reviews: 156,
@@ -875,7 +851,7 @@ function OurLittleFavoritesGingham() {
       id: 'year-in-review',
       title: 'Year In Review Journal',
       category: 'Annual Memories',
-      price: '₹2,999',
+      price: 'From ₹2,999',
       pages: 12,
       rating: 5,
       reviews: 212,
@@ -886,7 +862,7 @@ function OurLittleFavoritesGingham() {
       id: 'recipe-book',
       title: 'Family Heritage Keepsake',
       category: 'Family & Recipes',
-      price: '₹2,299',
+      price: 'From ₹2,299',
       pages: 12,
       rating: 5,
       reviews: 118,
@@ -928,13 +904,13 @@ function OurLittleFavoritesGingham() {
 
           {/* Feature Badges with clean typography */}
           <div className="flex flex-wrap justify-center gap-1.5 sm:gap-3 pt-1 sm:pt-2">
-            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-mono text-[#3A342D] font-bold shadow-xs">
+            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-readable text-[#3A342D] font-bold shadow-xs">
               100% Archival Cotton Paper
             </span>
-            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-mono text-[#3A342D] font-bold shadow-xs">
+            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-readable text-[#3A342D] font-bold shadow-xs">
               180° Seamless Layflat
             </span>
-            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-mono text-[#C27871] font-bold shadow-xs">
+            <span className="bg-[#FAF6EE] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#DDD5C5] text-[10px] sm:text-xs font-readable text-[#C27871] font-bold shadow-xs">
               Hand-Inspected with Care
             </span>
           </div>
@@ -981,7 +957,7 @@ function OurLittleFavoritesGingham() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/books.png"; }}
                   />
-                  <span className="absolute bottom-2 left-2 bg-[#FAF6EE]/90 px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-mono text-[#3A342D] font-bold border border-[#DDD5C5]">
+                  <span className="absolute bottom-2 left-2 bg-[#FAF6EE]/90 px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-readable font-bold text-[#3A342D] border border-[#DDD5C5]">
                     {fav.pages} Pages
                   </span>
                 </div>
@@ -998,19 +974,15 @@ function OurLittleFavoritesGingham() {
                     {fav.title}
                   </h4>
 
-                  {/* Clean, High-Legibility Price Display */}
-                  <div className="flex items-baseline gap-1.5 pt-0.5">
-                    <span className="text-[11px] font-sans font-semibold text-[#3A342D]/60 uppercase tracking-wider">
-                      From
-                    </span>
-                    <span className="text-base sm:text-lg font-sans font-extrabold text-[#C27871] tracking-tight">
-                      {fav.price}
-                    </span>
-                  </div>
+                  {/* Clean Readable Price */}
+                  <p className="text-sm font-bold text-[#C27871]">
+                    <span className="font-glory">From </span>
+                    <span className="font-num font-extrabold tracking-tight">{fav.price.replace('From ', '')}</span>
+                  </p>
 
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <span className="text-amber-500 font-sans tracking-widest text-[11px]">★★★★★</span>
-                    <span className="text-[11px] font-sans font-semibold text-[#3A342D]/70">({fav.reviews})</span>
+                  <div className="flex items-center gap-1 text-amber-500 text-xs">
+                    <span>★★★★★</span>
+                    <span className="text-[10px] font-readable font-bold text-[#3A342D]/70">({fav.reviews})</span>
                   </div>
                 </div>
               </div>

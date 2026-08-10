@@ -79,15 +79,20 @@
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Clean 2-Font System */
-/* Title Font: Protest Riot (Keep it offline style) */
+/* Clean 3-Tier Typography System */
+/* Tier 1 - Title Font: Protest Riot (Keep it offline style) */
 .font-protest, .font-title, .font-cute, .font-bagel, .font-cherry, .font-spicy, .font-agbalumo, .font-anton, .font-fruktur, .font-oi, .font-oxanium {
   font-family: 'Protest Riot', cursive, sans-serif !important;
 }
 
-/* Description & Notes Font: Give You Glory (Your favorite moments... style) */
+/* Tier 2 - Description & Notes Font: Give You Glory (Your favorite moments... style) */
 .font-glory, .font-desc, .font-handwriting, .font-notes, .font-soft {
   font-family: 'Give You Glory', cursive, sans-serif !important;
+}
+
+/* Tier 3 - High-Readability Functional Font: DM Sans (Prices, Specs, Numbers, Ratings) */
+.font-readable, .font-num {
+  font-family: var(--font-dm-sans), 'DM Sans', -apple-system, sans-serif !important;
 }
 
 
@@ -171,7 +176,10 @@
   h3,
   h4,
   h5,
-  h6,
+  h6 {
+    font-family: 'Protest Riot', cursive, sans-serif;
+  }
+
   .font-serif {
     font-family: var(--font-serif);
   }

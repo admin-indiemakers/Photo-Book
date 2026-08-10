@@ -108,7 +108,7 @@ export default function TemplatesClient() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/books.png"; }}
                       />
-                      <div className="absolute top-2 left-2 bg-[#FAF6EE]/90 px-2.5 py-0.5 rounded-full text-[9px] font-mono text-[#3A342D] font-bold border border-[#DDD5C5]">
+                      <div className="absolute top-2 left-2 bg-[#FAF6EE]/90 px-2.5 py-0.5 rounded-full text-[9px] font-readable text-[#3A342D] font-bold border border-[#DDD5C5]">
                         {tpl.badge}
                       </div>
                     </div>
@@ -120,9 +120,12 @@ export default function TemplatesClient() {
                       {tpl.name}
                     </h3>
 
-                    <div className="flex items-center justify-between font-glory text-sm text-[#3A342D]/75 font-bold mb-3">
-                      <span>{tpl.pages} Pages Included</span>
-                      <span className="text-[#C27871] font-bold">From ₹{tpl.price}</span>
+                    <div className="flex items-center justify-between text-sm text-[#3A342D]/75 font-bold mb-3">
+                      <span className="font-readable text-xs">{tpl.pages} Pages Included</span>
+                      <span className="text-[#C27871] font-bold">
+                        <span className="font-glory">From </span>
+                        <span className="font-num font-extrabold tracking-tight">₹{tpl.price.toLocaleString('en-IN')}</span>
+                      </span>
                     </div>
                   </div>
 
