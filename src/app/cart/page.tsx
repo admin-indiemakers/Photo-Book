@@ -269,13 +269,9 @@ export default function CartPage() {
                     <span>Subtotal ({items.length} items)</span>
                     <span>₹{total.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Taxes</span>
-                    <span className="text-[#C27871]">Included</span>
-                  </div>
                   <div className="flex justify-between pb-3 border-b border-[#DDD5C5]">
                     <span>Shipping</span>
-                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-sm">FREE OVER ₹999</span>
+                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-sm">FREE</span>
                   </div>
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="text-xl">Grand Total</span>

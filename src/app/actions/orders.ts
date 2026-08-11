@@ -25,7 +25,7 @@ export async function getUserOrders(userId: string, email?: string) {
 
     const { data, error } = await supabaseAdmin
       .from('orders')
-      .select('*, order_items(*, products(*))')
+      .select('*, order_items(*, products(*)), product_reviews(product_id)')
       .eq('customer_id', customer.id)
       .order('updated_at', { ascending: false });
 
