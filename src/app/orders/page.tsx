@@ -9,11 +9,42 @@ import {
   ScrapbookNavbar,
   ScrapbookFooter
 } from '@/components/ui/landingpage';
+import ReviewModal from '@/components/ui/ReviewModal';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedProductForReview, setSelectedProductForReview] = useState<any>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>('');
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [newlyReviewed, setNewlyReviewed] = useState<Set<string>>(new Set());
+
+  const submitReview = async (reviewData: any) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      
+      const res = await fetch('http://localhost:5000/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...reviewData,
+          user_id: session.user.id
+        })
+      });
+      
+      if (!res.ok) throw new Error('Failed to submit review');
+      setNewlyReviewed(prev => new Set(prev).add(`${selectedOrderId}-${selectedProductForReview?.id}`));
+      setToastMessage({ text: 'Review submitted successfully! It is pending admin approval.', type: 'success' });
+      setTimeout(() => setToastMessage(null), 5000);
+    } catch (err) {
+      console.error(err);
+      setToastMessage({ text: 'Failed to submit review.', type: 'error' });
+      setTimeout(() => setToastMessage(null), 5000);
+    }
+  };
 
   useEffect(() => {
     async function loadOrders() {
@@ -140,7 +171,7 @@ export default function OrdersPage() {
         ) : (
           <div className="space-y-8">
             {orders.map((order: any, idx: number) => {
-              const dateStr = new Date(order.created_at).toLocaleDateString('en-US', {
+              const dateStr = new Date(order.placed_at || order.created_at || new Date()).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric'
@@ -180,7 +211,7 @@ export default function OrdersPage() {
                         className="text-2xl text-[#C27871]"
                         style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
                       >
-                        ₹{(order.total_amount || 0).toFixed(2)}
+                        ₹{(order.total || order.total_amount || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -211,14 +242,30 @@ export default function OrdersPage() {
                             {item.products?.name || 'Photobook Keepsake'}
                           </h4>
                           <p className="font-glory text-sm text-[#3A342D]/70 font-bold">
-                            Quantity: {item.quantity} • ₹{item.price.toFixed(2)} each
+                            Quantity: {item.quantity} • ₹{(item.unit_price || 0).toFixed(2)} each
                           </p>
                         </div>
 
-                        <div className="text-right">
-                          <span className="font-glory text-xl text-[#3A342D] font-bold">
-                            ₹{(item.price * item.quantity).toFixed(2)}
+                        <div className="text-right space-y-2">
+                          <span className="block font-glory text-xl text-[#3A342D] font-bold">
+                            ₹{((item.unit_price || 0) * (item.quantity || 1)).toFixed(2)}
                           </span>
+                          {!order.product_reviews?.some((r: any) => r.product_id === item.products?.id) && !newlyReviewed.has(`${order.id}-${item.products?.id}`) ? (
+                            <button
+                              onClick={() => {
+                                setSelectedProductForReview(item.products);
+                                setSelectedOrderId(order.id);
+                                setReviewModalOpen(true);
+                              }}
+                              className="text-xs font-bold text-[#C27871] hover:text-[#3A342D] transition-colors underline decoration-[#C27871]/30 underline-offset-4"
+                            >
+                              Write a Review
+                            </button>
+                          ) : (
+                            <span className="text-xs font-bold text-[#DCE4D7] bg-[#3A342D] px-2 py-1 rounded">
+                              Reviewed
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -244,6 +291,31 @@ export default function OrdersPage() {
           </div>
         )}
       </main>
+
+      <ReviewModal
+        isOpen={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        product={selectedProductForReview}
+        orderId={selectedOrderId}
+        onSubmit={submitReview}
+      />
+
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className={`fixed bottom-6 left-1/2 z-[100] px-6 py-3 rounded-full shadow-2xl border flex items-center gap-2 font-glory font-bold ${
+              toastMessage.type === 'success' 
+                ? 'bg-[#DCE4D7] text-[#3A342D] border-[#3A342D]/20'
+                : 'bg-red-50 text-red-600 border-red-200'
+            }`}
+          >
+            {toastMessage.type === 'success' ? '♡' : '⚠'} {toastMessage.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ScrapbookFooter />
     </div>

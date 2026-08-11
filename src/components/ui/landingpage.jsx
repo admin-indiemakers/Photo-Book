@@ -465,7 +465,7 @@ function HeroScrapbookSection() {
 
         {/* Left Side: Headlines & Copy */}
         <div className="lg:col-span-5 z-20 space-y-4 sm:space-y-6 text-center lg:text-left">
-          
+
           {/* Archival Studio Pill Badge */}
           <div className="inline-flex items-center gap-2 bg-[#FAF6EE] px-3.5 py-1.5 rounded-full border border-[#DDD5C5] shadow-xs">
             <span className="text-[#C27871] text-xs">♥</span>
@@ -488,13 +488,13 @@ function HeroScrapbookSection() {
               href="/templates"
               className="w-full sm:w-auto px-7 py-3.5 bg-[#C27871] text-white font-cute text-xs tracking-wider uppercase font-bold rounded-full hover:bg-[#3A342D] transition-all shadow-md text-center"
             >
-              Make Something Real
+              Preserve Your Memories
             </Link>
             <Link
               href="/products"
               className="w-full sm:w-auto px-7 py-3.5 bg-[#F4EFE5] border border-[#3A342D]/30 text-[#3A342D] font-cute text-xs tracking-wider uppercase font-bold rounded-full hover:bg-[#3A342D] hover:text-white transition-all shadow-xs text-center"
             >
-              Explore Formats
+              Browse All Products
             </Link>
           </div>
 
@@ -643,7 +643,7 @@ function ScrapbookIntroSection() {
 }
 
 // 4. PRODUCT SECTION — "WHAT SHOULD WE PRINT?" (4 FEATURED PRODUCTS + VIEW ALL COLLECTIONS BUTTON)
-function WhatShouldWePrint() {
+function WhatShouldWePrint({ settings }) {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -653,7 +653,7 @@ function WhatShouldWePrint() {
     }
   };
 
-  const products = [
+  const defaultProducts = [
     {
       id: 'photobooks',
       title: 'Photo Books',
@@ -696,6 +696,21 @@ function WhatShouldWePrint() {
     }
   ];
 
+  const sectionData = settings?.whatShouldWePrint || settings?.curatedMoments;
+  const products = sectionData?.items?.length > 0 && sectionData.items.some(i => i.title || i.img)
+    ? sectionData.items.map((item, i) => ({
+      ...defaultProducts[i],
+      ...item,
+      // Only use item properties if they actually contain data
+      title: item.title || defaultProducts[i].title,
+      subtitle: item.subtitle || defaultProducts[i].subtitle,
+      badge: item.badge || defaultProducts[i].badge,
+      img: item.img || defaultProducts[i].img,
+      cta: item.cta || defaultProducts[i].cta,
+      href: item.href || defaultProducts[i].href
+    }))
+    : defaultProducts;
+
   return (
     <section className="pt-12 sm:pt-16 pb-16 sm:pb-24 px-4 sm:px-6 md:px-12 bg-[#F8F3EA] relative overflow-hidden">
 
@@ -713,36 +728,36 @@ function WhatShouldWePrint() {
 
       <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 relative z-10">
 
-        {/* Section Header - Centered */}
-        <div className="text-center max-w-3xl mx-auto space-y-2">
+        {/* Section Header */}
+        <div className="text-center max-w-7xl mx-auto space-y-2 px-4 sm:px-0">
           <h2
             className="text-3xl sm:text-4xl md:text-6xl text-[#3A342D] tracking-tight"
             style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
           >
-            What Should We Print?
+            {(settings?.whatShouldWePrint?.title || settings?.curatedMoments?.title) || "What Should We Print?"}
           </h2>
           <p className="font-glory text-base sm:text-xl text-[#3A342D]/80 font-bold">
-            Choose your physical keepsake format. ♡
+            {(settings?.whatShouldWePrint?.subtitle || settings?.curatedMoments?.subtitle) || "Choose your physical keepsake format. ♡"}
           </p>
+        </div>
 
-          {/* Left / Right Carousel Navigation Buttons (Mobile / Tablet Only) */}
-          <div className="flex lg:hidden items-center justify-center gap-2 pt-2">
-            <button
-              onClick={() => scroll('left')}
-              className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
-              aria-label="Scroll left"
-            >
-              <span className="material-symbols-outlined text-xl">chevron_left</span>
-            </button>
-            <span className="font-glory text-sm text-[#C27871] font-bold">swipe formats ♡</span>
-            <button
-              onClick={() => scroll('right')}
-              className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
-              aria-label="Scroll right"
-            >
-              <span className="material-symbols-outlined text-xl">chevron_right</span>
-            </button>
-          </div>
+        {/* Left / Right Carousel Navigation Buttons (Mobile / Tablet Only) */}
+        <div className="flex lg:hidden items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => scroll('left')}
+            className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
+            aria-label="Scroll left"
+          >
+            <span className="material-symbols-outlined text-xl">chevron_left</span>
+          </button>
+          <span className="font-glory text-sm text-[#C27871] font-bold">swipe formats ♡</span>
+          <button
+            onClick={() => scroll('right')}
+            className="w-10 h-10 rounded-full bg-[#FAF6EE] border border-[#DDD5C5] text-[#3A342D] hover:bg-[#C27871] hover:text-white transition-all shadow-md flex items-center justify-center hover:scale-105 active:scale-95 cursor-pointer"
+            aria-label="Scroll right"
+          >
+            <span className="material-symbols-outlined text-xl">chevron_right</span>
+          </button>
         </div>
 
         {/* Responsive Container: Horizontal Scroll on Mobile (<lg), Full 4-Column Grid on Desktop (>=lg) */}
@@ -788,13 +803,23 @@ function WhatShouldWePrint() {
 
               {/* CTA Button */}
               <Link
-                href={p.href}
+                href={p.href || '/products'}
                 className="w-full py-3 sm:py-3.5 bg-[#C27871] text-white rounded-full font-protest text-xs uppercase tracking-wider hover:bg-[#3A342D] transition-all shadow-md text-center block"
               >
-                {p.cta}
+                {p.cta || 'Shop Now'}
               </Link>
             </div>
           ))}
+        </div>
+
+        {/* View All Collections Button */}
+        <div className="text-center mt-10">
+          <Link
+            href="/products"
+            className="inline-block px-10 py-4 bg-[#FAF6EE] text-[#3A342D] border-2 border-[#DDD5C5] rounded-full font-protest text-sm uppercase tracking-widest hover:bg-[#C27871] hover:border-[#C27871] hover:text-white transition-all shadow-md"
+          >
+            All Collections
+          </Link>
         </div>
 
       </div>
@@ -803,7 +828,7 @@ function WhatShouldWePrint() {
 }
 
 // 5. BEST SELLERS SECTION — "OUR LITTLE FAVORITES" (HORIZONTAL SCROLL ON MOBILE, FULL GRID ON DESKTOP)
-function OurLittleFavoritesGingham() {
+function OurLittleFavoritesGingham({ settings }) {
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -813,7 +838,7 @@ function OurLittleFavoritesGingham() {
     }
   };
 
-  const favoriteTemplates = [
+  const defaultTemplates = [
     {
       id: 'wanderlust',
       title: 'Wanderlust Travel Journal',
@@ -871,6 +896,51 @@ function OurLittleFavoritesGingham() {
     }
   ];
 
+  const [favoriteTemplates, setFavoriteTemplates] = useState(defaultTemplates);
+
+  useEffect(() => {
+    async function loadTemplates() {
+      const featured = settings?.featuredTemplates;
+      if (featured && featured.length > 0) {
+        const itemIds = featured.map(f => typeof f === 'string' ? f : f.id);
+        const { data: templateData } = await supabase.from('layout_templates').select('*').in('id', itemIds);
+        const { data: productData } = await supabase.from('products').select('*').in('id', itemIds);
+
+        const combinedData = [...(templateData || []), ...(productData || [])];
+
+        if (combinedData && combinedData.length > 0) {
+          const formatted = combinedData.map(t => {
+            const override = featured.find(f => (typeof f === 'string' ? f === t.id : f.id === t.id));
+            const isProduct = !!t.base_price;
+            return {
+              id: t.id,
+              title: t.name,
+              category: t.category || (isProduct ? 'Product' : 'Photo Book Layout'),
+              price: `From ₹${t.base_price || t.price || 1499}`,
+              pages: t.pages || 12,
+              rating: t.rating || 5,
+              reviews: t.reviews || 150,
+              img: override?.img || t.images?.[0] || t.image || '/images/tpl_baby.png',
+              badge: isProduct ? 'bestseller' : 'featured layout',
+              href: isProduct ? (
+                t.category === 'photo_book' ? '/templates' :
+                  t.category === 'photo_frame' ? '/frame' :
+                    t.category === 'polaroid' ? '/polaroid' :
+                      t.category === 'fridge_magnet' ? '/fridge-magnet' :
+                        t.category === 'acrylic_frame' ? '/acrylic-frames' :
+                          t.category === 'photo_canvas' ? '/canvas-frames' : '/products'
+              ) : '/templates'
+            };
+          });
+          setFavoriteTemplates(formatted);
+        }
+      } else {
+        setFavoriteTemplates(defaultTemplates);
+      }
+    }
+    loadTemplates();
+  }, [settings]);
+
   return (
     <section className="relative py-14 sm:py-20 md:py-28 px-4 sm:px-6 md:px-12 bg-gingham text-[#3A342D] overflow-hidden">
       <TornPaperEdgeTop fill="#F8F3EA" className="-top-6 sm:-top-8 absolute left-0" />
@@ -895,11 +965,11 @@ function OurLittleFavoritesGingham() {
             className="text-3xl sm:text-4xl md:text-6xl text-[#3A342D] tracking-tight"
             style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}
           >
-            Our Little Favorites
+            {settings?.ourLittleFavorites?.title || "Our Little Favorites"}
           </h2>
 
           <p className="font-glory text-lg sm:text-xl md:text-2xl text-[#3A342D]/90 font-bold leading-relaxed px-2">
-            Every memory deserves its own chapter. Our hand-bound, archival layflat photobooks let you weave your camera roll into tactile heirloom pages that stay vivid for generations. ♡
+            {settings?.ourLittleFavorites?.subtitle || "Every memory deserves its own chapter. Our hand-bound, archival layflat photobooks let you weave your camera roll into tactile heirloom pages that stay vivid for generations. ♡"}
           </p>
 
           {/* Feature Badges with clean typography */}
@@ -980,10 +1050,7 @@ function OurLittleFavoritesGingham() {
                     <span className="font-num font-extrabold tracking-tight">{fav.price.replace('From ', '')}</span>
                   </p>
 
-                  <div className="flex items-center gap-1 text-amber-500 text-xs">
-                    <span>★★★★★</span>
-                    <span className="text-[10px] font-readable font-bold text-[#3A342D]/70">({fav.reviews})</span>
-                  </div>
+
                 </div>
               </div>
 
@@ -1053,10 +1120,30 @@ export function AuthenticWaxSeal({ className = "w-24 h-24 sm:w-28 sm:h-28 text-[
 }
 
 // 6. TESTIMONIAL BANNER — SAGE GREEN TORN PAPER STRIP
-function SageTestimonialBanner() {
+function SageTestimonialBanner({ reviews = [] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!reviews || reviews.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [reviews]);
+
+  const defaultReview = {
+    review_text: "It's not just printing. It's reliving.",
+    user: { raw_user_meta_data: { full_name: "Ananya" } },
+    images: ["/images/polaroid8.jpg"]
+  };
+
+  const activeReview = reviews && reviews.length > 0 ? reviews[currentIndex] : defaultReview;
+  const reviewText = activeReview.review_text;
+  const authorName = activeReview.user?.raw_user_meta_data?.full_name || activeReview.customer_name || activeReview.orders?.customers?.full_name || 'Ananya';
+  const authorImage = activeReview.images?.[0] || "/images/polaroid8.jpg";
+
   return (
     <section className="relative py-12 sm:py-16 px-4 sm:px-6 md:px-12 bg-[#DCE4D7] text-[#3A342D] flex items-center justify-center overflow-hidden">
-
       <AnimatedDrawnLine
         d={DRAWN_PATHS.whimsicalSquiggle}
         viewBox={DRAWN_PATHS.whimsicalSquiggleViewBox}
@@ -1069,33 +1156,49 @@ function SageTestimonialBanner() {
       />
 
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 w-full relative z-10">
-
         {/* Paper clip photo on left */}
         <div className="relative">
           <div className="absolute -top-3 left-4 z-20">
             <PaperClipIcon className="w-5 h-8 sm:w-6 sm:h-10 text-slate-600" />
           </div>
           <div className="polaroid-frame w-32 sm:w-40 shadow-xl transform -rotate-6">
-            <img src="/images/polaroid8.jpg" alt="Happy customer memory" className="w-full aspect-square object-cover" />
+            <motion.img 
+              key={authorImage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              src={authorImage} 
+              alt="Customer product photo" 
+              className="w-full aspect-square object-cover" 
+            />
           </div>
         </div>
 
         {/* Quote in center */}
-        <div className="text-center md:text-left space-y-1.5 sm:space-y-2 flex-1">
-          <p className="font-glory italic text-2xl sm:text-3xl md:text-4xl text-[#3A342D] leading-snug">
-            "It's not just printing. <br />
-            It's reliving."
-          </p>
-          <p className="font-protest text-xs text-[#C27871]">
-            — ANANYA, BANGALORE
-          </p>
+        <div className="text-center md:text-left space-y-1.5 sm:space-y-2 flex-1 relative overflow-hidden h-32 flex flex-col justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+            >
+              <p className="font-glory italic text-xl sm:text-2xl md:text-3xl text-[#3A342D] leading-snug line-clamp-3">
+                "{reviewText}"
+              </p>
+              <p className="font-protest text-xs text-[#C27871] uppercase mt-2">
+                — {authorName}
+                {activeReview.product && ` • ${activeReview.product.name}`}
+              </p>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Archival Wax Seal Stamp on right */}
         <div className="flex items-center justify-center">
           <AuthenticWaxSeal className="w-24 h-24 sm:w-32 sm:h-32" />
         </div>
-
       </div>
     </section>
   );
@@ -1103,8 +1206,8 @@ function SageTestimonialBanner() {
 
 
 // 7. REAL PEOPLE. REAL MEMORIES.
-function RealPeopleRealMemories() {
-  const customerMemories = [
+function RealPeopleRealMemories({ settings }) {
+  const defaultMemories = [
     { img: "/images/photobook11.jpg", caption: "Kyoto Trip '24" },
     { img: "/images/polaroid2.jpg", caption: "Beach Days" },
     { img: "/images/wide_photo_book.png", caption: "Family Album" },
@@ -1112,6 +1215,13 @@ function RealPeopleRealMemories() {
     { img: "/images/polaroid8.jpg", caption: "Sunday Coffee" },
     { img: "/images/craft1.png", caption: "Polaroids" }
   ];
+
+  const customerMemories = settings?.realPeople?.images?.length > 0
+    ? settings.realPeople.images.map((m, i) => ({
+        img: m.img || defaultMemories[i]?.img || '',
+        caption: m.caption || defaultMemories[i]?.caption || ''
+      }))
+    : defaultMemories;
 
   return (
     <section className="py-14 sm:py-24 px-4 sm:px-6 md:px-12 bg-[#F8F3EA] text-[#3A342D] relative overflow-hidden">
@@ -1132,10 +1242,10 @@ function RealPeopleRealMemories() {
 
         <div>
           <h2 className="text-2xl sm:text-3xl md:text-5xl text-[#3A342D] tracking-tight" style={{ fontFamily: "'Protest Riot', cursive, sans-serif" }}>
-            Real People. Real Memories.
+            {settings?.realPeople?.title || "Real People. Real Memories."}
           </h2>
           <p className="font-glory text-xs sm:text-sm text-[#C27871] font-bold mt-1.5">
-            Tag us @offlineliving.co to be featured ♡
+            {settings?.realPeople?.subtitle || "Tag us @offlineliving.co to be featured ♡"}
           </p>
         </div>
 
@@ -1242,9 +1352,11 @@ export function ScrapbookFooter() {
             <h5 className="font-sans text-[11px] sm:text-xs font-bold uppercase tracking-widest text-[#C27871]">SHOP</h5>
             <ul className="space-y-1.5 sm:space-y-2 font-sans text-xs text-[#F8F3EA]/70">
               <li><Link href="/templates" className="hover:text-[#C27871]">Photo Books</Link></li>
-              <li><Link href="/polaroid" className="hover:text-[#C27871]">Prints</Link></li>
-              <li><Link href="/fridge-magnet" className="hover:text-[#C27871]">Cards</Link></li>
-              <li><Link href="/frame" className="hover:text-[#C27871]">Gifts</Link></li>
+              <li><Link href="/frame" className="hover:text-[#C27871]">Photo Frames</Link></li>
+              <li><Link href="/polaroid" className="hover:text-[#C27871]">Polaroids</Link></li>
+              <li><Link href="/fridge-magnet" className="hover:text-[#C27871]">Fridge Magnets</Link></li>
+              <li><Link href="/acrylic-frames" className="hover:text-[#C27871]">Acrylic Frames</Link></li>
+              <li><Link href="/canvas-frames" className="hover:text-[#C27871]">Canvas Frames</Link></li>
             </ul>
           </div>
 
@@ -1286,8 +1398,176 @@ export function ScrapbookFooter() {
   );
 }
 
+function ProductCollections() {
+  const [homeProducts, setHomeProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true);
+
+        if (data) {
+          const featured = data.filter((p) => p.attributes?.is_featured);
+          featured.sort((a, b) => (a.attributes?.featured_order || 99) - (b.attributes?.featured_order || 99));
+          const mapped = featured.map((item) => ({
+            title: item.name,
+            desc: item.description || "",
+            img: item.images?.[0] || "/images/books.png",
+            badge: item.attributes?.featured_badge || "",
+            href: item.category === 'photo_book' ? '/templates' :
+              item.category === 'photo_frame' ? '/frame' :
+                item.category === 'polaroid' ? '/polaroid' :
+                  item.category === 'fridge_magnet' ? '/fridge-magnet' :
+                    item.category === 'acrylic_frame' ? '/acrylic-frames' :
+                      item.category === 'photo_canvas' ? '/canvas-frames' : '/products'
+          }));
+          setHomeProducts(mapped.slice(0, 6));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFeatured();
+  }, []);
+
+  const defaultProductsData = [
+    {
+      title: "Photo Book",
+      desc: "Custom archival-quality books with seamless layflat binding.",
+      img: "/images/books.png",
+      badge: "Signature",
+      href: "/templates"
+    },
+    {
+      title: "Photo Frame",
+      desc: "Solid wood framing for your most cherished memories.",
+      img: "/images/frames.png",
+      badge: "Popular",
+      href: "/frame"
+    },
+    {
+      title: "Polaroid",
+      desc: "Retro polaroid prints to keep the nostalgia alive.",
+      img: "/images/keepsakes.png",
+      badge: "",
+      href: "/polaroid"
+    },
+    {
+      title: "Polaroid Fridge Magnet",
+      desc: "Premium polaroid fridge magnets for everyday joy.",
+      img: "/images/craft1.png",
+      badge: "",
+      href: "/fridge-magnet"
+    }
+  ];
+
+  const displayProducts = homeProducts.length > 0 ? homeProducts : (!loading ? [] : defaultProductsData);
+
+  return (
+    <section className="pt-16 md:pt-32 pb-12 md:pb-16 px-6 md:px-12 lg:px-24 bg-white text-[#111] border-t border-[#EAEAEA]">
+      <div className="max-w-[1400px] mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-row justify-between items-end mb-8 md:mb-20 gap-4 md:gap-8 border-b border-[#EAEAEA] pb-6 md:pb-12"
+        >
+          <h2 className="font-[family-name:var(--font-instrument)] tracking-tight text-4xl md:text-7xl lg:text-[90px] max-w-[60%] md:max-w-2xl leading-none">
+            Curated Formats.
+          </h2>
+          <Link href="/products" className="group flex flex-row items-center justify-end gap-3 md:gap-4 cursor-pointer">
+            <span className="text-[8px] md:text-[10px] uppercase tracking-[0.25em] font-medium text-[#111] transition-colors text-right">
+              View Archive
+            </span>
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#EAEAEA] flex items-center justify-center group-hover:bg-[#111] group-hover:border-[#111] transition-colors duration-500 shadow-sm flex-shrink-0">
+              <ArrowRightIcon className="w-3 h-3 md:w-4 md:h-4 text-[#111] group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all duration-500 ease-[0.16,1,0.3,1]" />
+            </div>
+          </Link>
+        </motion.div>
+
+        <div className="grid grid-cols-3 gap-2 md:gap-8">
+          {displayProducts.length > 0 ? displayProducts.map((item, i) => (
+            <ProductCard key={item.title} item={item} index={i} />
+          )) : (
+            <div className="col-span-3 text-center text-[#888] font-light py-12">
+              No featured collections available at the moment.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductCard({ item, index }) {
+  return (
+    <Link href={item.href} className="group block w-full bg-[#FAFAFA] p-3 md:p-6 border border-[#EAEAEA] hover:shadow-xl transition-shadow duration-700">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.8, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
+        className="relative flex flex-col gap-3 md:gap-8 h-full"
+      >
+        <div className="flex justify-between items-start w-full">
+          <span className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-[#fdc930] font-bold">
+            {item.badge || `No. 0${index + 1}`}
+          </span>
+          <ArrowRightIcon className="w-3 h-3 md:w-4 md:h-4 text-[#111] opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out" />
+        </div>
+
+        <div className="relative w-full aspect-square overflow-hidden bg-white border border-[#EAEAEA] shadow-sm flex items-center justify-center p-3 md:p-8">
+          <img
+            src={item.img}
+            alt={item.title}
+            className="w-full h-full object-contain mix-blend-multiply transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-110"
+          />
+        </div>
+
+        <div className="mt-auto">
+          <h3 className="font-serif text-xs md:text-2xl tracking-tight text-[#111] mb-1 md:mb-2 line-clamp-1">
+            {item.title}
+          </h3>
+          <p className="text-[#888] font-light text-[9px] md:text-sm max-w-full md:max-w-[85%] leading-relaxed line-clamp-2 md:line-clamp-none">
+            {item.desc}
+          </p>
+        </div>
+      </motion.div>
+    </Link>
+  );
+}
+
 // MAIN EXPORTED LANDING PAGE COMPONENT
 export function LandingPage() {
+  const [settings, setSettings] = useState(null);
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+    async function loadSettings() {
+      const { data } = await supabase.from('landing_page_settings').select('value').eq('key', 'main_settings').single();
+      if (data) setSettings(data.value);
+    }
+    async function loadReviews() {
+      try {
+        const res = await fetch('http://localhost:5000/api/reviews/approved');
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+      }
+    }
+    loadSettings();
+    loadReviews();
+  }, []);
 
   return (
     <div className="bg-[#F8F3EA] text-[#3A342D] font-sans antialiased relative min-h-screen max-w-full overflow-x-hidden">
@@ -1296,10 +1576,10 @@ export function LandingPage() {
       <main className="max-w-full overflow-x-hidden">
         <HeroScrapbookSection />
         <ScrapbookIntroSection />
-        <WhatShouldWePrint />
-        <OurLittleFavoritesGingham />
-        <SageTestimonialBanner />
-        <RealPeopleRealMemories />
+        <WhatShouldWePrint settings={settings} />
+        <OurLittleFavoritesGingham settings={settings} />
+        <SageTestimonialBanner reviews={reviews} />
+        <RealPeopleRealMemories settings={settings} />
       </main>
       <ScrapbookFooter />
     </div>
@@ -1307,3 +1587,4 @@ export function LandingPage() {
 }
 
 export default LandingPage;
+
